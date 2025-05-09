@@ -1425,8 +1425,2959 @@
     <script src="schools.js"></script>
 </head>
 <body>
-    <!-- Event-Listener für das Laden der Profildaten -->
+    
+    <!-- Login-Seite -->
+    <div class="login-page" id="login-page">
+        <video autoplay muted loop id="background-video">
+            <!-- Verschiedene Quelloptionen ausprobieren -->
+            <source src="samurai-autumn.mp4" type="video/mp4">
+            Dein Browser unterstützt keine Hintergrundvideos.
+        </video>
+        <div class="login-container">
+            <div class="login-sidebar">
+                <h1>Zyro</h1>
+                <p>Das moderne Schulverwaltungssystem für Schüler, Lehrer und Eltern.</p>
+                <div class="features">
+                    <div class="feature">
+                        <div class="feature-icon">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect>
+                                <line x1="16" y1="2" x2="16" y2="6"></line>
+                                <line x1="8" y1="2" x2="8" y2="6"></line>
+                                <line x1="3" y1="10" x2="21" y2="10"></line>
+                            </svg>
+    </div>
+                        <p>Intuitiver Stundenplan</p>
+                    </div>
+                    <div class="feature">
+                        <div class="feature-icon">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"></path>
+                                <path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"></path>
+                            </svg>
+                        </div>
+                        <p>Übersichtliche Notenverwaltung</p>
+                    </div>
+                    <div class="feature">
+                        <div class="feature-icon">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path>
+                            </svg>
+                        </div>
+                        <p>Einfache Kommunikation</p>
+                    </div>
+                </div>
+            </div>
+            <div class="login-content">
+                <div class="login-tabs">
+                    <div class="login-tab active" id="login-tab" style="cursor: pointer;" onclick="document.getElementById('login-tab').classList.add('active'); document.getElementById('register-tab').classList.remove('active'); document.getElementById('login-form').style.display = 'block'; document.getElementById('register-form').style.display = 'none';">Anmeldung</div>
+                    <div class="login-tab" id="register-tab" style="cursor: pointer;" onclick="document.getElementById('register-tab').classList.add('active'); document.getElementById('login-tab').classList.remove('active'); document.getElementById('register-form').style.display = 'block'; document.getElementById('login-form').style.display = 'none'; console.log('Registrierung geklickt');">Registrierung</div>
+                </div>
+                <form id="login-form" class="login-form active">
+                    <div class="form-group">
+                        <label for="username">Benutzername</label>
+                        <input id="username" type="text" placeholder="Benutzername eingeben" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="password">Passwort</label>
+                        <input id="password" type="password" placeholder="Passwort eingeben" required>
+                    </div>
+                    <div class="form-footer">
+                        <div class="remember-me">
+                            <input id="remember-me" name="remember-me" type="checkbox" checked>
+                            <label for="remember-me">Angemeldet bleiben</label>
+                        </div>
+                        <button type="button" onclick="document.getElementById('forgot-password-modal').style.display='flex'; document.getElementById('forgot-password-modal').classList.add('open'); document.getElementById('forgot-step-1').style.display='block'; document.getElementById('forgot-step-2').style.display='none'; document.getElementById('forgot-step-3').style.display='none';" style="background: none; border: none; color: var(--primary-600); text-decoration: underline; width: auto; box-shadow: none; font-size: 0.875rem; font-weight: 500; padding: 0; margin: 0; cursor: pointer;">Passwort vergessen?</button>
+                    </div>
+                    <button type="button" onclick="loginUser()">Anmelden</button>
+                </form>
+                
+                <form id="register-form" class="login-form" style="display: none;">
+                    <!-- Registrierungsschritte -->
+                    <div class="register-steps">
+                        <div class="register-step active" id="step-1">
+                            <h3>Schritt 1: Persönliche Daten</h3>
+                    <div class="form-group">
+                        <label for="register-fullname">Vollständiger Name</label>
+                        <input id="register-fullname" type="text" placeholder="Vor- und Nachname eingeben" required>
+                    </div>
+                            <div class="form-footer">
+                                <button type="button" onclick="document.getElementById('step-1').style.display = 'none'; document.getElementById('step-2').style.display = 'block';">Weiter</button>
+                            </div>
+                        </div>
+                        
+                        <div class="register-step" id="step-2" style="display: none;">
+                            <h3>Schritt 2: Kontaktdaten</h3>
+                    <div class="form-group">
+                        <label>Kontaktmöglichkeit</label>
+                        <div class="contact-toggle">
+                            <div class="contact-option active" id="email-option">E-Mail</div>
+                            <div class="contact-option" id="phone-option">Telefonnummer</div>
+                        </div>
+                        <div id="email-input-container">
+                            <input id="register-email" type="email" placeholder="E-Mail-Adresse eingeben" required>
+                        </div>
+                        <div id="phone-input-container" style="display: none;">
+                            <input id="register-phone" type="tel" placeholder="Telefonnummer eingeben" pattern="[0-9]+" required>
+                        </div>
+                    </div>
+                            <div class="form-footer">
+                                <button type="button" onclick="document.getElementById('step-2').style.display = 'none'; document.getElementById('step-1').style.display = 'block';">Zurück</button>
+                                <button type="button" onclick="document.getElementById('step-2').style.display = 'none'; document.getElementById('step-3').style.display = 'block';">Weiter</button>
+                            </div>
+                        </div>
+                        
+                        <div class="register-step" id="step-3" style="display: none;">
+                            <h3>Schritt 3: Benutzername</h3>
+                    <div class="form-group">
+                        <label for="register-username">Benutzername</label>
+                        <input id="register-username" type="text" placeholder="Benutzername eingeben" required>
+                                <small>Benutzername darf keine Sonderzeichen enthalten und muss einzigartig sein.</small>
+                    </div>
+                    <div class="form-group">
+                        <label for="register-school">Einrichtung / Schule</label>
+                        <div class="school-search-container">
+                            <input id="register-school" type="text" placeholder="Schule suchen..." class="school-search-input" autocomplete="off">
+                            <div class="school-search-dropdown" id="school-dropdown">
+                                        <!-- Schulen werden hier dynamisch geladen -->
+                                </div>
+                                </div>
+                                </div>
+                            <div class="form-footer">
+                                <button type="button" onclick="document.getElementById('step-3').style.display = 'none'; document.getElementById('step-2').style.display = 'block';">Zurück</button>
+                                <button type="button" onclick="document.getElementById('step-3').style.display = 'none'; document.getElementById('step-4').style.display = 'block';">Weiter</button>
+                                </div>
+                                </div>
+                        
+                        <div class="register-step" id="step-4" style="display: none;">
+                            <h3>Schritt 4: Passwort</h3>
+                    <div class="form-group">
+                        <label for="register-password">Passwort</label>
+                        <input id="register-password" type="password" placeholder="Passwort eingeben" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="register-confirm-password">Passwort bestätigen</label>
+                        <input id="register-confirm-password" type="password" placeholder="Passwort wiederholen" required>
+                    </div>
+                    <div class="form-footer">
+                                <button type="button" onclick="document.getElementById('step-4').style.display = 'none'; document.getElementById('step-3').style.display = 'block';">Zurück</button>
+                                <button type="button" onclick="document.getElementById('step-4').style.display = 'none'; document.getElementById('step-5').style.display = 'block';">Weiter</button>
+                            </div>
+                        </div>
+                        
+                        <div class="register-step" id="step-5" style="display: none;">
+                            <h3>Schritt 5: Bestätigung</h3>
+                            <div class="form-group">
+                                <p>Bitte überprüfe deine Angaben:</p>
+                                <div id="summary-name"></div>
+                                <div id="summary-contact"></div>
+                                <div id="summary-username"></div>
+                                <div id="summary-school"></div>
+                            </div>
+                            <div class="form-group">
+                        <div class="remember-me">
+                            <input id="register-terms" name="register-terms" type="checkbox" required>
+                            <label for="register-terms">Ich akzeptiere die Nutzungsbedingungen</label>
+                        </div>
+                    </div>
+                            <div class="form-footer">
+                                <button type="button" onclick="document.getElementById('step-5').style.display = 'none'; document.getElementById('step-4').style.display = 'block';">Zurück</button>
+                                <button type="button" onclick="registerUser()">Registrieren</button>
+                            </div>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- Dashboard -->
+    <div class="dashboard" id="dashboard">
+        <nav class="navigation" id="navigation">
+            <div class="nav-header">
+                <div class="nav-logo">Zyro</div>
+            </div>
+            <div class="nav-links">
+                <button type="button" class="nav-link active" onclick="showDashboardPage()" style="display: flex; align-items: center; width: 100%; text-align: left; background: none; border: none; padding: 0.75rem 1.5rem; color: var(--gray-600); text-decoration: none; transition: background-color 0.2s;">
+                    <span class="nav-link-icon">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path>
+                            <polyline points="9 22 9 12 15 12 15 22"></polyline>
+                        </svg>
+                    </span>
+                    Dashboard
+                </button>
+                <button type="button" class="nav-link" onclick="showStundenplanPage()" style="display: flex; align-items: center; width: 100%; text-align: left; background: none; border: none; padding: 0.75rem 1.5rem; color: var(--gray-600); text-decoration: none; transition: background-color 0.2s;">
+                    <span class="nav-link-icon">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect>
+                            <line x1="16" y1="2" x2="16" y2="6"></line>
+                            <line x1="8" y1="2" x2="8" y2="6"></line>
+                            <line x1="3" y1="10" x2="21" y2="10"></line>
+                        </svg>
+                    </span>
+                    Stundenplan
+                </button>
+                <button type="button" class="nav-link" onclick="showNotenPage()" style="display: flex; align-items: center; width: 100%; text-align: left; background: none; border: none; padding: 0.75rem 1.5rem; color: var(--gray-600); text-decoration: none; transition: background-color 0.2s;">
+                    <span class="nav-link-icon">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"></path>
+                            <path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"></path>
+                        </svg>
+                    </span>
+                    Noten
+                </button>
+                <button type="button" class="nav-link" onclick="showNachrichtenPage()" style="display: flex; align-items: center; width: 100%; text-align: left; background: none; border: none; padding: 0.75rem 1.5rem; color: var(--gray-600); text-decoration: none; transition: background-color 0.2s;">
+                    <span class="nav-link-icon">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path>
+                        </svg>
+                    </span>
+                    Nachrichten
+                </button>
+            </div>
+        </nav>
+
+        <div class="main-content">
+            <header class="header">
+                <button class="menu-button" id="menu-button">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <line x1="3" y1="12" x2="21" y2="12"></line>
+                        <line x1="3" y1="6" x2="21" y2="6"></line>
+                        <line x1="3" y1="18" x2="21" y2="18"></line>
+                    </svg>
+                </button>
+                <h1 class="page-title" id="current-page-title">Dashboard</h1>
+                <div class="header-actions">
+                    <div style="position: relative;">
+                    <button class="notification-button" id="notification-btn" onclick="event.stopPropagation(); document.getElementById('notifications-dropdown').classList.toggle('open'); document.getElementById('profile-dropdown').classList.remove('open');">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"></path>
+                            <path d="M13.73 21a2 2 0 0 1-3.46 0"></path>
+                        </svg>
+                    </button>
+                    <div class="notifications-dropdown" id="notifications-dropdown">
+                        <div class="notifications-header">
+                            <div class="notifications-title">Benachrichtigungen</div>
+                            <div class="mark-all-read" id="mark-all-read">Alle als gelesen markieren</div>
+                        </div>
+                        <div class="notifications-list">
+                            <div class="notification-item notification-unread">
+                                <div class="notification-icon">
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                        <path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"></path>
+                                        <path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"></path>
+                                    </svg>
+                                </div>
+                                <div class="notification-content">
+                                    <div class="notification-title">Neue Noten</div>
+                                    <div class="notification-message">In Mathematik wurden neue Noten eingetragen.</div>
+                                    <div class="notification-time">Vor 10 Minuten</div>
+                                </div>
+                            </div>
+                            <div class="notification-item notification-unread">
+                                <div class="notification-icon">
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                        <rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect>
+                                        <line x1="16" y1="2" x2="16" y2="6"></line>
+                                        <line x1="8" y1="2" x2="8" y2="6"></line>
+                                        <line x1="3" y1="10" x2="21" y2="10"></line>
+                                    </svg>
+                                </div>
+                                <div class="notification-content">
+                                    <div class="notification-title">Stundenplanänderung</div>
+                                    <div class="notification-message">Der Unterricht am Freitag entfällt aufgrund einer Lehrerkonferenz.</div>
+                                    <div class="notification-time">Vor 2 Stunden</div>
+                                </div>
+                            </div>
+                            <div class="notification-item">
+                                <div class="notification-icon">
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                        <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path>
+                                    </svg>
+                                </div>
+                                <div class="notification-content">
+                                    <div class="notification-title">Neue Nachricht</div>
+                                    <div class="notification-message">Hr. Müller hat Ihnen eine Nachricht gesendet.</div>
+                                    <div class="notification-time">Gestern, 15:30</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    </div>
+                    <button class="notification-button" id="new-message-btn" onclick="event.stopPropagation(); document.getElementById('message-modal').classList.add('open');">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path>
+                            <line x1="12" y1="11" x2="12" y2="17"></line>
+                            <line x1="9" y1="14" x2="15" y2="14"></line>
+                        </svg>
+                    </button>
+                    <div class="profile-container">
+                        <div class="profile-button" id="profile-button" onclick="event.stopPropagation(); document.getElementById('profile-dropdown').classList.toggle('open'); document.getElementById('notifications-dropdown').classList.remove('open');">
+                            <div class="profile-image" id="profile-image">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                    <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
+                                    <circle cx="12" cy="7" r="4"></circle>
+                                </svg>
+                            </div>
+                        </div>
+                        <div class="profile-dropdown" id="profile-dropdown">
+                            <div class="profile-header">
+                                <div class="profile-name" id="profile-name">Benutzername</div>
+                                <div class="profile-email">schueler@schule.de</div>
+                            </div>
+                            <div class="profile-menu">
+                                <div class="profile-menu-item" onclick="document.getElementById('profile-modal').classList.add('open');">
+                                    <div class="profile-menu-icon">
+                                        <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                            <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
+                                            <circle cx="12" cy="7" r="4"></circle>
+                                        </svg>
+                                    </div>
+                                    <div class="profile-menu-text">Mein Profil</div>
+                                </div>
+                                <div class="profile-menu-item" onclick="document.getElementById('settings-modal').classList.add('open');">
+                                    <div class="profile-menu-icon">
+                                        <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                            <circle cx="12" cy="12" r="3"></circle>
+                                            <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path>
+                                        </svg>
+                                    </div>
+                                    <div class="profile-menu-text">Einstellungen</div>
+                                </div>
+                                <div class="profile-menu-item" onclick="document.getElementById('notifications-modal').classList.add('open');">
+                                    <div class="profile-menu-icon">
+                                        <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                            <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"></path>
+                                            <path d="M13.73 21a2 2 0 0 1-3.46 0"></path>
+                                        </svg>
+                                    </div>
+                                    <div class="profile-menu-text">Benachrichtigungen</div>
+                                </div>
+                                <div class="profile-menu-item" onclick="document.getElementById('privacy-modal').classList.add('open');">
+                                    <div class="profile-menu-icon">
+                                        <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                            <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path>
+                                        </svg>
+                                    </div>
+                                    <div class="profile-menu-text">Datenschutz</div>
+                                </div>
+                                <div class="profile-menu-divider"></div>
+                                <div class="profile-menu-item logout-item" id="logout-button">
+                                    <div class="profile-menu-icon">
+                                        <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                            <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path>
+                                            <polyline points="16 17 21 12 16 7"></polyline>
+                                            <line x1="21" y1="12" x2="9" y2="12"></line>
+                                        </svg>
+                                    </div>
+                                    <div class="profile-menu-text">Abmelden</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </header>
+
+            <div class="content">
+                <div class="page-container active" id="dashboard-content">
+                    <div class="grid">
+                    <!-- Stundenplan -->
+                    <div class="card">
+                        <div class="card-header">
+                            <h2 class="card-title">Stundenplan</h2>
+                                <a href="#" class="view-all" data-page="stundenplan">Alle anzeigen</a>
+                        </div>
+                        <div class="timetable">
+                            <div class="timetable-day">
+                                <div class="day-header">Montag</div>
+                                <div class="lesson">
+                                    <div class="lesson-time">08:00 - 09:00</div>
+                                    <div class="lesson-content">
+                                        <div class="lesson-subject">Mathematik</div>
+                                        <div class="lesson-info">Raum 101 • Hr. Gökdemir / Fr. Jagusch</div>
+                                    </div>
+                                </div>
+                                <div class="lesson">
+                                    <div class="lesson-time">09:00 - 10:00</div>
+                                    <div class="lesson-content">
+                                        <div class="lesson-subject">Lernstudio</div>
+                                        <div class="lesson-info">Raum 203 • Hr. Bierwirth / Fr. Heuer / Fr. Malz</div>
+                                    </div>
+                                </div>
+                                <div class="lesson">
+                                    <div class="lesson-time">10:00 - 10:30</div>
+                                    <div class="lesson-content">
+                                        <div class="lesson-subject">Pause</div>
+                                        <div class="lesson-info">30 Minuten</div>
+                                    </div>
+                                </div>
+                                <div class="lesson">
+                                    <div class="lesson-time">10:30 - 11:30</div>
+                                    <div class="lesson-content">
+                                        <div class="lesson-subject">Projekt</div>
+                                        <div class="lesson-info">Raum 105 • Hr. Weber</div>
+                                    </div>
+                                </div>
+                                <div class="lesson">
+                                    <div class="lesson-time">11:30 - 12:30</div>
+                                    <div class="lesson-content">
+                                        <div class="lesson-subject">Projekt</div>
+                                        <div class="lesson-info">Raum 105 • Hr. Weber</div>
+                                    </div>
+                                </div>
+                                <div class="lesson">
+                                    <div class="lesson-time">12:30 - 13:30</div>
+                                    <div class="lesson-content">
+                                        <div class="lesson-subject">Pause</div>
+                                        <div class="lesson-info">1 Stunde</div>
+                                    </div>
+                                </div>
+                                <div class="lesson">
+                                    <div class="lesson-time">13:30 - 14:30</div>
+                                    <div class="lesson-content">
+                                        <div class="lesson-subject">Kunst</div>
+                                        <div class="lesson-info">Kunstraum • Fr. Schaich</div>
+                                    </div>
+                                </div>
+                                <div class="lesson">
+                                    <div class="lesson-time">14:30 - 15:30</div>
+                                    <div class="lesson-content">
+                                        <div class="lesson-subject">Religion/PP</div>
+                                        <div class="lesson-info">Raum 302 • Fr. Heuer</div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="timetable-day">
+                                <div class="day-header">Donnerstag</div>
+                                <div class="lesson">
+                                    <div class="lesson-time">08:00 - 09:00</div>
+                                    <div class="lesson-content">
+                                        <div class="lesson-subject">Epoche</div>
+                                        <div class="lesson-info">Raum 205 • Hr. Schulz</div>
+                                    </div>
+                                </div>
+                                <div class="lesson">
+                                    <div class="lesson-time">09:00 - 10:00</div>
+                                    <div class="lesson-content">
+                                        <div class="lesson-subject">Lernstudio</div>
+                                        <div class="lesson-info">Raum 203 • Fr. Schmidt</div>
+                                    </div>
+                                </div>
+                                <div class="lesson">
+                                    <div class="lesson-time">10:30 - 11:30</div>
+                                    <div class="lesson-content">
+                                        <div class="lesson-subject">Englisch</div>
+                                        <div class="lesson-info">Raum 105 • Hr. Weber</div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="timetable-day">
+                                <div class="day-header">Freitag</div>
+                                <div class="lesson">
+                                    <div class="lesson-time">08:00 - 09:00</div>
+                                    <div class="lesson-content">
+                                        <div class="lesson-subject">Deutsch</div>
+                                        <div class="lesson-info">Raum 203 • Fr. Schmidt</div>
+                                    </div>
+                                </div>
+                                <div class="lesson">
+                                    <div class="lesson-time">09:00 - 10:00</div>
+                                    <div class="lesson-content">
+                                        <div class="lesson-subject">Hauswirtschaft/Technik</div>
+                                        <div class="lesson-info">Fachraum • Hr. Hoffmann</div>
+                                    </div>
+                                </div>
+                                <div class="lesson">
+                                    <div class="lesson-time">10:30 - 11:30</div>
+                                    <div class="lesson-content">
+                                        <div class="lesson-subject">WPU 1</div>
+                                        <div class="lesson-info">Verschiedene Räume</div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Noten -->
+                    <div class="card">
+                        <div class="card-header">
+                            <h2 class="card-title">Noten</h2>
+                                <a href="#" class="view-all" data-page="noten">Alle anzeigen</a>
+                        </div>
+                        <div class="grades">
+                            <div class="subject">
+                                <div class="subject-name">Mathematik</div>
+                                <div class="subject-grades">
+                                    <span class="grade good">2</span>
+                                    <span class="grade excellent">1</span>
+                                    <span class="grade average">3</span>
+                                </div>
+                                <div class="subject-average">Durchschnitt: <strong>2,0</strong></div>
+                            </div>
+                            <div class="subject">
+                                <div class="subject-name">Deutsch</div>
+                                <div class="subject-grades">
+                                    <span class="grade good">2</span>
+                                    <span class="grade good">2</span>
+                                </div>
+                                <div class="subject-average">Durchschnitt: <strong>2,0</strong></div>
+                            </div>
+                            <div class="subject">
+                                <div class="subject-name">Englisch</div>
+                                <div class="subject-grades">
+                                    <span class="grade excellent">1</span>
+                                    <span class="grade good">2</span>
+                                </div>
+                                <div class="subject-average">Durchschnitt: <strong>1,5</strong></div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Nachrichten -->
+                    <div class="card col-span-full">
+                        <div class="card-header">
+                            <h2 class="card-title">Nachrichten</h2>
+                                <a href="#" class="view-all" data-page="nachrichten">Alle anzeigen</a>
+                        </div>
+                        <div class="messages">
+                            <div class="message">
+                                <div class="message-sender">Hr. Gökdemir</div>
+                                <div class="message-subject">Hausaufgaben für Montag</div>
+                                <div class="message-preview">Bitte bearbeiten Sie die Aufgaben auf Seite 42-43...</div>
+                                <div class="message-time">Heute, 14:30</div>
+                            </div>
+                            <div class="message">
+                                <div class="message-sender">Hr. Bierwirth</div>
+                                <div class="message-subject">Klassenarbeit verschoben</div>
+                                <div class="message-preview">Die für nächste Woche geplante Klassenarbeit wird auf...</div>
+                                <div class="message-time">Gestern, 16:15</div>
+                            </div>
+                            <div class="message">
+                                <div class="message-sender">Schulleitung</div>
+                                <div class="message-subject">Elternabend</div>
+                                <div class="message-preview">Am kommenden Donnerstag findet um 19:00 Uhr der Elternabend statt...</div>
+                                <div class="message-time">15.05.2023, 09:00</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+                
+                <!-- Stundenplan Seite -->
+                <div class="page-container" id="stundenplan-page">
+                    <div class="card">
+                        <div class="card-header">
+                            <h2 class="card-title">Stundenplan</h2>
+                        </div>
+                        <div class="full-timetable">
+                            <div class="time-column">
+                                <div class="time-header">Montag</div>
+                                <div class="time-slot">
+                                    <div class="time-slot-time">08:00 - 09:00</div>
+                                    <div class="time-slot-subject">Mathematik</div>
+                                    <div class="time-slot-info">Raum 101 • Hr. Müller</div>
+                                </div>
+                                <div class="time-slot">
+                                    <div class="time-slot-time">09:00 - 10:00</div>
+                                    <div class="time-slot-subject">Lernstudio</div>
+                                    <div class="time-slot-info">Raum 203 • Fr. Schmidt</div>
+                                </div>
+                                <div class="time-slot">
+                                    <div class="time-slot-time">10:00 - 10:30</div>
+                                    <div class="time-slot-subject">Pause</div>
+                                    <div class="time-slot-info">30 Minuten</div>
+                                </div>
+                                <div class="time-slot">
+                                    <div class="time-slot-time">10:30 - 11:30</div>
+                                    <div class="time-slot-subject">Projekt</div>
+                                    <div class="time-slot-info">Raum 105 • Hr. Weber</div>
+                                </div>
+                                <div class="time-slot">
+                                    <div class="time-slot-time">11:30 - 12:30</div>
+                                    <div class="time-slot-subject">Projekt</div>
+                                    <div class="time-slot-info">Raum 105 • Hr. Weber</div>
+                                </div>
+                                <div class="time-slot">
+                                    <div class="time-slot-time">12:30 - 13:30</div>
+                                    <div class="time-slot-subject">Pause</div>
+                                    <div class="time-slot-info">1 Stunde</div>
+                                </div>
+                                <div class="time-slot">
+                                    <div class="time-slot-time">13:30 - 14:30</div>
+                                    <div class="time-slot-subject">Kunst</div>
+                                    <div class="time-slot-info">Kunstraum • Fr. Schaich</div>
+                                </div>
+                                <div class="time-slot">
+                                    <div class="time-slot-time">14:30 - 15:30</div>
+                                    <div class="time-slot-subject">Religion/PP</div>
+                                    <div class="time-slot-info">Raum 302 • Fr. Heuer</div>
+                                </div>
+                            </div>
+                            <div class="time-column">
+                                <div class="time-header">Dienstag</div>
+                                <div class="time-slot">
+                                    <div class="time-slot-time">08:00 - 09:00</div>
+                                    <div class="time-slot-subject">Deutsch</div>
+                                    <div class="time-slot-info">Raum 203 • Fr. Bierwirth</div>
+                                </div>
+                                <div class="time-slot">
+                                    <div class="time-slot-time">09:00 - 10:00</div>
+                                    <div class="time-slot-subject">Epoche</div>
+                                    <div class="time-slot-info">Raum 205 • Hr. Bierwirth</div>
+                                </div>
+                                <div class="time-slot">
+                                    <div class="time-slot-time">10:00 - 10:30</div>
+                                    <div class="time-slot-subject">Pause</div>
+                                    <div class="time-slot-info">30 Minuten</div>
+                                </div>
+                                <div class="time-slot">
+                                    <div class="time-slot-time">10:30 - 11:30</div>
+                                    <div class="time-slot-subject">Sport</div>
+                                    <div class="time-slot-info">Sporthalle • Fr. Meyer</div>
+                                </div>
+                                <div class="time-slot">
+                                    <div class="time-slot-time">11:30 - 12:30</div>
+                                    <div class="time-slot-subject">Mathematik</div>
+                                    <div class="time-slot-info">Raum 101 • Hr. Müller</div>
+                                </div>
+                            </div>
+                            <div class="time-column">
+                                <div class="time-header">Mittwoch</div>
+                                <div class="time-slot">
+                                    <div class="time-slot-time">08:00 - 09:00</div>
+                                    <div class="time-slot-subject">Deutsch</div>
+                                    <div class="time-slot-info">Raum 203 • Fr. Bierwirth</div>
+                                </div>
+                                <div class="time-slot">
+                                    <div class="time-slot-time">09:00 - 10:00</div>
+                                    <div class="time-slot-subject">Epoche</div>
+                                    <div class="time-slot-info">Raum 205 • Hr. Schulz</div>
+                                </div>
+                                <div class="time-slot">
+                                    <div class="time-slot-time">10:00 - 10:30</div>
+                                    <div class="time-slot-subject">Pause</div>
+                                    <div class="time-slot-info">30 Minuten</div>
+                                </div>
+                                <div class="time-slot">
+                                    <div class="time-slot-time">10:30 - 11:30</div>
+                                    <div class="time-slot-subject">Englisch</div>
+                                    <div class="time-slot-info">Raum 105 • Hr. Weber</div>
+                                </div>
+                                <div class="time-slot">
+                                    <div class="time-slot-time">11:30 - 12:30</div>
+                                    <div class="time-slot-subject">Projekt</div>
+                                    <div class="time-slot-info">Raum 105 • Hr. Weber</div>
+                                </div>
+                                <div class="time-slot">
+                                    <div class="time-slot-time">12:30 - 13:30</div>
+                                    <div class="time-slot-subject">Pause</div>
+                                    <div class="time-slot-info">1 Stunde</div>
+                                </div>
+                                <div class="time-slot">
+                                    <div class="time-slot-time">13:30 - 14:30</div>
+                                    <div class="time-slot-subject">Chemie/Physik</div>
+                                    <div class="time-slot-info">Raum 302 • Fr. Wagner</div>
+                                </div>
+                                <div class="time-slot">
+                                    <div class="time-slot-time">14:30 - 15:30</div>
+                                    <div class="time-slot-subject">Sport</div>
+                                    <div class="time-slot-info">Sporthalle • Fr. Meyer</div>
+                                </div>
+                            </div>
+                            <div class="time-column">
+                                <div class="time-header">Donnerstag</div>
+                                <div class="time-slot">
+                                    <div class="time-slot-time">08:00 - 09:00</div>
+                                    <div class="time-slot-subject">Epoche</div>
+                                    <div class="time-slot-info">Raum 205 • Hr. Schulz</div>
+                                </div>
+                                <div class="time-slot">
+                                    <div class="time-slot-time">09:00 - 10:00</div>
+                                    <div class="time-slot-subject">Lernstudio</div>
+                                    <div class="time-slot-info">Raum 203 • Fr. Schmidt</div>
+                                </div>
+                                <div class="time-slot">
+                                    <div class="time-slot-time">10:00 - 10:30</div>
+                                    <div class="time-slot-subject">Pause</div>
+                                    <div class="time-slot-info">30 Minuten</div>
+                                </div>
+                                <div class="time-slot">
+                                    <div class="time-slot-time">10:30 - 11:30</div>
+                                    <div class="time-slot-subject">Englisch</div>
+                                    <div class="time-slot-info">Raum 105 • Hr. Weber</div>
+                                </div>
+                                <div class="time-slot">
+                                    <div class="time-slot-time">11:30 - 12:30</div>
+                                    <div class="time-slot-subject">Mathematik</div>
+                                    <div class="time-slot-info">Raum 101 • Hr. Müller</div>
+                                </div>
+                                <div class="time-slot">
+                                    <div class="time-slot-time">12:30 - 13:30</div>
+                                    <div class="time-slot-subject">Pause</div>
+                                    <div class="time-slot-info">1 Stunde</div>
+                                </div>
+                                <div class="time-slot">
+                                    <div class="time-slot-time">13:30 - 14:30</div>
+                                    <div class="time-slot-subject">AG</div>
+                                    <div class="time-slot-info">Verschiedene Räume</div>
+                                </div>
+                                <div class="time-slot">
+                                    <div class="time-slot-time">14:30 - 15:30</div>
+                                    <div class="time-slot-subject">AG</div>
+                                    <div class="time-slot-info">Verschiedene Räume</div>
+                                </div>
+                            </div>
+                            <div class="time-column">
+                                <div class="time-header">Freitag</div>
+                                <div class="time-slot">
+                                    <div class="time-slot-time">08:00 - 09:00</div>
+                                    <div class="time-slot-subject">Deutsch</div>
+                                    <div class="time-slot-info">Raum 203 • Fr. Schmidt</div>
+                                </div>
+                                <div class="time-slot">
+                                    <div class="time-slot-time">09:00 - 10:00</div>
+                                    <div class="time-slot-subject">Hauswirtschaft/Technik</div>
+                                    <div class="time-slot-info">Fachraum • Hr. Hoffmann</div>
+                                </div>
+                                <div class="time-slot">
+                                    <div class="time-slot-time">10:00 - 10:30</div>
+                                    <div class="time-slot-subject">Pause</div>
+                                    <div class="time-slot-info">30 Minuten</div>
+                                </div>
+                                <div class="time-slot">
+                                    <div class="time-slot-time">10:30 - 11:30</div>
+                                    <div class="time-slot-subject">WPU 1</div>
+                                    <div class="time-slot-info">Verschiedene Räume</div>
+                                </div>
+                                <div class="time-slot">
+                                    <div class="time-slot-time">11:30 - 12:30</div>
+                                    <div class="time-slot-subject">Epoche</div>
+                                    <div class="time-slot-info">Raum 205 • Hr. Schulz</div>
+                                </div>
+                                <div class="time-slot">
+                                    <div class="time-slot-time">12:30 - 13:30</div>
+                                    <div class="time-slot-subject">Pause</div>
+                                    <div class="time-slot-info">1 Stunde</div>
+                                </div>
+                                <div class="time-slot">
+                                    <div class="time-slot-time">13:30 - 14:30</div>
+                                    <div class="time-slot-subject">AG</div>
+                                    <div class="time-slot-info">Verschiedene Räume</div>
+                                </div>
+                                <div class="time-slot">
+                                    <div class="time-slot-time">14:30 - 15:30</div>
+                                    <div class="time-slot-subject">AG</div>
+                                    <div class="time-slot-info">Verschiedene Räume</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Noten Seite -->
+                <div class="page-container" id="noten-page">
+                    <div class="card">
+                        <div class="card-header">
+                            <h2 class="card-title">Noten</h2>
+                        </div>
+                        <div class="all-grades">
+                            <div class="grade-card">
+                                <div class="grade-card-header">
+                                    <div class="grade-card-title">Mathematik</div>
+                                    <div class="grade-card-average good">2,0</div>
+                                </div>
+                                <div class="grade-card-content">
+                                    <div class="grade-entry">
+                                        <div class="grade-entry-title">Klassenarbeit: Algebra</div>
+                                        <div class="grade good">2</div>
+                                        <div class="grade-entry-date">15.03.2023</div>
+                                    </div>
+                                    <div class="grade-entry">
+                                        <div class="grade-entry-title">Test: Geometrie</div>
+                                        <div class="grade excellent">1</div>
+                                        <div class="grade-entry-date">05.04.2023</div>
+                                    </div>
+                                    <div class="grade-entry">
+                                        <div class="grade-entry-title">Klassenarbeit: Funktionen</div>
+                                        <div class="grade average">3</div>
+                                        <div class="grade-entry-date">10.05.2023</div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="grade-card">
+                                <div class="grade-card-header">
+                                    <div class="grade-card-title">Deutsch</div>
+                                    <div class="grade-card-average good">2,0</div>
+                                </div>
+                                <div class="grade-card-content">
+                                    <div class="grade-entry">
+                                        <div class="grade-entry-title">Aufsatz: Erörterung</div>
+                                        <div class="grade good">2</div>
+                                        <div class="grade-entry-date">20.03.2023</div>
+                                    </div>
+                                    <div class="grade-entry">
+                                        <div class="grade-entry-title">Klassenarbeit: Literatur</div>
+                                        <div class="grade good">2</div>
+                                        <div class="grade-entry-date">18.04.2023</div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="grade-card">
+                                <div class="grade-card-header">
+                                    <div class="grade-card-title">Englisch</div>
+                                    <div class="grade-card-average excellent">1,5</div>
+                                </div>
+                                <div class="grade-card-content">
+                                    <div class="grade-entry">
+                                        <div class="grade-entry-title">Vokabeltest</div>
+                                        <div class="grade excellent">1</div>
+                                        <div class="grade-entry-date">12.03.2023</div>
+                                    </div>
+                                    <div class="grade-entry">
+                                        <div class="grade-entry-title">Klassenarbeit: Grammar</div>
+                                        <div class="grade good">2</div>
+                                        <div class="grade-entry-date">22.04.2023</div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="grade-card">
+                                <div class="grade-card-header">
+                                    <div class="grade-card-title">Physik</div>
+                                    <div class="grade-card-average good">2,0</div>
+                                </div>
+                                <div class="grade-card-content">
+                                    <div class="grade-entry">
+                                        <div class="grade-entry-title">Test: Mechanik</div>
+                                        <div class="grade good">2</div>
+                                        <div class="grade-entry-date">25.03.2023</div>
+                                    </div>
+                                    <div class="grade-entry">
+                                        <div class="grade-entry-title">Laborarbeit</div>
+                                        <div class="grade good">2</div>
+                                        <div class="grade-entry-date">15.04.2023</div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="grade-card">
+                                <div class="grade-card-header">
+                                    <div class="grade-card-title">Biologie</div>
+                                    <div class="grade-card-average average">3,0</div>
+                                </div>
+                                <div class="grade-card-content">
+                                    <div class="grade-entry">
+                                        <div class="grade-entry-title">Klassenarbeit: Ökologie</div>
+                                        <div class="grade average">3</div>
+                                        <div class="grade-entry-date">30.03.2023</div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="grade-card">
+                                <div class="grade-card-header">
+                                    <div class="grade-card-title">Geschichte</div>
+                                    <div class="grade-card-average good">2,0</div>
+                                </div>
+                                <div class="grade-card-content">
+                                    <div class="grade-entry">
+                                        <div class="grade-entry-title">Referat</div>
+                                        <div class="grade excellent">1</div>
+                                        <div class="grade-entry-date">05.03.2023</div>
+                                    </div>
+                                    <div class="grade-entry">
+                                        <div class="grade-entry-title">Klassenarbeit</div>
+                                        <div class="grade average">3</div>
+                                        <div class="grade-entry-date">08.04.2023</div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Nachrichten Seite -->
+                <div class="page-container" id="nachrichten-page">
+                    <div class="messages-container">
+                        <div class="messages-sidebar">
+                            <div class="messages-search">
+                                <input type="text" class="messages-search-input" placeholder="Nachrichten durchsuchen...">
+                            </div>
+                            <div class="messages-list">
+                                <div class="message-preview active">
+                                    <div class="message-preview-header">
+                                        <div class="message-preview-sender">Hr. Gökdemir</div>
+                                        <div class="message-preview-time">Heute, 14:30</div>
+                                    </div>
+                                    <div class="message-preview-subject">Hausaufgaben für Montag</div>
+                                    <div class="message-preview-text">Bitte bearbeiten Sie die Aufgaben auf Seite 42-43 im Mathematikbuch bis zum nächsten Montag.</div>
+                                </div>
+                                <div class="message-preview">
+                                    <div class="message-preview-header">
+                                        <div class="message-preview-sender">Hr. Bierwirth</div>
+                                        <div class="message-preview-time">Gestern, 16:15</div>
+                                    </div>
+                                    <div class="message-preview-subject">Klassenarbeit verschoben</div>
+                                    <div class="message-preview-text">Die für nächste Woche geplante Klassenarbeit wird auf den übernächsten Dienstag verschoben.</div>
+                                </div>
+                                <div class="message-preview">
+                                    <div class="message-preview-header">
+                                        <div class="message-preview-sender">Schulleitung</div>
+                                        <div class="message-preview-time">15.05.2023, 09:00</div>
+                                    </div>
+                                    <div class="message-preview-subject">Elternabend</div>
+                                    <div class="message-preview-text">Am kommenden Donnerstag findet um 19:00 Uhr der Elternabend statt. Bitte informieren Sie Ihre Eltern.</div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="message-content">
+                            <div class="message-header">
+                                <div class="message-subject">Hausaufgaben für Montag</div>
+                                <div class="message-meta">
+                                    <div class="message-sender">Von: Hr. Gökdemir</div>
+                                    <div class="message-date">Heute, 14:30</div>
+                                </div>
+                            </div>
+                            <div class="message-body">
+                                <p>Liebe Schülerinnen und Schüler,</p>
+                                <br>
+                                <p>für den kommenden Montag bitte ich Sie, die folgenden Aufgaben zu bearbeiten:</p>
+                                <br>
+                                <p>- Seite 42, Aufgaben 1-5</p>
+                                <p>- Seite 43, Aufgaben 7-9</p>
+                                <br>
+                                <p>Diese Aufgaben werden wir in der nächsten Stunde besprechen und sie dienen als Vorbereitung auf die kommende Klassenarbeit.</p>
+                                <br>
+                                <p>Bei Fragen können Sie mir gerne eine Nachricht schreiben.</p>
+                                <br>
+                                <p>Mit freundlichen Grüßen,</p>
+                                <p>Hr. Gökdemir</p>
+                            </div>
+                            <div class="message-reply">
+                                <textarea class="message-reply-input" placeholder="Antwort schreiben..."></textarea>
+                                <div class="message-actions">
+                                    <button class="btn btn-secondary" id="cancel-message" onclick="document.getElementById('message-modal').classList.remove('open');">Abbrechen</button>
+                                    <button class="btn btn-primary" id="send-message">Senden</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Nachrichten-Modal -->
+    <div class="modal" id="message-modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 class="modal-title">Neue Nachricht</h2>
+                <button class="modal-close" id="modal-close" onclick="document.getElementById('message-modal').classList.remove('open');">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <line x1="18" y1="6" x2="6" y2="18"></line>
+                        <line x1="6" y1="6" x2="18" y2="18"></line>
+                    </svg>
+                </button>
+            </div>
+            <div class="modal-body">
+                <div class="message-form">
+                    <div>
+                        <label class="form-label">Empfänger auswählen</label>
+                        <div class="recipients-list">
+                            <div class="recipient" data-recipient="mueller">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                    <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
+                                    <circle cx="12" cy="7" r="4"></circle>
+                                </svg>
+                                <span class="recipient-name">Hr. Gökdemir</span>
+                                <span class="recipient-role">Lehrer</span>
+                            </div>
+                            <div class="recipient" data-recipient="schmidt">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                    <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
+                                    <circle cx="12" cy="7" r="4"></circle>
+                                </svg>
+                                <span class="recipient-name">Hr. Bierwirth</span>
+                                <span class="recipient-role">Lehrer</span>
+                            </div>
+                            <div class="recipient" data-recipient="weber">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                    <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
+                                    <circle cx="12" cy="7" r="4"></circle>
+                                </svg>
+                                <span class="recipient-name">Hr. Weber</span>
+                                <span class="recipient-role">Lehrer</span>
+                            </div>
+                            <div class="recipient" data-recipient="schulleitung">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                    <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
+                                    <circle cx="12" cy="7" r="4"></circle>
+                                </svg>
+                                <span class="recipient-name">Schulleitung</span>
+                                <span class="recipient-role">Verwaltung</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div>
+                        <label for="message-subject" class="form-label">Betreff</label>
+                        <input type="text" id="message-subject" class="message-input" style="min-height: auto;" placeholder="Betreff eingeben">
+                    </div>
+                    <div>
+                        <label for="message-content" class="form-label">Nachricht</label>
+                        <textarea id="message-content" class="message-input" placeholder="Schreiben Sie Ihre Nachricht hier..."></textarea>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-secondary" id="cancel-message" onclick="document.getElementById('message-modal').classList.remove('open');">Abbrechen</button>
+                <button class="btn btn-primary" id="send-message">Senden</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Passwort vergessen Modal mit direkten onclick-Attributen -->
+    <div class="modal" id="forgot-password-modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 class="modal-title">Passwort zurücksetzen</h2>
+                <button class="modal-close" id="forgot-password-close" onclick="document.getElementById('forgot-password-modal').classList.remove('open'); document.getElementById('forgot-password-modal').style.display='none'; resetForgotForm();">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <line x1="18" y1="6" x2="6" y2="18"></line>
+                        <line x1="6" y1="6" x2="18" y2="18"></line>
+                    </svg>
+                </button>
+            </div>
+            <div class="modal-body">
+                <!-- Schritt 1: E-Mail eingeben -->
+                <div id="forgot-step-1">
+                    <p>Bitte gib deine E-Mail-Adresse ein. Wir senden dir einen Code zur Bestätigung.</p>
+                    <div class="form-group">
+                        <label for="forgot-email">E-Mail-Adresse</label>
+                        <input id="forgot-email" type="email" placeholder="E-Mail-Adresse eingeben" required>
+                    </div>
+                </div>
+
+                <!-- Schritt 2: Code bestätigen -->
+                <div id="forgot-step-2" style="display: none;">
+                    <p>Wir haben einen 6-stelligen Code an deine E-Mail-Adresse gesendet. Bitte gib den Code hier ein.</p>
+                    <div class="form-group">
+                        <label for="forgot-code">Verifizierungscode</label>
+                        <input id="forgot-code" type="text" placeholder="6-stelligen Code eingeben" maxlength="6" required>
+                    </div>
+                </div>
+
+                <!-- Schritt 3: Neues Passwort eingeben -->
+                <div id="forgot-step-3" style="display: none;">
+                    <p>Bitte gib dein neues Passwort ein.</p>
+                    <div class="form-group">
+                        <label for="new-password">Neues Passwort</label>
+                        <input id="new-password" type="password" placeholder="Neues Passwort eingeben" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="confirm-new-password">Passwort bestätigen</label>
+                        <input id="confirm-new-password" type="password" placeholder="Passwort wiederholen" required>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-secondary" id="forgot-cancel" onclick="document.getElementById('forgot-password-modal').classList.remove('open'); document.getElementById('forgot-password-modal').style.display='none'; resetForgotForm();">Abbrechen</button>
+                <button class="btn btn-primary" id="forgot-next" onclick="handleForgotStep()">Weiter</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Neue Funktion zum Verarbeiten der Schritte im Passwort-Zurücksetzen-Prozess -->
     <script>
+        // Funktion zum Verarbeiten der Schritte im Passwort-Zurücksetzen-Prozess
+        function handleForgotStep() {
+            // Bestimme den aktuellen Schritt
+            let currentStep = 1;
+            if (document.getElementById('forgot-step-2').style.display === 'block') {
+                currentStep = 2;
+            } else if (document.getElementById('forgot-step-3').style.display === 'block') {
+                currentStep = 3;
+            }
+            
+            console.log("Verarbeite Schritt:", currentStep);
+            
+            if (currentStep === 1) {
+                // E-Mail validieren
+                const forgotEmail = document.getElementById('forgot-email').value;
+                if (!forgotEmail || !forgotEmail.includes('@')) {
+                    alert('Bitte gib eine gültige E-Mail-Adresse ein.');
+                    return;
+                }
+                
+                // Prüfen, ob die E-Mail bei einem registrierten Benutzer existiert
+                const registeredUsers = JSON.parse(localStorage.getItem('registeredUsers') || '[]');
+                const user = registeredUsers.find(u => u.contact === forgotEmail);
+                
+                if (!user) {
+                    alert('Diese E-Mail-Adresse ist nicht registriert.');
+                    return;
+                }
+                
+                // Speichere die E-Mail für spätere Schritte
+                localStorage.setItem('forgotEmail', forgotEmail);
+                
+                // Verifizierungscode generieren und speichern
+                const forgotCode = generateRandomCode(6);
+                localStorage.setItem('forgotCode', forgotCode);
+                
+                // In einer echten Anwendung würde hier eine E-Mail gesendet werden
+                alert('Ein Verifizierungscode wurde an ' + forgotEmail + ' gesendet.\n\n' +
+                      'In einer echten Anwendung würde eine E-Mail gesendet werden.\n\n' +
+                      'Zu Demonstrationszwecken: Dein Code ist ' + forgotCode);
+                
+                // Zum nächsten Schritt
+                document.getElementById('forgot-step-1').style.display = 'none';
+                document.getElementById('forgot-step-2').style.display = 'block';
+                document.getElementById('forgot-step-3').style.display = 'none';
+            } 
+            else if (currentStep === 2) {
+                // Code validieren
+                const enteredCode = document.getElementById('forgot-code').value;
+                const savedCode = localStorage.getItem('forgotCode');
+                
+                if (!enteredCode || enteredCode.length !== 6) {
+                    alert('Bitte gib den 6-stelligen Code ein.');
+                    return;
+                }
+                
+                if (enteredCode !== savedCode) {
+                    alert('Der eingegebene Code ist nicht korrekt. Bitte versuche es erneut.');
+                    return;
+                }
+                
+                // Zum nächsten Schritt
+                document.getElementById('forgot-step-1').style.display = 'none';
+                document.getElementById('forgot-step-2').style.display = 'none';
+                document.getElementById('forgot-step-3').style.display = 'block';
+                
+                // Button-Text ändern
+                document.getElementById('forgot-next').textContent = 'Passwort ändern';
+            } 
+            else if (currentStep === 3) {
+                // Neue Passwörter validieren
+                const newPassword = document.getElementById('new-password').value;
+                const confirmNewPassword = document.getElementById('confirm-new-password').value;
+                const forgotEmail = localStorage.getItem('forgotEmail');
+                
+                if (!newPassword) {
+                    alert('Bitte gib ein neues Passwort ein.');
+                    return;
+                }
+                
+                if (newPassword !== confirmNewPassword) {
+                    alert('Die Passwörter stimmen nicht überein.');
+                    return;
+                }
+                
+                // Passwort in localStorage aktualisieren
+                const registeredUsers = JSON.parse(localStorage.getItem('registeredUsers') || '[]');
+                const userIndex = registeredUsers.findIndex(u => u.contact === forgotEmail);
+                
+                if (userIndex !== -1) {
+                    registeredUsers[userIndex].password = newPassword;
+                    localStorage.setItem('registeredUsers', JSON.stringify(registeredUsers));
+                    
+                    alert('Dein Passwort wurde erfolgreich geändert. Du kannst dich jetzt mit deinem neuen Passwort anmelden.');
+                    
+                    // Modal schließen und Formular zurücksetzen
+                    const modal = document.getElementById('forgot-password-modal');
+                    modal.classList.remove('open');
+                    modal.style.display = 'none';
+                    resetForgotForm();
+                    
+                    // Temporäre Daten löschen
+                    localStorage.removeItem('forgotEmail');
+                    localStorage.removeItem('forgotCode');
+                }
+            }
+        }
+        
+        // Funktion zum Zurücksetzen des Formulars
+        function resetForgotForm() {
+            document.getElementById('forgot-email').value = '';
+            document.getElementById('forgot-code').value = '';
+            document.getElementById('new-password').value = '';
+            document.getElementById('confirm-new-password').value = '';
+            
+            // Zurücksetzen auf Schritt 1
+            document.getElementById('forgot-step-1').style.display = 'block';
+            document.getElementById('forgot-step-2').style.display = 'none';
+            document.getElementById('forgot-step-3').style.display = 'none';
+            
+            // Button-Text zurücksetzen
+            document.getElementById('forgot-next').textContent = 'Weiter';
+        }
+    </script>
+
+    <script>
+        // Einfache globale Funktionen für die Tab-Umschaltung
+        function showLoginTab() {
+            document.getElementById('login-tab').classList.add('active');
+            document.getElementById('register-tab').classList.remove('active');
+            document.getElementById('login-form').style.display = 'block';
+            document.getElementById('register-form').style.display = 'none';
+        }
+        
+        function showRegisterTab() {
+            document.getElementById('register-tab').classList.add('active');
+            document.getElementById('login-tab').classList.remove('active');
+            document.getElementById('register-form').style.display = 'block';
+            document.getElementById('login-form').style.display = 'none';
+        }
+        
+        // Funktionen für die Registrierungsschritte
+        function nextStep(currentStep) {
+            // Validierung für jeden Schritt
+            if (currentStep === 1) {
+                const fullname = document.getElementById('register-fullname').value;
+                if (!fullname) {
+                    alert('Bitte gib deinen vollständigen Namen ein.');
+                    return;
+                }
+            } else if (currentStep === 2) {
+                const isEmail = document.getElementById('email-option').classList.contains('active');
+                if (isEmail) {
+                    const email = document.getElementById('register-email').value;
+                    if (!email || !email.includes('@')) {
+                        alert('Bitte gib eine gültige E-Mail-Adresse ein.');
+                        return;
+                    }
+                } else {
+                    const phone = document.getElementById('register-phone').value;
+                    if (!phone || phone.length < 6) {
+                        alert('Bitte gib eine gültige Telefonnummer ein.');
+                        return;
+                    }
+                }
+            } else if (currentStep === 3) {
+                const username = document.getElementById('register-username').value;
+                const school = document.getElementById('register-school').value;
+                if (!username) {
+                    alert('Bitte gib einen Benutzernamen ein.');
+                    return;
+                }
+                if (!school) {
+                    alert('Bitte wähle eine Schule aus.');
+                    return;
+                }
+                
+                // Prüfen, ob Benutzername bereits existiert
+                const registeredUsers = JSON.parse(localStorage.getItem('registeredUsers') || '[]');
+                if (registeredUsers.some(u => u.username === username)) {
+                    alert('Dieser Benutzername existiert bereits. Bitte wähle einen anderen.');
+                    return;
+                }
+            } else if (currentStep === 4) {
+                const password = document.getElementById('register-password').value;
+                const confirmPassword = document.getElementById('register-confirm-password').value;
+                if (!password) {
+                    alert('Bitte gib ein Passwort ein.');
+                    return;
+                }
+                if (password !== confirmPassword) {
+                    alert('Die Passwörter stimmen nicht überein.');
+                    return;
+                }
+            } else if (currentStep === 5) {
+                // Zusammenfassung anzeigen
+                document.getElementById('summary-name').textContent = 'Name: ' + document.getElementById('register-fullname').value;
+                
+                const isEmail = document.getElementById('email-option').classList.contains('active');
+                if (isEmail) {
+                    document.getElementById('summary-contact').textContent = 'E-Mail: ' + document.getElementById('register-email').value;
+                } else {
+                    document.getElementById('summary-contact').textContent = 'Telefon: ' + document.getElementById('register-phone').value;
+                }
+                
+                document.getElementById('summary-username').textContent = 'Benutzername: ' + document.getElementById('register-username').value;
+                document.getElementById('summary-school').textContent = 'Schule: ' + document.getElementById('register-school').value;
+            }
+            
+            // Zum nächsten Schritt wechseln
+            document.getElementById('step-' + currentStep).classList.remove('active');
+            document.getElementById('step-' + (currentStep + 1)).classList.add('active');
+        }
+        
+        function prevStep(currentStep) {
+            document.getElementById('step-' + currentStep).classList.remove('active');
+            document.getElementById('step-' + (currentStep - 1)).classList.add('active');
+        }
+        
+        // Neue Funktion zur Validierung und Übermittlung des Registrierungsformulars
+        function validateAndSubmitRegistration() {
+            // Prüfen, ob die Nutzungsbedingungen akzeptiert wurden
+            const termsCheckbox = document.getElementById('register-terms');
+            if (!termsCheckbox.checked) {
+                alert('Bitte akzeptiere die Nutzungsbedingungen, um fortzufahren.');
+                return;
+            }
+            
+            // Daten aus allen Schritten sammeln
+            const fullname = document.getElementById('register-fullname').value;
+            const username = document.getElementById('register-username').value;
+            const school = document.getElementById('register-school').value;
+            const password = document.getElementById('register-password').value;
+            
+            // Kontaktinformationen je nach gewählter Option
+            let contact = '';
+            if (document.getElementById('email-option').classList.contains('active')) {
+                contact = document.getElementById('register-email').value;
+            } else {
+                contact = document.getElementById('register-phone').value;
+            }
+            
+            // Überprüfen, ob der Benutzername bereits existiert
+            const registeredUsers = JSON.parse(localStorage.getItem('registeredUsers') || '[]');
+            if (registeredUsers.some(u => u.username === username)) {
+                alert('Dieser Benutzername existiert bereits. Bitte wähle einen anderen.');
+                return;
+            }
+            
+            // 6-stelligen Verifizierungscode generieren
+            const verificationCode = generateRandomCode(6);
+            
+            // Daten für die Verifizierung zwischenspeichern
+            const pendingUser = {
+                fullname: fullname,
+                username: username,
+                school: school,
+                contact: contact,
+                password: password,
+                verificationCode: verificationCode
+            };
+            
+            localStorage.setItem('pendingUser', JSON.stringify(pendingUser));
+            
+            // Anzeigen des Verifikationsdialogs
+            showVerificationDialog(verificationCode, contact);
+        }
+        
+        // Video-Fehlerbehandlung hinzufügen
+        document.addEventListener('DOMContentLoaded', function() {
+            const video = document.getElementById('background-video');
+            
+            // Überprüfen, ob das Video geladen werden kann
+            video.addEventListener('error', function(e) {
+                console.error('Video-Fehler:', e);
+                // Fallback-Hintergrund bei Fehler
+                document.querySelector('.login-page').style.background = 'linear-gradient(to bottom right, var(--primary-500), var(--secondary-500))';
+            });
+            
+            // Versuchen, das Video zu laden
+            video.load();
+        });
+        
+        // Direkte Funktionalität für die Tabs
+        window.addEventListener('load', function() {
+            // Tab-Elemente
+            const loginTab = document.getElementById('login-tab');
+            const registerTab = document.getElementById('register-tab');
+            const loginForm = document.getElementById('login-form');
+            const registerForm = document.getElementById('register-form');
+            
+            console.log('Tabs geladen:', loginTab, registerTab);
+            console.log('Formulare geladen:', loginForm, registerForm);
+            
+            // Event-Listener für Login-Tab
+            if (loginTab) {
+                loginTab.addEventListener('click', function(e) {
+                    console.log('Login-Tab geklickt');
+                    e.preventDefault();
+                    loginTab.classList.add('active');
+                    registerTab.classList.remove('active');
+                    loginForm.style.display = 'block';
+                    registerForm.style.display = 'none';
+                });
+            }
+            
+            // Event-Listener für Register-Tab
+            if (registerTab) {
+                registerTab.addEventListener('click', function(e) {
+                    console.log('Register-Tab geklickt');
+                    e.preventDefault();
+                    registerTab.classList.add('active');
+                    loginTab.classList.remove('active');
+                    registerForm.style.display = 'block';
+                    loginForm.style.display = 'none';
+                });
+                
+                // Füge zusätzlich einen direkten onClick-Handler hinzu
+                registerTab.onclick = function() {
+                    console.log('Register-Tab onClick ausgelöst');
+                    registerTab.classList.add('active');
+                    loginTab.classList.remove('active');
+                    registerForm.style.display = 'block';
+                    loginForm.style.display = 'none';
+                };
+            }
+        });
+        
+        document.addEventListener('DOMContentLoaded', function() {
+            const loginPage = document.getElementById('login-page');
+            const dashboard = document.getElementById('dashboard');
+            const loginForm = document.getElementById('login-form');
+            const registerForm = document.getElementById('register-form');
+            const menuButton = document.getElementById('menu-button');
+            const navigation = document.getElementById('navigation');
+            const messageModal = document.getElementById('message-modal');
+            const newMessageBtn = document.getElementById('new-message-btn');
+            const modalClose = document.getElementById('modal-close');
+            const cancelMessage = document.getElementById('cancel-message');
+            const sendMessage = document.getElementById('send-message');
+            const recipients = document.querySelectorAll('.recipient');
+            const notificationBtn = document.getElementById('notification-btn');
+            const notificationsDropdown = document.getElementById('notifications-dropdown');
+            const markAllRead = document.getElementById('mark-all-read');
+            const rememberMeCheckbox = document.getElementById('remember-me');
+            const profileButton = document.getElementById('profile-button');
+            const profileDropdown = document.getElementById('profile-dropdown');
+            const profileName = document.getElementById('profile-name');
+            const profileImage = document.getElementById('profile-image');
+            const logoutButton = document.getElementById('logout-button');
+            const currentPageTitle = document.getElementById('current-page-title');
+            
+            // Login/Register Tabs
+            const loginTab = document.getElementById('login-tab');
+            const registerTab = document.getElementById('register-tab');
+            
+            // Überprüfen, ob die DOM-Elemente existieren
+            console.log('Login-Tab:', loginTab);
+            console.log('Register-Tab:', registerTab);
+            console.log('Login-Form:', loginForm);
+            console.log('Register-Form:', registerForm);
+            
+            // Seiten-Container
+            const dashboardContent = document.getElementById('dashboard-content');
+            const stundenplanPage = document.getElementById('stundenplan-page');
+            const notenPage = document.getElementById('noten-page');
+            const nachrichtenPage = document.getElementById('nachrichten-page');
+            
+            // Navigation Links
+            const navLinks = document.querySelectorAll('.nav-link');
+            
+            let isLoggedIn = false;
+            
+            // Prüfen, ob der Benutzer bereits angemeldet ist
+            checkRememberedLogin();
+            
+            const emailOption = document.getElementById('email-option');
+            const phoneOption = document.getElementById('phone-option');
+            const emailInputContainer = document.getElementById('email-input-container');
+            const phoneInputContainer = document.getElementById('phone-input-container');
+            const registerSchool = document.getElementById('register-school');
+            const schoolDropdown = document.getElementById('school-dropdown');
+            const schoolItems = document.querySelectorAll('.school-item');
+            
+            // Initialisiere registeredUsers im localStorage, falls noch nicht vorhanden
+            if (!localStorage.getItem('registeredUsers')) {
+                localStorage.setItem('registeredUsers', JSON.stringify([]));
+            }
+            
+            // Deutsche Schulen laden
+            loadSchoolDropdown();
+            
+            // Navigation zwischen den Seiten
+            navLinks.forEach(link => {
+                link.addEventListener('click', function(event) {
+                    event.preventDefault();
+                    
+                    // Aktiven Link setzen
+                    navLinks.forEach(l => l.classList.remove('active'));
+                    this.classList.add('active');
+                    
+                    // Seiten-Container anzeigen/ausblenden basierend auf dem Link-Text
+                    const linkText = this.textContent.trim();
+                    
+                    // Alle Seiten ausblenden
+                    dashboardContent.classList.remove('active');
+                    if (stundenplanPage) stundenplanPage.classList.remove('active');
+                    if (notenPage) notenPage.classList.remove('active');
+                    if (nachrichtenPage) nachrichtenPage.classList.remove('active');
+                    
+                    // Entsprechende Seite anzeigen
+                    if (linkText === 'Dashboard') {
+                        dashboardContent.classList.add('active');
+                        currentPageTitle.textContent = 'Dashboard';
+                    } else if (linkText === 'Stundenplan') {
+                        stundenplanPage.classList.add('active');
+                        currentPageTitle.textContent = 'Stundenplan';
+                    } else if (linkText === 'Noten') {
+                        notenPage.classList.add('active');
+                        currentPageTitle.textContent = 'Noten';
+                    } else if (linkText === 'Nachrichten') {
+                        nachrichtenPage.classList.add('active');
+                        currentPageTitle.textContent = 'Nachrichten';
+                    }
+                    
+                    // Auf mobilen Geräten das Menü schließen
+                    if (window.innerWidth < 768) {
+                        navigation.classList.remove('open');
+                    }
+                });
+            });
+            
+            // "Alle anzeigen" Links
+            document.querySelectorAll('.view-all').forEach(link => {
+                link.addEventListener('click', function(event) {
+                    event.preventDefault();
+                    
+                    const page = this.getAttribute('data-page');
+                    
+                    // Alle Seiten ausblenden
+                    dashboardContent.classList.remove('active');
+                    if (stundenplanPage) stundenplanPage.classList.remove('active');
+                    if (notenPage) notenPage.classList.remove('active');
+                    if (nachrichtenPage) nachrichtenPage.classList.remove('active');
+                    
+                    // Navigation-Links aktualisieren
+                    navLinks.forEach(link => {
+                        link.classList.remove('active');
+                        if (link.textContent.trim().toLowerCase() === page) {
+                            link.classList.add('active');
+                        }
+                    });
+                    
+                    // Entsprechende Seite anzeigen
+                    if (page === 'stundenplan') {
+                        stundenplanPage.classList.add('active');
+                        currentPageTitle.textContent = 'Stundenplan';
+                    } else if (page === 'noten') {
+                        notenPage.classList.add('active');
+                        currentPageTitle.textContent = 'Noten';
+                    } else if (page === 'nachrichten') {
+                        nachrichtenPage.classList.add('active');
+                        currentPageTitle.textContent = 'Nachrichten';
+                    }
+                });
+            });
+            
+            // Tab-Wechsel zwischen Login und Registrierung
+            if (loginTab && registerTab) {
+                // Diese Event-Listener werden jetzt in window.onload gesetzt
+            }
+            
+            // Login-Formular Event-Listener
+            if (loginForm) {
+            loginForm.addEventListener('submit', function(event) {
+                event.preventDefault();
+                    console.log('Login-Formular abgesendet');
+                    
+                const username = document.getElementById('username').value;
+                const password = document.getElementById('password').value;
+                
+                // Überprüfen, ob der Benutzer registriert ist
+                const registeredUsers = JSON.parse(localStorage.getItem('registeredUsers') || '[]');
+                const user = registeredUsers.find(u => u.username === username && u.password === password);
+                
+                if (user) {
+                    // Login erfolgreich
+                    loginSuccess(username);
+                } else {
+                    // Login fehlgeschlagen
+                    alert('Benutzername oder Passwort falsch!');
+                }
+            });
+            }
+            
+            // Register-Formular Event-Listener
+            if (registerForm) {
+            registerForm.addEventListener('submit', function(event) {
+                event.preventDefault();
+                    console.log('Register-Formular abgesendet');
+                
+                const fullname = document.getElementById('register-fullname').value;
+                const username = document.getElementById('register-username').value;
+                const school = document.getElementById('register-school').value;
+                const password = document.getElementById('register-password').value;
+                const confirmPassword = document.getElementById('register-confirm-password').value;
+                
+                // Kontaktinformationen je nach gewählter Option
+                let contact = '';
+                if (emailOption.classList.contains('active')) {
+                    contact = document.getElementById('register-email').value;
+                } else {
+                    contact = document.getElementById('register-phone').value;
+                }
+                
+                // Überprüfung der Passwörter
+                if (password !== confirmPassword) {
+                    alert('Die Passwörter stimmen nicht überein.');
+                    return;
+                }
+                
+                // Überprüfen, ob der Benutzername bereits existiert
+                const registeredUsers = JSON.parse(localStorage.getItem('registeredUsers') || '[]');
+                if (registeredUsers.some(u => u.username === username)) {
+                    alert('Dieser Benutzername existiert bereits. Bitte wähle einen anderen.');
+                    return;
+                }
+                
+                // 6-stelligen Verifizierungscode generieren
+                const verificationCode = generateRandomCode(6);
+                
+                // Daten für die Verifizierung zwischenspeichern
+                const pendingUser = {
+                    fullname: fullname,
+                    username: username,
+                    school: school,
+                    contact: contact,
+                    password: password,
+                    verificationCode: verificationCode
+                };
+                
+                localStorage.setItem('pendingUser', JSON.stringify(pendingUser));
+                
+                // Anzeigen des Verifikationsdialogs
+                showVerificationDialog(verificationCode, contact);
+            });
+            }
+            
+            // Funktion zum Generieren eines zufälligen Codes
+            function generateRandomCode(length) {
+                const digits = '0123456789';
+                let code = '';
+                for (let i = 0; i < length; i++) {
+                    code += digits.charAt(Math.floor(Math.random() * digits.length));
+                }
+                return code;
+            }
+            
+            // Funktion zum Anzeigen des Verifikationsdialogs
+            function showVerificationDialog(code, userEmail) {
+                // Dummy-Email-Info anzeigen
+                alert('Ein Verifizierungscode wurde an ' + userEmail + ' gesendet.\n\n' +
+                      'In einer echten Anwendung würde eine E-Mail von unternehmenzyrogmbh@gmail.com gesendet werden.\n\n' +
+                      'Zu Demonstrationszwecken: Dein Code ist ' + code);
+                
+                // Verifikationsdialog erstellen
+                const verificationDialog = document.createElement('div');
+                verificationDialog.className = 'modal open';
+                verificationDialog.id = 'verification-modal';
+                
+                verificationDialog.innerHTML = `
+                    <div class="modal-content" style="max-width: 400px;">
+                        <div class="modal-header">
+                            <h2 class="modal-title">E-Mail verifizieren</h2>
+                            <button class="modal-close" id="verification-close">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                    <line x1="18" y1="6" x2="6" y2="18"></line>
+                                    <line x1="6" y1="6" x2="18" y2="18"></line>
+                                </svg>
+                            </button>
+                        </div>
+                        <div class="modal-body">
+                            <p>Ein 6-stelliger Code wurde an deine E-Mail-Adresse gesendet. Bitte gib den Code hier ein, um deine Registrierung abzuschließen.</p>
+                            <div class="form-group">
+                                <label for="verification-code">Verifizierungscode</label>
+                                <input id="verification-code" type="text" placeholder="6-stelligen Code eingeben" maxlength="6" required>
+                            </div>
+                        </div>
+                        <div class="modal-footer"> 
+                            <button class="btn btn-secondary" id="verification-cancel">Abbrechen</button>
+                            <button class="btn btn-primary" id="verification-submit">Bestätigen</button>
+                        </div>
+                    </div>
+                `;
+                
+                document.body.appendChild(verificationDialog);
+                
+                // Event-Listener für Schließen des Dialogs
+                document.getElementById('verification-close').addEventListener('click', function() {
+                    document.body.removeChild(verificationDialog);
+                });
+                
+                document.getElementById('verification-cancel').addEventListener('click', function() {
+                    document.body.removeChild(verificationDialog);
+                });
+                
+                // Event-Listener für Bestätigen des Codes
+                document.getElementById('verification-submit').addEventListener('click', function() {
+                    const enteredCode = document.getElementById('verification-code').value;
+                    const pendingUser = JSON.parse(localStorage.getItem('pendingUser') || '{}');
+                    
+                    if (enteredCode === pendingUser.verificationCode) {
+                        // Code ist korrekt, Benutzer registrieren
+                        const registeredUsers = JSON.parse(localStorage.getItem('registeredUsers') || '[]');
+                        
+                        // Verifikationscode entfernen bevor Benutzer gespeichert wird
+                        delete pendingUser.verificationCode;
+                        
+                        // Benutzer zur Liste hinzufügen
+                        registeredUsers.push(pendingUser);
+                        localStorage.setItem('registeredUsers', JSON.stringify(registeredUsers));
+                        
+                        // Aktiven Benutzer speichern
+                        localStorage.setItem('zyroUser', JSON.stringify(pendingUser));
+                        
+                        // Dialog schließen
+                        document.body.removeChild(verificationDialog);
+                        
+                        // Erfolgsmeldung anzeigen und einloggen
+                        alert('Registrierung erfolgreich abgeschlossen!');
+                        loginSuccess(pendingUser.username);
+                    } else {
+                        // Falscher Code
+                        alert('Der eingegebene Code ist nicht korrekt. Bitte versuche es erneut.');
+                    }
+                });
+            }
+            
+            function loginSuccess(username) {
+                // Benutzerdaten aus registeredUsers holen
+                const registeredUsers = JSON.parse(localStorage.getItem('registeredUsers') || '[]');
+                const user = registeredUsers.find(u => u.username === username);
+                
+                if (user) {
+                    // Benutzerdaten im localStorage speichern
+                    localStorage.setItem('zyroUser', JSON.stringify(user));
+                    
+                    // "Angemeldet bleiben" Option speichern
+                if (rememberMeCheckbox && rememberMeCheckbox.checked) {
+                    localStorage.setItem('zyroLoggedIn', 'true');
+                }
+                
+                // Dashboard anzeigen und Login-Seite ausblenden
+                loginPage.style.display = 'none';
+                dashboard.style.display = 'block';
+                
+                // Benutzernamen im Profil anzeigen
+                if (profileName) {
+                        profileName.textContent = user.fullname || username;
+                }
+                
+                // Benutzerinitiale im Profilbild anzeigen
+                if (profileImage) {
+                        const initial = (user.fullname || username).charAt(0).toUpperCase();
+                    profileImage.textContent = initial;
+                }
+                
+                isLoggedIn = true;
+                }
+            }
+            
+            function checkRememberedLogin() {
+                const rememberedLogin = localStorage.getItem('zyroLoggedIn');
+                const userData = JSON.parse(localStorage.getItem('zyroUser') || '{}');
+                
+                if (rememberedLogin === 'true' && userData.username) {
+                    loginSuccess(userData.username);
+                }
+            }
+            
+            emailOption.addEventListener('click', function() {
+                emailOption.classList.add('active');
+                phoneOption.classList.remove('active');
+                emailInputContainer.style.display = 'block';
+                phoneInputContainer.style.display = 'none';
+                document.getElementById('register-email').setAttribute('required', '');
+                document.getElementById('register-phone').removeAttribute('required');
+            });
+            
+            phoneOption.addEventListener('click', function() {
+                phoneOption.classList.add('active');
+                emailOption.classList.remove('active');
+                phoneInputContainer.style.display = 'block';
+                emailInputContainer.style.display = 'none';
+                document.getElementById('register-phone').setAttribute('required', '');
+                document.getElementById('register-email').removeAttribute('required');
+            });
+            
+            // Schulauswahl
+            registerSchool.addEventListener('focus', function() {
+                schoolDropdown.classList.add('open');
+            });
+            
+            registerSchool.addEventListener('input', function() {
+                const searchText = this.value.toLowerCase();
+                
+                document.querySelectorAll('.school-item').forEach(item => {
+                    const schoolName = item.querySelector('.school-name').textContent.toLowerCase();
+                    const schoolAddress = item.querySelector('.school-address').textContent.toLowerCase();
+                    
+                    if (schoolName.includes(searchText) || schoolAddress.includes(searchText)) {
+                        item.style.display = 'block';
+                    } else {
+                        item.style.display = 'none';
+                    }
+                });
+                
+                schoolDropdown.classList.add('open');
+            });
+            
+            document.addEventListener('click', function(event) {
+                if (!registerSchool.contains(event.target) && !schoolDropdown.contains(event.target)) {
+                    schoolDropdown.classList.remove('open');
+                }
+            });
+            
+            document.querySelectorAll('.school-item').forEach(item => {
+                item.addEventListener('click', function() {
+                    const schoolName = this.querySelector('.school-name').textContent;
+                    registerSchool.value = schoolName;
+                    schoolDropdown.classList.remove('open');
+                });
+            });
+            
+            // Logout-Funktion
+            if (logoutButton) {
+                logoutButton.addEventListener('click', function() {
+                    // Nur die Login-Session entfernen, aber registrierte Benutzer behalten
+                    localStorage.removeItem('zyroLoggedIn');
+                    localStorage.removeItem('zyroUser');
+                    
+                    loginPage.style.display = 'flex';
+                    dashboard.style.display = 'none';
+                    isLoggedIn = false;
+                });
+            }
+            
+            // Menü für mobile Ansicht
+            if (menuButton) {
+                menuButton.addEventListener('click', function() {
+                    navigation.classList.toggle('open');
+                });
+            }
+            
+            // Nachrichten-Modal öffnen/schließen
+            if (newMessageBtn) {
+                newMessageBtn.addEventListener('click', function() {
+                    messageModal.classList.add('open');
+                });
+            }
+            
+            if (modalClose) {
+                modalClose.addEventListener('click', function() {
+                    messageModal.classList.remove('open');
+                });
+            }
+            
+            if (cancelMessage) {
+                cancelMessage.addEventListener('click', function() {
+                    messageModal.classList.remove('open');
+                });
+            }
+            
+            // Empfänger auswählen
+            recipients.forEach(recipient => {
+                recipient.addEventListener('click', function() {
+                    recipients.forEach(r => r.classList.remove('selected'));
+                    this.classList.add('selected');
+                });
+            });
+            
+            // Benachrichtigungen Dropdown
+            if (notificationBtn) {
+                notificationBtn.addEventListener('click', function(event) {
+                    event.stopPropagation();
+                    notificationsDropdown.classList.toggle('open');
+                    profileDropdown.classList.remove('open');
+                });
+            }
+            
+            // Profil Dropdown
+            if (profileButton) {
+                profileButton.addEventListener('click', function(event) {
+                    event.stopPropagation();
+                    profileDropdown.classList.toggle('open');
+                    notificationsDropdown.classList.remove('open');
+                });
+            }
+            
+            // Dropdowns schließen, wenn außerhalb geklickt wird
+            document.addEventListener('click', function() {
+                notificationsDropdown.classList.remove('open');
+                profileDropdown.classList.remove('open');
+            });
+            
+            // Alle Benachrichtigungen als gelesen markieren
+            if (markAllRead) {
+                markAllRead.addEventListener('click', function() {
+                    document.querySelectorAll('.notification-unread').forEach(notification => {
+                        notification.classList.remove('notification-unread');
+                    });
+                });
+            }
+        });
+
+        // Beispiel für deutsche Schulen (wird später durch schools.js ersetzt)
+        const germanSchools = [
+            { id: 1, name: "Gymnasium am Stadtpark", address: "Parkstraße 15, 10115 Berlin" },
+            { id: 2, name: "Marie-Curie-Oberschule", address: "Hauptstraße 42, 20095 Hamburg" },
+            { id: 3, name: "Albert-Einstein-Gymnasium", address: "Schillerstraße 23, 80336 München" },
+            { id: 4, name: "Friedrich-Schiller-Realschule", address: "Goetheweg 8, 50667 Köln" },
+            { id: 5, name: "Humboldt-Gesamtschule", address: "Lessingplatz 3, 60313 Frankfurt" },
+            { id: 6, name: "Goethe-Gymnasium", address: "Schillerstraße 45, 70173 Stuttgart" },
+            { id: 7, name: "Lessing-Realschule", address: "Hauptstraße 78, 40213 Düsseldorf" },
+            { id: 8, name: "Heinrich-Heine-Gesamtschule", address: "Schulstraße 12, 30159 Hannover" },
+            { id: 9, name: "Schiller-Gymnasium", address: "Goetheallee 33, 01309 Dresden" },
+            { id: 10, name: "Kant-Oberschule", address: "Philosophenweg 22, 04103 Leipzig" }
+        ];
+
+        function loadSchoolDropdown() {
+            const schoolDropdown = document.getElementById('school-dropdown');
+            
+            // Bestehende Schulen löschen
+            schoolDropdown.innerHTML = '';
+            
+            // Schulen zum Dropdown hinzufügen
+            germanSchools.forEach(school => {
+                const schoolItem = document.createElement('div');
+                schoolItem.className = 'school-item';
+                schoolItem.dataset.id = school.id;
+                
+                const schoolName = document.createElement('div');
+                schoolName.className = 'school-name';
+                schoolName.textContent = school.name;
+                
+                const schoolAddress = document.createElement('div');
+                schoolAddress.className = 'school-address';
+                schoolAddress.textContent = school.address;
+                
+                schoolItem.appendChild(schoolName);
+                schoolItem.appendChild(schoolAddress);
+                schoolDropdown.appendChild(schoolItem);
+                
+                // Event-Listener für Schulauswahl
+                schoolItem.addEventListener('click', function() {
+                    document.getElementById('register-school').value = school.name;
+                    schoolDropdown.classList.remove('open');
+                });
+            });
+        }
+        
+        // Passwort vergessen Funktionalität
+        document.addEventListener('DOMContentLoaded', function() {
+            // ... existing code ...
+            
+            // Passwort vergessen Link
+            const forgotPasswordLink = document.querySelector('.forgot-password');
+            const forgotPasswordModal = document.getElementById('forgot-password-modal');
+            const forgotPasswordClose = document.getElementById('forgot-password-close');
+            const forgotCancelBtn = document.getElementById('forgot-cancel');
+            const forgotNextBtn = document.getElementById('forgot-next');
+            
+            // Aktuelle Schritte im Passwort-Zurücksetzen-Prozess
+            let forgotStep = 1;
+            let forgotEmail = '';
+            let forgotCode = '';
+            
+            // Passwort vergessen Modal öffnen
+            if (forgotPasswordLink) {
+                forgotPasswordLink.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    forgotPasswordModal.classList.add('open');
+                    forgotStep = 1;
+                    showForgotStep(1);
+                });
+            }
+            
+            // Modal schließen
+            if (forgotPasswordClose) {
+                forgotPasswordClose.addEventListener('click', function() {
+                    forgotPasswordModal.classList.remove('open');
+                    resetForgotForm();
+                });
+            }
+            
+            // Abbrechen-Button
+            if (forgotCancelBtn) {
+                forgotCancelBtn.addEventListener('click', function() {
+                    forgotPasswordModal.classList.remove('open');
+                    resetForgotForm();
+                });
+            }
+            
+            // Weiter-Button
+            if (forgotNextBtn) {
+                forgotNextBtn.addEventListener('click', function() {
+                    processForgotStep();
+                });
+            }
+            
+            // Funktion zum Anzeigen des aktuellen Schritts
+            function showForgotStep(step) {
+                document.getElementById('forgot-step-1').style.display = 'none';
+                document.getElementById('forgot-step-2').style.display = 'none';
+                document.getElementById('forgot-step-3').style.display = 'none';
+                
+                document.getElementById('forgot-step-' + step).style.display = 'block';
+                
+                // Button-Text anpassen
+                if (step === 3) {
+                    forgotNextBtn.textContent = 'Passwort ändern';
+                } else {
+                    forgotNextBtn.textContent = 'Weiter';
+                }
+            }
+            
+            // Funktion zum Verarbeiten des aktuellen Schritts
+            function processForgotStep() {
+                const forgotStep = parseInt(document.querySelector('#forgot-password-modal [id^="forgot-step-"]:not([style*="display: none"])').id.split('-')[2]);
+                
+                if (forgotStep === 1) {
+                    // E-Mail validieren
+                    const forgotEmail = document.getElementById('forgot-email').value;
+                    if (!forgotEmail || !forgotEmail.includes('@')) {
+                        alert('Bitte gib eine gültige E-Mail-Adresse ein.');
+                        return;
+                    }
+                    
+                    // Prüfen, ob die E-Mail bei einem registrierten Benutzer existiert
+                    const registeredUsers = JSON.parse(localStorage.getItem('registeredUsers') || '[]');
+                    const user = registeredUsers.find(u => u.contact === forgotEmail);
+                    
+                    if (!user) {
+                        alert('Diese E-Mail-Adresse ist nicht registriert.');
+                        return;
+                    }
+                    
+                    // Speichere die E-Mail für spätere Schritte
+                    localStorage.setItem('forgotEmail', forgotEmail);
+                    
+                    // Verifizierungscode generieren und speichern
+                    const forgotCode = generateRandomCode(6);
+                    localStorage.setItem('forgotCode', forgotCode);
+                    
+                    // In einer echten Anwendung würde hier eine E-Mail gesendet werden
+                    alert('Ein Verifizierungscode wurde an ' + forgotEmail + ' gesendet.\n\n' +
+                          'In einer echten Anwendung würde eine E-Mail gesendet werden.\n\n' +
+                          'Zu Demonstrationszwecken: Dein Code ist ' + forgotCode);
+                    
+                    // Zum nächsten Schritt
+                    showForgotStep(2);
+                } 
+                else if (forgotStep === 2) {
+                    // Code validieren
+                    const enteredCode = document.getElementById('forgot-code').value;
+                    const savedCode = localStorage.getItem('forgotCode');
+                    
+                    if (!enteredCode || enteredCode.length !== 6) {
+                        alert('Bitte gib den 6-stelligen Code ein.');
+                        return;
+                    }
+                    
+                    if (enteredCode !== savedCode) {
+                        alert('Der eingegebene Code ist nicht korrekt. Bitte versuche es erneut.');
+                        return;
+                    }
+                    
+                    // Zum nächsten Schritt
+                    showForgotStep(3);
+                } 
+                else if (forgotStep === 3) {
+                    // Neue Passwörter validieren
+                    const newPassword = document.getElementById('new-password').value;
+                    const confirmNewPassword = document.getElementById('confirm-new-password').value;
+                    const forgotEmail = localStorage.getItem('forgotEmail');
+                    
+                    if (!newPassword) {
+                        alert('Bitte gib ein neues Passwort ein.');
+                        return;
+                    }
+                    
+                    if (newPassword !== confirmNewPassword) {
+                        alert('Die Passwörter stimmen nicht überein.');
+                        return;
+                    }
+                    
+                    // Passwort in localStorage aktualisieren
+                    const registeredUsers = JSON.parse(localStorage.getItem('registeredUsers') || '[]');
+                    const userIndex = registeredUsers.findIndex(u => u.contact === forgotEmail);
+                    
+                    if (userIndex !== -1) {
+                        registeredUsers[userIndex].password = newPassword;
+                        localStorage.setItem('registeredUsers', JSON.stringify(registeredUsers));
+                        
+                        alert('Dein Passwort wurde erfolgreich geändert. Du kannst dich jetzt mit deinem neuen Passwort anmelden.');
+                        
+                        // Modal schließen und Formular zurücksetzen
+                        const modal = document.getElementById('forgot-password-modal');
+                        modal.classList.remove('open');
+                        resetForgotForm();
+                        
+                        // Temporäre Daten löschen
+                        localStorage.removeItem('forgotEmail');
+                        localStorage.removeItem('forgotCode');
+                    }
+                }
+            }
+            
+            // Formular zurücksetzen
+            function resetForgotForm() {
+                document.getElementById('forgot-email').value = '';
+                document.getElementById('forgot-code').value = '';
+                document.getElementById('new-password').value = '';
+                document.getElementById('confirm-new-password').value = '';
+            }
+            
+            // ... existing code ...
+        });
+        
+        // ... existing code ...
+
+        // Globale Variablen für den Passwort-Zurücksetzen-Prozess
+        let forgotCurrentStep = 1;
+
+        // Funktion zum Öffnen des Passwort-vergessen-Modals
+        function openForgotPasswordModal() {
+            console.log("Öffne Passwort-vergessen-Modal");
+            const modal = document.getElementById('forgot-password-modal');
+            if (modal) {
+                modal.style.display = "flex";
+                modal.classList.add('open');
+                
+                // Zurücksetzen auf Schritt 1
+                document.getElementById('forgot-step-1').style.display = 'block';
+                document.getElementById('forgot-step-2').style.display = 'none';
+                document.getElementById('forgot-step-3').style.display = 'none';
+                
+                // Button-Text zurücksetzen
+                document.getElementById('forgot-next').textContent = 'Weiter';
+            }
+        }
+
+        // Funktion zum Anzeigen des aktuellen Schritts im Passwort-vergessen-Prozess
+        function showForgotStep(step) {
+            document.getElementById('forgot-step-1').style.display = 'none';
+            document.getElementById('forgot-step-2').style.display = 'none';
+            document.getElementById('forgot-step-3').style.display = 'none';
+            
+            document.getElementById('forgot-step-' + step).style.display = 'block';
+            forgotCurrentStep = step;
+            
+            // Button-Text anpassen
+            const nextBtn = document.getElementById('forgot-next');
+            if (nextBtn) {
+                if (step === 3) {
+                    nextBtn.textContent = 'Passwort ändern';
+                } else {
+                    nextBtn.textContent = 'Weiter';
+                }
+            }
+        }
+
+        // Funktion zum Verarbeiten des aktuellen Schritts
+        function processForgotStep() {
+            if (forgotCurrentStep === 1) {
+                // E-Mail validieren
+                const forgotEmail = document.getElementById('forgot-email').value;
+                if (!forgotEmail || !forgotEmail.includes('@')) {
+                    alert('Bitte gib eine gültige E-Mail-Adresse ein.');
+                    return;
+                }
+                
+                // Prüfen, ob die E-Mail bei einem registrierten Benutzer existiert
+                const registeredUsers = JSON.parse(localStorage.getItem('registeredUsers') || '[]');
+                const user = registeredUsers.find(u => u.contact === forgotEmail);
+                
+                if (!user) {
+                    alert('Diese E-Mail-Adresse ist nicht registriert.');
+                    return;
+                }
+                
+                // Speichere die E-Mail für spätere Schritte
+                localStorage.setItem('forgotEmail', forgotEmail);
+                
+                // Verifizierungscode generieren und speichern
+                const forgotCode = generateRandomCode(6);
+                localStorage.setItem('forgotCode', forgotCode);
+                
+                // In einer echten Anwendung würde hier eine E-Mail gesendet werden
+                alert('Ein Verifizierungscode wurde an ' + forgotEmail + ' gesendet.\n\n' +
+                      'In einer echten Anwendung würde eine E-Mail gesendet werden.\n\n' +
+                      'Zu Demonstrationszwecken: Dein Code ist ' + forgotCode);
+                
+                // Zum nächsten Schritt
+                showForgotStep(2);
+            } 
+            else if (forgotCurrentStep === 2) {
+                // Code validieren
+                const enteredCode = document.getElementById('forgot-code').value;
+                const savedCode = localStorage.getItem('forgotCode');
+                
+                if (!enteredCode || enteredCode.length !== 6) {
+                    alert('Bitte gib den 6-stelligen Code ein.');
+                    return;
+                }
+                
+                if (enteredCode !== savedCode) {
+                    alert('Der eingegebene Code ist nicht korrekt. Bitte versuche es erneut.');
+                    return;
+                }
+                
+                // Zum nächsten Schritt
+                showForgotStep(3);
+            } 
+            else if (forgotCurrentStep === 3) {
+                // Neue Passwörter validieren
+                const newPassword = document.getElementById('new-password').value;
+                const confirmNewPassword = document.getElementById('confirm-new-password').value;
+                const forgotEmail = localStorage.getItem('forgotEmail');
+                
+                if (!newPassword) {
+                    alert('Bitte gib ein neues Passwort ein.');
+                    return;
+                }
+                
+                if (newPassword !== confirmNewPassword) {
+                    alert('Die Passwörter stimmen nicht überein.');
+                    return;
+                }
+                
+                // Passwort in localStorage aktualisieren
+                const registeredUsers = JSON.parse(localStorage.getItem('registeredUsers') || '[]');
+                const userIndex = registeredUsers.findIndex(u => u.contact === forgotEmail);
+                
+                if (userIndex !== -1) {
+                    registeredUsers[userIndex].password = newPassword;
+                    localStorage.setItem('registeredUsers', JSON.stringify(registeredUsers));
+                    
+                    alert('Dein Passwort wurde erfolgreich geändert. Du kannst dich jetzt mit deinem neuen Passwort anmelden.');
+                    
+                    // Modal schließen und Formular zurücksetzen
+                    const modal = document.getElementById('forgot-password-modal');
+                    modal.classList.remove('open');
+                    resetForgotForm();
+                    
+                    // Temporäre Daten löschen
+                    localStorage.removeItem('forgotEmail');
+                    localStorage.removeItem('forgotCode');
+                }
+            }
+        }
+
+        // Formular zurücksetzen
+        function resetForgotForm() {
+            document.getElementById('forgot-email').value = '';
+            document.getElementById('forgot-code').value = '';
+            document.getElementById('new-password').value = '';
+            document.getElementById('confirm-new-password').value = '';
+            forgotCurrentStep = 1;
+        }
+
+        // ... existing code ...
+
+        // Füge einen DOMContentLoaded-Event-Listener hinzu, der speziell für den Passwort-vergessen-Button ist
+        document.addEventListener('DOMContentLoaded', function() {
+            // Passwort vergessen Button
+            const forgotPasswordBtn = document.querySelector('.forgot-password-btn');
+            if (forgotPasswordBtn) {
+                console.log("Passwort-vergessen-Button gefunden");
+                forgotPasswordBtn.addEventListener('click', function() {
+                    console.log("Passwort-vergessen-Button geklickt");
+                    const modal = document.getElementById('forgot-password-modal');
+                    if (modal) {
+                        console.log("Modal gefunden, wird geöffnet");
+                        modal.style.display = "flex";
+                        modal.classList.add('open');
+                        
+                        // Zurücksetzen auf Schritt 1
+                        document.getElementById('forgot-step-1').style.display = 'block';
+                        document.getElementById('forgot-step-2').style.display = 'none';
+                        document.getElementById('forgot-step-3').style.display = 'none';
+                        
+                        // Button-Text zurücksetzen
+                        const nextBtn = document.getElementById('forgot-next');
+                        if (nextBtn) {
+                            nextBtn.textContent = 'Weiter';
+                        }
+                    } else {
+                        console.error("Modal nicht gefunden!");
+                    }
+                });
+            } else {
+                console.error("Passwort-vergessen-Button nicht gefunden");
+            }
+        });
+
+        // Direkter Event-Listener für den finalen Registrieren-Button
+        document.addEventListener('DOMContentLoaded', function() {
+            const finalRegisterButton = document.getElementById('final-register-button');
+            if (finalRegisterButton) {
+                console.log("Finaler Registrieren-Button gefunden");
+                finalRegisterButton.addEventListener('click', function() {
+                    console.log("Finaler Registrieren-Button geklickt");
+                    
+                    // Prüfen, ob die Nutzungsbedingungen akzeptiert wurden
+                    const termsCheckbox = document.getElementById('register-terms');
+                    if (!termsCheckbox || !termsCheckbox.checked) {
+                        alert('Bitte akzeptiere die Nutzungsbedingungen, um fortzufahren.');
+                        return;
+                    }
+                    
+                    // Daten aus allen Schritten sammeln
+                    const fullname = document.getElementById('register-fullname').value;
+                    const username = document.getElementById('register-username').value;
+                    const school = document.getElementById('register-school').value;
+                    const password = document.getElementById('register-password').value;
+                    
+                    // Kontaktinformationen je nach gewählter Option
+                    let contact = '';
+                    if (document.getElementById('email-option').classList.contains('active')) {
+                        contact = document.getElementById('register-email').value;
+                    } else {
+                        contact = document.getElementById('register-phone').value;
+                    }
+                    
+                    // Überprüfen, ob der Benutzername bereits existiert
+                    const registeredUsers = JSON.parse(localStorage.getItem('registeredUsers') || '[]');
+                    if (registeredUsers.some(u => u.username === username)) {
+                        alert('Dieser Benutzername existiert bereits. Bitte wähle einen anderen.');
+                        return;
+                    }
+                    
+                    // 6-stelligen Verifizierungscode generieren
+                    const verificationCode = generateRandomCode(6);
+                    
+                    // Daten für die Verifizierung zwischenspeichern
+                    const pendingUser = {
+                        fullname: fullname,
+                        username: username,
+                        school: school,
+                        contact: contact,
+                        password: password,
+                        verificationCode: verificationCode
+                    };
+                    
+                    localStorage.setItem('pendingUser', JSON.stringify(pendingUser));
+                    
+                    // Anzeigen des Verifikationsdialogs
+                    alert('Ein Verifizierungscode wurde an ' + contact + ' gesendet.\n\n' +
+                          'In einer echten Anwendung würde eine E-Mail gesendet werden.\n\n' +
+                          'Zu Demonstrationszwecken: Dein Code ist ' + verificationCode);
+                    
+                    // Verifikationsdialog erstellen
+                    const verificationDialog = document.createElement('div');
+                    verificationDialog.className = 'modal open';
+                    verificationDialog.id = 'verification-modal';
+                    verificationDialog.style.display = 'flex';
+                    
+                    verificationDialog.innerHTML = `
+                        <div class="modal-content" style="max-width: 400px;">
+                            <div class="modal-header">
+                                <h2 class="modal-title">E-Mail verifizieren</h2>
+                                <button class="modal-close" id="verification-close">
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                        <line x1="18" y1="6" x2="6" y2="18"></line>
+                                        <line x1="6" y1="6" x2="18" y2="18"></line>
+                                    </svg>
+                                </button>
+                            </div>
+                            <div class="modal-body">
+                                <p>Ein 6-stelliger Code wurde an deine E-Mail-Adresse gesendet. Bitte gib den Code hier ein, um deine Registrierung abzuschließen.</p>
+                                <div class="form-group">
+                                    <label for="verification-code">Verifizierungscode</label>
+                                    <input id="verification-code" type="text" placeholder="6-stelligen Code eingeben" maxlength="6" required>
+                                </div>
+                            </div>
+                            <div class="modal-footer"> 
+                                <button class="btn btn-secondary" id="verification-cancel">Abbrechen</button>
+                                <button class="btn btn-primary" id="verification-submit">Bestätigen</button>
+                            </div>
+                        </div>
+                    `;
+                    
+                    document.body.appendChild(verificationDialog);
+                    
+                    // Event-Listener für Schließen des Dialogs
+                    document.getElementById('verification-close').addEventListener('click', function() {
+                        document.body.removeChild(verificationDialog);
+                    });
+                    
+                    document.getElementById('verification-cancel').addEventListener('click', function() {
+                        document.body.removeChild(verificationDialog);
+                    });
+                    
+                    // Event-Listener für Bestätigen des Codes
+                    document.getElementById('verification-submit').addEventListener('click', function() {
+                        const enteredCode = document.getElementById('verification-code').value;
+                        const pendingUser = JSON.parse(localStorage.getItem('pendingUser') || '{}');
+                        
+                        if (enteredCode === pendingUser.verificationCode) {
+                            // Code ist korrekt, Benutzer registrieren
+                            const registeredUsers = JSON.parse(localStorage.getItem('registeredUsers') || '[]');
+                            
+                            // Verifikationscode entfernen bevor Benutzer gespeichert wird
+                            delete pendingUser.verificationCode;
+                            
+                            // Benutzer zur Liste hinzufügen
+                            registeredUsers.push(pendingUser);
+                            localStorage.setItem('registeredUsers', JSON.stringify(registeredUsers));
+                            
+                            // Aktiven Benutzer speichern
+                            localStorage.setItem('zyroUser', JSON.stringify(pendingUser));
+                            
+                            // Dialog schließen
+                            document.body.removeChild(verificationDialog);
+                            
+                            // Erfolgsmeldung anzeigen und einloggen
+                            alert('Registrierung erfolgreich abgeschlossen!');
+                            
+                            // Zum Dashboard wechseln
+                            document.getElementById('login-page').style.display = 'none';
+                            document.getElementById('dashboard').style.display = 'block';
+                            
+                            // Benutzernamen im Profil anzeigen
+                            const profileName = document.getElementById('profile-name');
+                            if (profileName) {
+                                profileName.textContent = pendingUser.fullname || pendingUser.username;
+                            }
+                            
+                            // Benutzerinitiale im Profilbild anzeigen
+                            const profileImage = document.getElementById('profile-image');
+                            if (profileImage) {
+                                const initial = (pendingUser.fullname || pendingUser.username).charAt(0).toUpperCase();
+                                profileImage.textContent = initial;
+                            }
+                        } else {
+                            // Falscher Code
+                            alert('Der eingegebene Code ist nicht korrekt. Bitte versuche es erneut.');
+                        }
+                    });
+                });
+            } else {
+                console.error("Finaler Registrieren-Button nicht gefunden");
+            }
+        });
+    </script>
+
+    <script>
+        // Einfache Funktion zur Registrierung mit direktem Aufruf
+        function registerUser() {
+            console.log("Registrieren-Button geklickt");
+            
+            // Prüfen, ob die Nutzungsbedingungen akzeptiert wurden
+            const termsCheckbox = document.getElementById('register-terms');
+            if (!termsCheckbox || !termsCheckbox.checked) {
+                alert('Bitte akzeptiere die Nutzungsbedingungen, um fortzufahren.');
+                return;
+            }
+            
+            // Daten aus allen Schritten sammeln
+            const fullname = document.getElementById('register-fullname').value;
+            const username = document.getElementById('register-username').value;
+            const school = document.getElementById('register-school').value;
+            const password = document.getElementById('register-password').value;
+            
+            // Kontaktinformationen je nach gewählter Option
+            let contact = '';
+            if (document.getElementById('email-option').classList.contains('active')) {
+                contact = document.getElementById('register-email').value;
+            } else {
+                contact = document.getElementById('register-phone').value;
+            }
+            
+            // Überprüfen, ob der Benutzername bereits existiert
+            const registeredUsers = JSON.parse(localStorage.getItem('registeredUsers') || '[]');
+            if (registeredUsers.some(u => u.username === username)) {
+                alert('Dieser Benutzername existiert bereits. Bitte wähle einen anderen.');
+                return;
+            }
+            
+            // Benutzer direkt registrieren ohne Verifizierung (für einfacheres Testen)
+            const newUser = {
+                fullname: fullname,
+                username: username,
+                school: school,
+                contact: contact,
+                password: password
+            };
+            
+            // Benutzer zur Liste hinzufügen
+            registeredUsers.push(newUser);
+            localStorage.setItem('registeredUsers', JSON.stringify(registeredUsers));
+            
+            // Aktiven Benutzer speichern
+            localStorage.setItem('zyroUser', JSON.stringify(newUser));
+            
+            // Erfolgsmeldung anzeigen
+            alert('Registrierung erfolgreich abgeschlossen!');
+            
+            // Zum Dashboard wechseln
+            document.getElementById('login-page').style.display = 'none';
+            document.getElementById('dashboard').style.display = 'block';
+            
+            // Benutzernamen im Profil anzeigen
+            const profileName = document.getElementById('profile-name');
+            if (profileName) {
+                profileName.textContent = newUser.fullname || newUser.username;
+            }
+            
+            // Benutzerinitiale im Profilbild anzeigen
+            const profileImage = document.getElementById('profile-image');
+            if (profileImage) {
+                const initial = (newUser.fullname || newUser.username).charAt(0).toUpperCase();
+                profileImage.textContent = initial;
+            }
+        }
+    </script>
+
+    <script>
+        // Funktionen zum Anzeigen der verschiedenen Seiten
+        function showDashboardPage() {
+            // Alle Seiten ausblenden
+            document.getElementById('dashboard-content').classList.add('active');
+            document.getElementById('stundenplan-page').classList.remove('active');
+            document.getElementById('noten-page').classList.remove('active');
+            document.getElementById('nachrichten-page').classList.remove('active');
+            
+            // Seitentitel aktualisieren
+            document.getElementById('current-page-title').textContent = 'Dashboard';
+            
+            // Aktiven Link setzen
+            setActiveNavLink('Dashboard');
+            
+            // Auf mobilen Geräten das Menü schließen
+            if (window.innerWidth < 768) {
+                document.getElementById('navigation').classList.remove('open');
+            }
+        }
+        
+        function showStundenplanPage() {
+            // Alle Seiten ausblenden
+            document.getElementById('dashboard-content').classList.remove('active');
+            document.getElementById('stundenplan-page').classList.add('active');
+            document.getElementById('noten-page').classList.remove('active');
+            document.getElementById('nachrichten-page').classList.remove('active');
+            
+            // Seitentitel aktualisieren
+            document.getElementById('current-page-title').textContent = 'Stundenplan';
+            
+            // Aktiven Link setzen
+            setActiveNavLink('Stundenplan');
+            
+            // Auf mobilen Geräten das Menü schließen
+            if (window.innerWidth < 768) {
+                document.getElementById('navigation').classList.remove('open');
+            }
+        }
+        
+        function showNotenPage() {
+            // Alle Seiten ausblenden
+            document.getElementById('dashboard-content').classList.remove('active');
+            document.getElementById('stundenplan-page').classList.remove('active');
+            document.getElementById('noten-page').classList.add('active');
+            document.getElementById('nachrichten-page').classList.remove('active');
+            
+            // Seitentitel aktualisieren
+            document.getElementById('current-page-title').textContent = 'Noten';
+            
+            // Aktiven Link setzen
+            setActiveNavLink('Noten');
+            
+            // Auf mobilen Geräten das Menü schließen
+            if (window.innerWidth < 768) {
+                document.getElementById('navigation').classList.remove('open');
+            }
+        }
+        
+        function showNachrichtenPage() {
+            // Alle Seiten ausblenden
+            document.getElementById('dashboard-content').classList.remove('active');
+            document.getElementById('stundenplan-page').classList.remove('active');
+            document.getElementById('noten-page').classList.remove('active');
+            document.getElementById('nachrichten-page').classList.add('active');
+            
+            // Seitentitel aktualisieren
+            document.getElementById('current-page-title').textContent = 'Nachrichten';
+            
+            // Aktiven Link setzen
+            setActiveNavLink('Nachrichten');
+            
+            // Auf mobilen Geräten das Menü schließen
+            if (window.innerWidth < 768) {
+                document.getElementById('navigation').classList.remove('open');
+            }
+        }
+        
+        function setActiveNavLink(linkText) {
+            // Alle Links deaktivieren
+            document.querySelectorAll('.nav-link').forEach(link => {
+                link.classList.remove('active');
+                if (link.textContent.trim() === linkText) {
+                    link.classList.add('active');
+                }
+            });
+        }
+    </script>
+
+    <script>
+        // Funktion zum Anmelden
+        function loginUser() {
+            console.log('Login-Funktion aufgerufen');
+            
+            const username = document.getElementById('username').value;
+            const password = document.getElementById('password').value;
+            
+            // Überprüfen, ob die Felder ausgefüllt sind
+            if (!username || !password) {
+                alert('Bitte Benutzername und Passwort eingeben.');
+                return;
+            }
+            
+            // Überprüfen, ob der Benutzer registriert ist
+            const registeredUsers = JSON.parse(localStorage.getItem('registeredUsers') || '[]');
+            const user = registeredUsers.find(u => u.username === username && u.password === password);
+            
+            if (user) {
+                // Login erfolgreich
+                // Benutzerdaten im localStorage speichern
+                localStorage.setItem('zyroUser', JSON.stringify(user));
+                
+                // "Angemeldet bleiben" Option speichern
+                const rememberMeCheckbox = document.getElementById('remember-me');
+                if (rememberMeCheckbox && rememberMeCheckbox.checked) {
+                    localStorage.setItem('zyroLoggedIn', 'true');
+                }
+                
+                // Dashboard anzeigen und Login-Seite ausblenden
+                document.getElementById('login-page').style.display = 'none';
+                document.getElementById('dashboard').style.display = 'block';
+                
+                // Benutzernamen im Profil anzeigen
+                const profileName = document.getElementById('profile-name');
+                if (profileName) {
+                    profileName.textContent = user.fullname || username;
+                }
+                
+                // Benutzerinitiale im Profilbild anzeigen
+                const profileImage = document.getElementById('profile-image');
+                if (profileImage) {
+                    const initial = (user.fullname || username).charAt(0).toUpperCase();
+                    profileImage.textContent = initial;
+                }
+            } else {
+                // Login fehlgeschlagen
+                alert('Benutzername oder Passwort falsch!');
+            }
+        }
+    </script>
+
+    <!-- Profil-Modal -->
+    <div class="modal" id="profile-modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 class="modal-title">Mein Profil</h2>
+                <button class="modal-close" onclick="document.getElementById('profile-modal').classList.remove('open');">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <line x1="18" y1="6" x2="6" y2="18"></line>
+                        <line x1="6" y1="6" x2="18" y2="18"></line>
+                    </svg>
+                </button>
+            </div>
+            <div class="modal-body">
+                <div class="form-group" style="display: flex; flex-direction: column; align-items: center; margin-bottom: 2rem;">
+                    <div class="profile-image" id="profile-image-large" style="width: 100px; height: 100px; font-size: 2.5rem; margin-bottom: 1rem;">
+                        <!-- Initiale wird per JavaScript gesetzt -->
+                    </div>
+                    <button class="btn btn-secondary" onclick="document.getElementById('profile-picture-upload').click();">Profilbild ändern</button>
+                    <input type="file" id="profile-picture-upload" style="display: none;" accept="image/*">
+                </div>
+                
+                <div class="form-group">
+                    <label for="profile-fullname">Vollständiger Name</label>
+                    <input type="text" id="profile-fullname" class="form-control" placeholder="Vollständiger Name">
+                </div>
+                
+                <div class="form-group">
+                    <label for="profile-username">Benutzername</label>
+                    <input type="text" id="profile-username" class="form-control" placeholder="Benutzername">
+                </div>
+                
+                <div class="form-group">
+                    <label for="profile-email">E-Mail-Adresse</label>
+                    <input type="email" id="profile-email" class="form-control" placeholder="E-Mail-Adresse">
+                </div>
+                
+                <div class="form-group">
+                    <label for="profile-school">Schule</label>
+                    <input type="text" id="profile-school" class="form-control" placeholder="Schule">
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-secondary" onclick="document.getElementById('profile-modal').classList.remove('open');">Abbrechen</button>
+                <button class="btn btn-primary" onclick="saveProfileChanges()">Speichern</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Einstellungen-Modal -->
+    <div class="modal" id="settings-modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 class="modal-title">Einstellungen</h2>
+                <button class="modal-close" onclick="document.getElementById('settings-modal').classList.remove('open');">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <line x1="18" y1="6" x2="6" y2="18"></line>
+                        <line x1="6" y1="6" x2="18" y2="18"></line>
+                    </svg>
+                </button>
+            </div>
+            <div class="modal-body">
+                <h3>Darstellung</h3>
+                <div class="form-group">
+                    <label for="theme-select">Farbschema</label>
+                    <select id="theme-select" class="form-control">
+                        <option value="light">Hell</option>
+                        <option value="dark">Dunkel</option>
+                        <option value="system">Systemeinstellung</option>
+                    </select>
+                </div>
+                
+                <div class="form-group">
+                    <label for="font-size">Schriftgröße</label>
+                    <select id="font-size" class="form-control">
+                        <option value="small">Klein</option>
+                        <option value="medium" selected>Mittel</option>
+                        <option value="large">Groß</option>
+                    </select>
+                </div>
+                
+                <h3>Sicherheit</h3>
+                <div class="form-group">
+                    <label for="current-password">Aktuelles Passwort</label>
+                    <input type="password" id="current-password" class="form-control" placeholder="Aktuelles Passwort">
+                </div>
+                
+                <div class="form-group">
+                    <label for="new-password">Neues Passwort</label>
+                    <input type="password" id="new-password" class="form-control" placeholder="Neues Passwort">
+                </div>
+                
+                <div class="form-group">
+                    <label for="confirm-new-password">Passwort bestätigen</label>
+                    <input type="password" id="confirm-new-password" class="form-control" placeholder="Passwort bestätigen">
+                </div>
+                
+                <div class="form-group">
+                    <label>Sicherheitsoptionen</label>
+                    <div style="display: flex; align-items: center; margin-top: 0.5rem;">
+                        <input type="checkbox" id="two-factor-auth" style="margin-right: 0.5rem;">
+                        <label for="two-factor-auth">Zwei-Faktor-Authentifizierung aktivieren</label>
+                    </div>
+                    <div style="display: flex; align-items: center; margin-top: 0.5rem;">
+                        <input type="checkbox" id="remember-login" style="margin-right: 0.5rem;" checked>
+                        <label for="remember-login">Angemeldet bleiben</label>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-secondary" onclick="document.getElementById('settings-modal').classList.remove('open');">Abbrechen</button>
+                <button class="btn btn-primary" onclick="saveSettings()">Speichern</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Benachrichtigungen-Modal -->
+    <div class="modal" id="notifications-modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 class="modal-title">Benachrichtigungen</h2>
+                <button class="modal-close" onclick="document.getElementById('notifications-modal').classList.remove('open');">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <line x1="18" y1="6" x2="6" y2="18"></line>
+                        <line x1="6" y1="6" x2="18" y2="18"></line>
+                    </svg>
+                </button>
+            </div>
+            <div class="modal-body">
+                <h3>Benachrichtigungseinstellungen</h3>
+                
+                <div class="form-group">
+                    <label>E-Mail-Benachrichtigungen</label>
+                    <div style="display: flex; align-items: center; margin-top: 0.5rem;">
+                        <input type="checkbox" id="email-new-messages" style="margin-right: 0.5rem;" checked>
+                        <label for="email-new-messages">Neue Nachrichten</label>
+                    </div>
+                    <div style="display: flex; align-items: center; margin-top: 0.5rem;">
+                        <input type="checkbox" id="email-new-grades" style="margin-right: 0.5rem;" checked>
+                        <label for="email-new-grades">Neue Noten</label>
+                    </div>
+                    <div style="display: flex; align-items: center; margin-top: 0.5rem;">
+                        <input type="checkbox" id="email-schedule-changes" style="margin-right: 0.5rem;" checked>
+                        <label for="email-schedule-changes">Stundenplanänderungen</label>
+                    </div>
+                    <div style="display: flex; align-items: center; margin-top: 0.5rem;">
+                        <input type="checkbox" id="email-announcements" style="margin-right: 0.5rem;" checked>
+                        <label for="email-announcements">Ankündigungen</label>
+                    </div>
+                </div>
+                
+                <div class="form-group">
+                    <label>Push-Benachrichtigungen</label>
+                    <div style="display: flex; align-items: center; margin-top: 0.5rem;">
+                        <input type="checkbox" id="push-new-messages" style="margin-right: 0.5rem;" checked>
+                        <label for="push-new-messages">Neue Nachrichten</label>
+                    </div>
+                    <div style="display: flex; align-items: center; margin-top: 0.5rem;">
+                        <input type="checkbox" id="push-new-grades" style="margin-right: 0.5rem;" checked>
+                        <label for="push-new-grades">Neue Noten</label>
+                    </div>
+                    <div style="display: flex; align-items: center; margin-top: 0.5rem;">
+                        <input type="checkbox" id="push-schedule-changes" style="margin-right: 0.5rem;" checked>
+                        <label for="push-schedule-changes">Stundenplanänderungen</label>
+                    </div>
+                    <div style="display: flex; align-items: center; margin-top: 0.5rem;">
+                        <input type="checkbox" id="push-announcements" style="margin-right: 0.5rem;" checked>
+                        <label for="push-announcements">Ankündigungen</label>
+                    </div>
+                </div>
+                
+                <div class="form-group">
+                    <label for="notification-frequency">Benachrichtigungshäufigkeit</label>
+                    <select id="notification-frequency" class="form-control">
+                        <option value="immediately">Sofort</option>
+                        <option value="hourly">Stündlich zusammengefasst</option>
+                        <option value="daily">Täglich zusammengefasst</option>
+                        <option value="weekly">Wöchentlich zusammengefasst</option>
+                    </select>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-secondary" onclick="document.getElementById('notifications-modal').classList.remove('open');">Abbrechen</button>
+                <button class="btn btn-primary" onclick="saveNotificationSettings()">Speichern</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Datenschutz-Modal -->
+    <div class="modal" id="privacy-modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 class="modal-title">Datenschutz</h2>
+                <button class="modal-close" onclick="document.getElementById('privacy-modal').classList.remove('open');">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <line x1="18" y1="6" x2="6" y2="18"></line>
+                        <line x1="6" y1="6" x2="18" y2="18"></line>
+                    </svg>
+                </button>
+            </div>
+            <div class="modal-body">
+                <h3>Datenschutzeinstellungen</h3>
+                
+                <div class="form-group">
+                    <label>Sichtbarkeit meines Profils</label>
+                    <div style="display: flex; align-items: center; margin-top: 0.5rem;">
+                        <input type="radio" id="visibility-all" name="profile-visibility" style="margin-right: 0.5rem;">
+                        <label for="visibility-all">Für alle sichtbar</label>
+                    </div>
+                    <div style="display: flex; align-items: center; margin-top: 0.5rem;">
+                        <input type="radio" id="visibility-school" name="profile-visibility" style="margin-right: 0.5rem;" checked>
+                        <label for="visibility-school">Nur für Mitglieder meiner Schule</label>
+                    </div>
+                    <div style="display: flex; align-items: center; margin-top: 0.5rem;">
+                        <input type="radio" id="visibility-contacts" name="profile-visibility" style="margin-right: 0.5rem;">
+                        <label for="visibility-contacts">Nur für meine Kontakte</label>
+                    </div>
+                </div>
+                
+                <div class="form-group">
+                    <label>Datennutzung</label>
+                    <div style="display: flex; align-items: center; margin-top: 0.5rem;">
+                        <input type="checkbox" id="data-analytics" style="margin-right: 0.5rem;" checked>
+                        <label for="data-analytics">Nutzungsdaten zur Verbesserung des Dienstes verwenden</label>
+                    </div>
+                    <div style="display: flex; align-items: center; margin-top: 0.5rem;">
+                        <input type="checkbox" id="data-personalization" style="margin-right: 0.5rem;" checked>
+                        <label for="data-personalization">Personalisierung basierend auf meiner Nutzung</label>
+                    </div>
+                </div>
+                
+                <div class="form-group">
+                    <label>Meine Daten</label>
+                    <div style="margin-top: 1rem;">
+                        <button class="btn btn-secondary" onclick="downloadUserData()">Meine Daten herunterladen</button>
+                    </div>
+                    <div style="margin-top: 1rem;">
+                        <button class="btn btn-danger" onclick="showDeleteAccountConfirmation()">Konto löschen</button>
+                    </div>
+                </div>
+                
+                <div class="form-group">
+                    <h3>Datenschutzrichtlinie</h3>
+                    <div style="max-height: 200px; overflow-y: auto; border: 1px solid var(--gray-300); padding: 1rem; border-radius: 0.5rem;">
+                        <p>Unsere Datenschutzrichtlinie erklärt, wie wir Ihre persönlichen Daten sammeln, verwenden und schützen, wenn Sie unsere Schulverwaltungswebseite "Zyro" nutzen.</p>
+                        <p>Wir sammeln nur die notwendigen Daten, um Ihnen unsere Dienste zur Verfügung zu stellen, und geben diese nicht ohne Ihre Zustimmung an Dritte weiter.</p>
+                        <p>Für weitere Informationen kontaktieren Sie bitte unseren Datenschutzbeauftragten unter datenschutz@zyro-schule.de.</p>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-secondary" onclick="document.getElementById('privacy-modal').classList.remove('open');">Abbrechen</button>
+                <button class="btn btn-primary" onclick="savePrivacySettings()">Speichern</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Funktionen für die Profil-Modals
+        function saveProfileChanges() {
+            const fullname = document.getElementById('profile-fullname').value;
+            const username = document.getElementById('profile-username').value;
+            const email = document.getElementById('profile-email').value;
+            const school = document.getElementById('profile-school').value;
+            
+            const currentUser = JSON.parse(localStorage.getItem('zyroUser') || '{}');
+            currentUser.fullname = fullname;
+            currentUser.username = username;
+            currentUser.contact = email;
+            currentUser.school = school;
+            
+            localStorage.setItem('zyroUser', JSON.stringify(currentUser));
+            
+            document.getElementById('profile-modal').classList.remove('open');
+            alert('Profil erfolgreich aktualisiert!');
+        }
+        
+        function saveSettings() {
+            const theme = document.getElementById('theme-select').value;
+            const fontSize = document.getElementById('font-size').value;
+            
+            const settings = { theme, fontSize };
+            localStorage.setItem('zyroSettings', JSON.stringify(settings));
+            
+            document.getElementById('settings-modal').classList.remove('open');
+            alert('Einstellungen erfolgreich gespeichert!');
+        }
+        
+        function saveNotificationSettings() {
+            document.getElementById('notifications-modal').classList.remove('open');
+            alert('Benachrichtigungseinstellungen erfolgreich gespeichert!');
+        }
+        
+        function savePrivacySettings() {
+            document.getElementById('privacy-modal').classList.remove('open');
+            alert('Datenschutzeinstellungen erfolgreich gespeichert!');
+        }
+        
+        function downloadUserData() {
+            const userData = JSON.parse(localStorage.getItem('zyroUser') || '{}');
+            const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(userData, null, 2));
+            
+            const downloadAnchorNode = document.createElement('a');
+            downloadAnchorNode.setAttribute("href", dataStr);
+            downloadAnchorNode.setAttribute("download", "zyro-user-data.json");
+            document.body.appendChild(downloadAnchorNode);
+            downloadAnchorNode.click();
+            downloadAnchorNode.remove();
+        }
+        
+        function showDeleteAccountConfirmation() {
+            if (confirm('Sind Sie sicher, dass Sie Ihr Konto löschen möchten? Diese Aktion kann nicht rückgängig gemacht werden.')) {
+                localStorage.removeItem('zyroUser');
+                localStorage.removeItem('zyroLoggedIn');
+                
+                document.getElementById('login-page').style.display = 'flex';
+                document.getElementById('dashboard').style.display = 'none';
+                document.getElementById('privacy-modal').classList.remove('open');
+                
+                alert('Ihr Konto wurde erfolgreich gelöscht.');
+            }
+        }
+        
+        // Event-Listener für das Laden der Profildaten
         document.addEventListener('DOMContentLoaded', function() {
             // Event-Listener für das Öffnen des Profil-Modals
             const profileModal = document.getElementById('profile-modal');
@@ -1539,7 +4490,7 @@
                         <div id="chat-input-area" style="padding: 1rem; border-top: 1px solid var(--gray-200); display: none;">
                             <div style="display: flex;">
                                 <input type="text" id="chat-message-input" placeholder="Nachricht eingeben..." style="flex: 1; padding: 0.75rem; border-radius: 0.25rem; border: 1px solid var(--gray-300); margin-right: 0.5rem;">
-                                <button id="chat-send-button" class="btn btn-primary" style="width: auto;" onclick="sendChatMessage()">Senden</button>
+                                <button id="chat-send-button" class="btn btn-primary" style="width: auto;">Senden</button>
                             </div>
                         </div>
                     </div>
@@ -1580,10 +4531,12 @@
                 }
             }
             
-            // Chat-Nachricht-Input-Enter-Handler
+            // Chat-Nachricht senden
+            const chatSendButton = document.getElementById('chat-send-button');
             const chatMessageInput = document.getElementById('chat-message-input');
             
-            if (chatMessageInput) {
+            if (chatSendButton && chatMessageInput) {
+                chatSendButton.addEventListener('click', sendChatMessage);
                 chatMessageInput.addEventListener('keypress', function(e) {
                     if (e.key === 'Enter') {
                         sendChatMessage();
@@ -1862,6 +4815,7 @@
 
     <script>
         // ... existing code ...
-    </script>
+// ... existing code ...
+</script>
 </body>
 </html> 
