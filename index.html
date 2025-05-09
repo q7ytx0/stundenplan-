@@ -66,20 +66,15 @@
             display: flex;
             align-items: center;
             justify-content: center;
-            background: none; /* Entferne den Farbverlauf-Hintergrund */
+            background: url('hintergrund.jpg') no-repeat center center; /* Hintergrundbild hinzufügen */
+            background-size: cover; /* Bild so skalieren, dass es den gesamten Bereich abdeckt */
             padding: 1rem;
             position: relative;
             overflow: hidden;
         }
         
         .login-page video {
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            object-fit: cover;
-            z-index: -1;
+            display: none; /* Video ausblenden */
         }
         
         .login-container {
