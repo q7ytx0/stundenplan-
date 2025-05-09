@@ -3844,7 +3844,59 @@
     </script>
 
     <script>
-        // Einfache Funktion zur Registrierung mit direktem Aufruf
+        // Hilfsfunktion, um registeredUsers öffentlich zugänglich zu machen
+        function getRegisteredUsers() {
+            return JSON.parse(localStorage.getItem('registeredUsers') || '[]');
+        }
+        
+        // Hilfsfunktion, um registeredUsers zu setzen
+        function setRegisteredUsers(users) {
+            localStorage.setItem('registeredUsers', JSON.stringify(users));
+            // Mache registeredUsers global für Debugging
+            window.registeredUsers = users;
+            console.log('Registrierte Benutzer:', users);
+        }
+        
+        // Hilfsfunktion zum Importieren der Beispielbenutzer
+        function importExampleUsers() {
+            fetch('examples/benutzer.txt')
+                .then(response => response.json())
+                .then(users => {
+                    const existingUsers = getRegisteredUsers();
+                    // Füge nur Benutzer hinzu, die noch nicht existieren
+                    const newUsers = users.filter(newUser => 
+                        !existingUsers.some(existingUser => existingUser.username === newUser.username)
+                    );
+                    
+                    if (newUsers.length > 0) {
+                        const updatedUsers = [...existingUsers, ...newUsers];
+                        setRegisteredUsers(updatedUsers);
+                        alert(`${newUsers.length} Beispielbenutzer wurden importiert!`);
+                    } else {
+                        alert('Alle Beispielbenutzer sind bereits importiert!');
+                    }
+                })
+                .catch(error => {
+                    console.error('Fehler beim Importieren der Beispielbenutzer:', error);
+                    alert('Fehler beim Importieren der Beispielbenutzer! Überprüfe die Konsole für Details.');
+                });
+        }
+        
+        // Diese Funktion direkt global verfügbar machen
+        window.importExampleUsers = importExampleUsers;
+        
+        // Hilfsfunktion zum Löschen aller registrierten Benutzer (für Testzwecke)
+        function clearAllUsers() {
+            localStorage.removeItem('registeredUsers');
+            window.registeredUsers = [];
+            console.log('Alle Benutzer wurden gelöscht.');
+            alert('Alle Benutzer wurden gelöscht.');
+        }
+        
+        // Diese Funktion direkt global verfügbar machen
+        window.clearAllUsers = clearAllUsers;
+        
+        // Funktion zum Registrieren
         function registerUser() {
             console.log("Registrieren-Button geklickt");
             
@@ -3870,7 +3922,7 @@
             }
             
             // Überprüfen, ob der Benutzername bereits existiert
-            const registeredUsers = JSON.parse(localStorage.getItem('registeredUsers') || '[]');
+            const registeredUsers = getRegisteredUsers();
             if (registeredUsers.some(u => u.username === username)) {
                 alert('Dieser Benutzername existiert bereits. Bitte wähle einen anderen.');
                 return;
@@ -3887,10 +3939,11 @@
             
             // Benutzer zur Liste hinzufügen
             registeredUsers.push(newUser);
-            localStorage.setItem('registeredUsers', JSON.stringify(registeredUsers));
+            setRegisteredUsers(registeredUsers);
             
             // Aktiven Benutzer speichern
             localStorage.setItem('zyroUser', JSON.stringify(newUser));
+            localStorage.setItem('zyroLoggedIn', 'true');
             
             // Erfolgsmeldung anzeigen
             alert('Registrierung erfolgreich abgeschlossen!');
@@ -3910,6 +3963,60 @@
             if (profileImage) {
                 const initial = (newUser.fullname || newUser.username).charAt(0).toUpperCase();
                 profileImage.textContent = initial;
+            }
+        }
+        
+        // Funktion zum Anmelden
+        function loginUser() {
+            console.log('Login-Funktion aufgerufen');
+            
+            const username = document.getElementById('username').value;
+            const password = document.getElementById('password').value;
+            
+            // Überprüfen, ob die Felder ausgefüllt sind
+            if (!username || !password) {
+                alert('Bitte Benutzername und Passwort eingeben.');
+                return;
+            }
+            
+            // Überprüfen, ob der Benutzer registriert ist
+            const registeredUsers = getRegisteredUsers();
+            // Mache registeredUsers global für Debugging
+            window.registeredUsers = registeredUsers;
+            console.log('Registrierte Benutzer:', registeredUsers);
+            
+            const user = registeredUsers.find(u => u.username === username && u.password === password);
+            
+            if (user) {
+                // Login erfolgreich
+                // Benutzerdaten im localStorage speichern
+                localStorage.setItem('zyroUser', JSON.stringify(user));
+                
+                // "Angemeldet bleiben" Option speichern
+                const rememberMeCheckbox = document.getElementById('remember-me');
+                if (rememberMeCheckbox && rememberMeCheckbox.checked) {
+                    localStorage.setItem('zyroLoggedIn', 'true');
+                }
+                
+                // Dashboard anzeigen und Login-Seite ausblenden
+                document.getElementById('login-page').style.display = 'none';
+                document.getElementById('dashboard').style.display = 'block';
+                
+                // Benutzernamen im Profil anzeigen
+                const profileName = document.getElementById('profile-name');
+                if (profileName) {
+                    profileName.textContent = user.fullname || username;
+                }
+                
+                // Benutzerinitiale im Profilbild anzeigen
+                const profileImage = document.getElementById('profile-image');
+                if (profileImage) {
+                    const initial = (user.fullname || username).charAt(0).toUpperCase();
+                    profileImage.textContent = initial;
+                }
+            } else {
+                // Login fehlgeschlagen
+                alert('Benutzername oder Passwort falsch!');
             }
         }
     </script>
@@ -4000,58 +4107,6 @@
                     link.classList.add('active');
                 }
             });
-        }
-    </script>
-
-    <script>
-        // Funktion zum Anmelden
-        function loginUser() {
-            console.log('Login-Funktion aufgerufen');
-            
-            const username = document.getElementById('username').value;
-            const password = document.getElementById('password').value;
-            
-            // Überprüfen, ob die Felder ausgefüllt sind
-            if (!username || !password) {
-                alert('Bitte Benutzername und Passwort eingeben.');
-                return;
-            }
-            
-            // Überprüfen, ob der Benutzer registriert ist
-            const registeredUsers = JSON.parse(localStorage.getItem('registeredUsers') || '[]');
-            const user = registeredUsers.find(u => u.username === username && u.password === password);
-            
-            if (user) {
-                // Login erfolgreich
-                // Benutzerdaten im localStorage speichern
-                localStorage.setItem('zyroUser', JSON.stringify(user));
-                
-                // "Angemeldet bleiben" Option speichern
-                const rememberMeCheckbox = document.getElementById('remember-me');
-                if (rememberMeCheckbox && rememberMeCheckbox.checked) {
-                    localStorage.setItem('zyroLoggedIn', 'true');
-                }
-                
-                // Dashboard anzeigen und Login-Seite ausblenden
-                document.getElementById('login-page').style.display = 'none';
-                document.getElementById('dashboard').style.display = 'block';
-                
-                // Benutzernamen im Profil anzeigen
-                const profileName = document.getElementById('profile-name');
-                if (profileName) {
-                    profileName.textContent = user.fullname || username;
-                }
-                
-                // Benutzerinitiale im Profilbild anzeigen
-                const profileImage = document.getElementById('profile-image');
-                if (profileImage) {
-                    const initial = (user.fullname || username).charAt(0).toUpperCase();
-                    profileImage.textContent = initial;
-                }
-            } else {
-                // Login fehlgeschlagen
-                alert('Benutzername oder Passwort falsch!');
-            }
         }
     </script>
 
@@ -4551,6 +4606,15 @@
                     loadChatUsers(this.value);
                 });
             }
+            
+            // Registrierte Benutzer in der Konsole ausgeben
+            const registeredUsers = getRegisteredUsers();
+            window.registeredUsers = registeredUsers;
+            console.log("Beim Laden der Seite - Registrierte Benutzer:", registeredUsers);
+            
+            // Hinweis in der Konsole, wie man Beispielbenutzer importieren kann
+            console.log("TIP: Verwende 'importExampleUsers()' in der Konsole, um Beispielbenutzer zu importieren.");
+            console.log("TIP: Verwende 'clearAllUsers()' in der Konsole, um alle Benutzer zu löschen.");
         });
         
         // Globale Variablen für den aktuellen Chat
@@ -4565,7 +4629,11 @@
             chatUsersList.innerHTML = '';
             
             // Alle registrierten Benutzer laden
-            const registeredUsers = JSON.parse(localStorage.getItem('registeredUsers') || '[]');
+            const registeredUsers = getRegisteredUsers();
+            // Mache registeredUsers global verfügbar für Debugging
+            window.registeredUsers = registeredUsers;
+            console.log('Chat-Benutzer laden:', registeredUsers);
+            
             const currentUser = JSON.parse(localStorage.getItem('zyroUser') || '{}');
             
             // Benutzer filtern (ohne den aktuellen Benutzer)
@@ -4583,8 +4651,12 @@
                 return true;
             });
             
+            console.log('Gefilterte Chat-Benutzer:', filteredUsers);
+            
+            // Wenn keine Benutzer gefunden wurden, erstelle einen Testbenutzer
             if (filteredUsers.length === 0) {
                 chatUsersList.innerHTML = '<div style="padding: 1rem; text-align: center; color: var(--gray-500);">Keine Benutzer gefunden</div>';
+                chatUsersList.innerHTML += '<div style="padding: 1rem; text-align: center;"><button class="btn btn-secondary" onclick="importExampleUsers(); setTimeout(() => loadChatUsers(), 500);">Beispielbenutzer importieren</button></div>';
                 return;
             }
             
@@ -4797,6 +4869,58 @@
             
             // Nachrichteneingabe leeren
             messageInput.value = '';
+            
+            // Sonderfall für den Testbenutzer: automatische Antwort generieren
+            if (currentChatUser.username === "testuser") {
+                // Chat-Nachrichten neu laden, um die eigene Nachricht anzuzeigen
+                loadChatMessages(currentChatUser);
+                
+                // Nach kurzer Zeit eine Antwort vom Testbenutzer anzeigen
+                setTimeout(() => {
+                    const chatMessagesElement = document.getElementById('chat-messages');
+                    if (!chatMessagesElement) return;
+                    
+                    // Automatische Antwort erstellen
+                    const responseMessage = document.createElement('div');
+                    responseMessage.className = 'chat-message received';
+                    responseMessage.style.maxWidth = '70%';
+                    responseMessage.style.margin = '0.5rem 0';
+                    responseMessage.style.padding = '0.75rem 1rem';
+                    responseMessage.style.borderRadius = '0.5rem';
+                    responseMessage.style.wordBreak = 'break-word';
+                    responseMessage.style.marginRight = 'auto';
+                    responseMessage.style.backgroundColor = 'white';
+                    responseMessage.style.border = '1px solid var(--gray-200)';
+                    responseMessage.style.borderBottomLeftRadius = '0';
+                    
+                    const now = new Date();
+                    const formattedTime = now.toLocaleTimeString('de-DE', { hour: '2-digit', minute: '2-digit' });
+                    
+                    // Verschiedene Antwortmöglichkeiten
+                    const responses = [
+                        "Danke für deine Nachricht! Das ist eine automatische Antwort.",
+                        "Ich bin ein Demo-Benutzer und antworte automatisch auf deine Nachrichten.",
+                        "Hallo! Schön, dass du das Chat-System testest!",
+                        "Diese Antwort wurde automatisch generiert. Du kannst weiter mit mir chatten.",
+                        "Das ist eine Testantwort. In einer echten Umgebung würden hier Antworten von realen Benutzern erscheinen."
+                    ];
+                    
+                    // Zufällige Antwort auswählen
+                    const randomResponse = responses[Math.floor(Math.random() * responses.length)];
+                    
+                    responseMessage.innerHTML = `
+                        <div>${randomResponse}</div>
+                        <div style="font-size: 0.7rem; text-align: right; margin-top: 0.25rem; opacity: 0.8;">${formattedTime}</div>
+                    `;
+                    
+                    chatMessagesElement.appendChild(responseMessage);
+                    
+                    // Zum Ende des Chats scrollen
+                    chatMessagesElement.scrollTop = chatMessagesElement.scrollHeight;
+                }, 1000);
+                
+                return;
+            }
             
             // Chat-Nachrichten neu laden
             loadChatMessages(currentChatUser);
