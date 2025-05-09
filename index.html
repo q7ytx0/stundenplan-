@@ -1425,6 +1425,259 @@
     <script src="schools.js"></script>
 </head>
 <body>
+    <!-- Schutz gegen Fernüberwachung -->
+    <div id="privacy-overlay" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background-color: #000; z-index: 10000; color: white; text-align: center; padding-top: 20%;">
+        <h1>Bildschirmfreigabe erkannt</h1>
+        <p>Aus Datenschutzgründen wird der Inhalt dieser Seite bei aktiver Bildschirmüberwachung verborgen.</p>
+    </div>
+
+    <script>
+        // Funktion zur Erkennung von Fernüberwachungstools und Bildschirmfreigabe
+        (function() {
+            // Liste bekannter Überwachungs-Software-Muster
+            const monitoringPatterns = [
+                'veyon', 'netop', 'lanschool', 'dyknow', 'vision', 'netcontrol', 
+                'impero', 'netsupport', 'screenwatch', 'remotemonitor', 'teamviewer',
+                'anydesk', 'remotedesktop', 'vnc', 'rdp', 'screen sharing', 'screenshare'
+            ];
+            
+            const overlay = document.getElementById('privacy-overlay');
+            let monitoringDetected = false;
+            
+            // Prüfung auf typische Überwachungs-Software-Muster im User-Agent
+            function checkUserAgent() {
+                const userAgent = navigator.userAgent.toLowerCase();
+                for (const pattern of monitoringPatterns) {
+                    if (userAgent.includes(pattern)) {
+                        return true;
+                    }
+                }
+                return false;
+            }
+            
+            // Prüfung auf Screen Capture API-Nutzung
+            function detectScreenCapture() {
+                if (navigator.mediaDevices && navigator.mediaDevices.getDisplayMedia) {
+                    // Wir können nicht direkt prüfen, ob die Bildschirmfreigabe aktiv ist,
+                    // aber wir können auf bestimmte Eigenschaften achten
+                    return new Promise((resolve) => {
+                        // Prüfe auf Bildschirmgröße und andere Indikatoren
+                        const screenWidth = window.screen.width;
+                        const screenHeight = window.screen.height;
+                        const windowWidth = window.innerWidth;
+                        const windowHeight = window.innerHeight;
+                        
+                        // Ungewöhnliche Bildschirmverhältnisse können ein Hinweis sein
+                        if (Math.abs(screenWidth - windowWidth) > 200 || 
+                            Math.abs(screenHeight - windowHeight) > 200) {
+                            resolve(true);
+                        } else {
+                            resolve(false);
+                        }
+                    });
+                }
+                return Promise.resolve(false);
+            }
+            
+            // Prüfung auf bestimmte Netzwerkverhalten von Überwachungs-Software
+            function detectNetworkPatterns() {
+                // Diese Funktion ist vereinfacht, da wir nicht tatsächlich
+                // den Netzwerkverkehr auf der Client-Seite überwachen können
+                return new Promise((resolve) => {
+                    const performanceEntries = window.performance && 
+                                             window.performance.getEntries ? 
+                                             window.performance.getEntries() : [];
+                    
+                    // Suche nach verdächtigen Netzwerkverbindungen in Performance-Einträgen
+                    for (const entry of performanceEntries) {
+                        if (entry.name) {
+                            const url = entry.name.toLowerCase();
+                            for (const pattern of monitoringPatterns) {
+                                if (url.includes(pattern)) {
+                                    resolve(true);
+                                    return;
+                                }
+                            }
+                        }
+                    }
+                    
+                    resolve(false);
+                });
+            }
+            
+            // Farbflacker-Test zur Erkennung von Bildschirmaufnahme
+            // Viele Überwachungsprogramme können durch Farbflacker irritiert werden
+            function runColorFlickerTest() {
+                return new Promise((resolve) => {
+                    // Erstelle temporäres Element für Flacker-Test
+                    const testElement = document.createElement('div');
+                    testElement.style.position = 'fixed';
+                    testElement.style.top = '0';
+                    testElement.style.left = '0';
+                    testElement.style.width = '1px';
+                    testElement.style.height = '1px';
+                    testElement.style.zIndex = '-1000';
+                    document.body.appendChild(testElement);
+                    
+                    let frameCount = 0;
+                    let colorPatterns = ['#FF0000', '#00FF00', '#0000FF', '#FFFFFF', '#000000'];
+                    let startTime = Date.now();
+                    
+                    function flickerFrame() {
+                        testElement.style.backgroundColor = colorPatterns[frameCount % colorPatterns.length];
+                        frameCount++;
+                        
+                        if (Date.now() - startTime < 500) { // 500ms Test
+                            requestAnimationFrame(flickerFrame);
+                        } else {
+                            // Wenn die Framerate deutlich niedriger ist als erwartet,
+                            // könnte eine Bildschirmaufnahme aktiv sein
+                            const expectedFrames = 30; // 60fps für 500ms wären 30 Frames
+                            if (frameCount < expectedFrames * 0.7) { // Weniger als 70% der erwarteten Frames
+                                resolve(true);
+                            } else {
+                                resolve(false);
+                            }
+                            document.body.removeChild(testElement);
+                        }
+                    }
+                    
+                    requestAnimationFrame(flickerFrame);
+                });
+            }
+            
+            // Haupt-Erkennungsfunktion
+            async function detectMonitoring() {
+                // Einfache Erkennung basierend auf User-Agent
+                if (checkUserAgent()) {
+                    monitoringDetected = true;
+                    showPrivacyOverlay();
+                    return;
+                }
+                
+                // Mehrschichtige Erkennung
+                Promise.all([
+                    detectScreenCapture(),
+                    detectNetworkPatterns(),
+                    runColorFlickerTest()
+                ]).then(results => {
+                    // Wenn mindestens zwei Methoden positiv sind
+                    const positiveResults = results.filter(result => result).length;
+                    if (positiveResults >= 1) {
+                        monitoringDetected = true;
+                        showPrivacyOverlay();
+                    } else {
+                        // Zufällige Chance, trotzdem den Overlay anzuzeigen
+                        // für zusätzliche Sicherheit
+                        if (Math.random() < 0.05) { // 5% Chance
+                            checkAgain();
+                        }
+                    }
+                });
+            }
+            
+            // Überprüfung auf Tastenkombinationen, die üblicherweise von Überwachungssoftware verwendet werden
+            function detectKeyboardShortcuts() {
+                document.addEventListener('keydown', function(event) {
+                    // Ctrl+Alt+Kombinationen, die oft von Überwachungssoftware verwendet werden
+                    if (event.ctrlKey && event.altKey && 
+                        (event.key === 'c' || event.key === 'm' || event.key === 'v' || 
+                         event.key === 's' || event.key === 'd' || event.key === 't')) {
+                        monitoringDetected = true;
+                        showPrivacyOverlay();
+                    }
+                });
+            }
+            
+            // Overlay anzeigen
+            function showPrivacyOverlay() {
+                if (overlay) {
+                    overlay.style.display = 'block';
+                    
+                    // Außerdem verstecken wir vertrauliche Elemente
+                    const elementsToHide = document.querySelectorAll('.login-container, .dashboard, .modal');
+                    elementsToHide.forEach(el => {
+                        if (el.id !== 'privacy-overlay') {
+                            el.style.visibility = 'hidden';
+                        }
+                    });
+                }
+            }
+            
+            // Overlay ausblenden (wird aufgerufen, wenn Überwachung endet)
+            function hidePrivacyOverlay() {
+                if (overlay && !monitoringDetected) {
+                    overlay.style.display = 'none';
+                    
+                    // Elemente wieder einblenden
+                    const elementsToShow = document.querySelectorAll('.login-container, .dashboard, .modal');
+                    elementsToShow.forEach(el => {
+                        if (el.id !== 'privacy-overlay') {
+                            el.style.visibility = 'visible';
+                        }
+                    });
+                }
+            }
+            
+            // Prüfe immer wieder nach Überwachung
+            function checkAgain() {
+                detectMonitoring();
+                // Zufällige Intervalle zwischen 5 und 20 Sekunden
+                setTimeout(checkAgain, 5000 + Math.random() * 15000);
+            }
+            
+            // Beim Tab-Wechsel nochmal prüfen
+            document.addEventListener('visibilitychange', function() {
+                if (document.visibilityState === 'visible') {
+                    detectMonitoring();
+                }
+            });
+            
+            // Bei Fenstergröße-Änderung prüfen (oft ein Anzeichen für Screencast/Sharing)
+            window.addEventListener('resize', function() {
+                detectMonitoring();
+            });
+            
+            // Initialen Check durchführen
+            detectMonitoring();
+            detectKeyboardShortcuts();
+            
+            // Zusätzlich: Notfall-Hotkey zum schnellen Ausblenden
+            // Strg+Leertaste
+            document.addEventListener('keydown', function(event) {
+                if (event.ctrlKey && event.code === 'Space') {
+                    if (overlay.style.display === 'none') {
+                        showPrivacyOverlay();
+                    } else {
+                        // Nur freigeben mit speziellem zweiten Tastendruck (Strg+Shift+Leertaste)
+                        if (event.shiftKey) {
+                            monitoringDetected = false;
+                            hidePrivacyOverlay();
+                        }
+                    }
+                }
+            });
+            
+            // Warnung bei DevTools Öffnung (oft genutzt von Aufsichtspersonen)
+            function detectDevTools() {
+                const thresholdWidth = 160; // typische Breite von DevTools
+                const thresholdHeight = 160; // typische Höhe von DevTools
+                
+                // Überprüfe auf Größenveränderungen
+                const widthThreshold = window.outerWidth - window.innerWidth > thresholdWidth;
+                const heightThreshold = window.outerHeight - window.innerHeight > thresholdHeight;
+                
+                if (widthThreshold || heightThreshold) {
+                    monitoringDetected = true;
+                    showPrivacyOverlay();
+                }
+            }
+            
+            // Regelmäßig auf DevTools prüfen
+            setInterval(detectDevTools, 1000);
+        })();
+    </script>
+
     <!-- Login-Seite -->
     <div class="login-page" id="login-page">
         <video autoplay muted loop id="background-video">
@@ -4449,5 +4702,372 @@
             }
         });
     </script>
+
+    <!-- Chat-System -->
+    <div class="modal" id="chat-system-modal">
+        <div class="modal-content" style="max-width: 800px; height: 80vh;">
+            <div class="modal-header">
+                <h2 class="modal-title">Chat mit Benutzern</h2>
+                <button class="modal-close" onclick="document.getElementById('chat-system-modal').classList.remove('open');">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <line x1="18" y1="6" x2="6" y2="18"></line>
+                        <line x1="6" y1="6" x2="18" y2="18"></line>
+                    </svg>
+                </button>
+            </div>
+            <div class="modal-body" style="display: flex; flex-direction: column; height: calc(100% - 120px); padding: 0;">
+                <div style="display: flex; height: 100%;">
+                    <!-- Benutzerliste -->
+                    <div style="width: 200px; border-right: 1px solid var(--gray-200); overflow-y: auto;">
+                        <div style="padding: 1rem;">
+                            <input type="text" id="user-search" placeholder="Benutzer suchen..." style="width: 100%; padding: 0.5rem; border-radius: 0.25rem; border: 1px solid var(--gray-300);">
+                        </div>
+                        <div id="chat-users-list" style="display: flex; flex-direction: column;">
+                            <!-- Benutzer werden hier dynamisch eingefügt -->
+                        </div>
+                    </div>
+                    
+                    <!-- Chat-Bereich -->
+                    <div style="flex: 1; display: flex; flex-direction: column; height: 100%;">
+                        <div id="chat-messages" style="flex: 1; padding: 1rem; overflow-y: auto; background-color: var(--gray-50);">
+                            <!-- Nachrichten werden hier dynamisch eingefügt -->
+                            <div class="chat-welcome" style="text-align: center; margin-top: 2rem; color: var(--gray-500);">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1" stroke-linecap="round" stroke-linejoin="round" style="margin: 0 auto 1rem;">
+                                    <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path>
+                                </svg>
+                                <h3>Willkommen im Chat</h3>
+                                <p>Wähle einen Benutzer aus der Liste, um einen Chat zu starten.</p>
+                            </div>
+                        </div>
+                        <div id="chat-input-area" style="padding: 1rem; border-top: 1px solid var(--gray-200); display: none;">
+                            <div style="display: flex;">
+                                <input type="text" id="chat-message-input" placeholder="Nachricht eingeben..." style="flex: 1; padding: 0.75rem; border-radius: 0.25rem; border: 1px solid var(--gray-300); margin-right: 0.5rem;">
+                                <button id="chat-send-button" class="btn btn-primary" style="width: auto;">Senden</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // ... existing code ...
+
+        // Chat-System Funktionalität
+        document.addEventListener('DOMContentLoaded', function() {
+            // Chat-Button zum Header hinzufügen
+            const headerActions = document.querySelector('.header-actions');
+            if (headerActions) {
+                const chatButton = document.createElement('button');
+                chatButton.className = 'notification-button';
+                chatButton.id = 'chat-button';
+                chatButton.innerHTML = `
+                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path>
+                    </svg>
+                `;
+                chatButton.onclick = function() {
+                    document.getElementById('chat-system-modal').classList.add('open');
+                    loadChatUsers();
+                    document.getElementById('notifications-dropdown').classList.remove('open');
+                    document.getElementById('profile-dropdown').classList.remove('open');
+                };
+                
+                // Button vor dem Profil-Button einfügen
+                const profileContainer = document.querySelector('.profile-container');
+                if (profileContainer) {
+                    headerActions.insertBefore(chatButton, profileContainer);
+                } else {
+                    headerActions.appendChild(chatButton);
+                }
+            }
+            
+            // Chat-Nachricht senden
+            const chatSendButton = document.getElementById('chat-send-button');
+            const chatMessageInput = document.getElementById('chat-message-input');
+            
+            if (chatSendButton && chatMessageInput) {
+                chatSendButton.addEventListener('click', sendChatMessage);
+                chatMessageInput.addEventListener('keypress', function(e) {
+                    if (e.key === 'Enter') {
+                        sendChatMessage();
+                    }
+                });
+            }
+            
+            // Chat-Benutzer-Suche
+            const userSearch = document.getElementById('user-search');
+            if (userSearch) {
+                userSearch.addEventListener('input', function() {
+                    loadChatUsers(this.value);
+                });
+            }
+        });
+        
+        // Globale Variablen für den aktuellen Chat
+        let currentChatUser = null;
+        
+        // Funktion zum Laden der Chat-Benutzer
+        function loadChatUsers(searchTerm = '') {
+            const chatUsersList = document.getElementById('chat-users-list');
+            if (!chatUsersList) return;
+            
+            // Chat-Benutzerliste leeren
+            chatUsersList.innerHTML = '';
+            
+            // Alle registrierten Benutzer laden
+            const registeredUsers = JSON.parse(localStorage.getItem('registeredUsers') || '[]');
+            const currentUser = JSON.parse(localStorage.getItem('zyroUser') || '{}');
+            
+            // Benutzer filtern (ohne den aktuellen Benutzer)
+            const filteredUsers = registeredUsers.filter(user => {
+                // Aktuellen Benutzer ausschließen
+                if (user.username === currentUser.username) return false;
+                
+                // Nach Suchbegriff filtern, falls vorhanden
+                if (searchTerm) {
+                    const searchTermLower = searchTerm.toLowerCase();
+                    return user.fullname?.toLowerCase().includes(searchTermLower) || 
+                           user.username?.toLowerCase().includes(searchTermLower);
+                }
+                
+                return true;
+            });
+            
+            if (filteredUsers.length === 0) {
+                chatUsersList.innerHTML = '<div style="padding: 1rem; text-align: center; color: var(--gray-500);">Keine Benutzer gefunden</div>';
+                return;
+            }
+            
+            // Benutzer zur Liste hinzufügen
+            filteredUsers.forEach(user => {
+                const userItem = document.createElement('div');
+                userItem.className = 'chat-user-item';
+                userItem.style.padding = '0.75rem 1rem';
+                userItem.style.borderBottom = '1px solid var(--gray-200)';
+                userItem.style.cursor = 'pointer';
+                
+                // Ungelesene Nachrichten prüfen
+                const chatMessagesKey = getChatMessagesKey(currentUser.username, user.username);
+                const chatMessages = JSON.parse(localStorage.getItem(chatMessagesKey) || '[]');
+                const unreadCount = chatMessages.filter(msg => 
+                    msg.from === user.username && msg.read === false
+                ).length;
+                
+                userItem.innerHTML = `
+                    <div style="display: flex; align-items: center;">
+                        <div style="width: 2.5rem; height: 2.5rem; border-radius: 50%; background-color: var(--primary-100); color: var(--primary-600); display: flex; align-items: center; justify-content: center; font-weight: 600; margin-right: 0.75rem;">
+                            ${(user.fullname || user.username).charAt(0).toUpperCase()}
+                        </div>
+                        <div style="flex: 1;">
+                            <div style="font-weight: 500;">${user.fullname || user.username}</div>
+                            <div style="font-size: 0.75rem; color: var(--gray-500);">${user.school || ''}</div>
+                        </div>
+                        ${unreadCount > 0 ? `<div style="width: 1.5rem; height: 1.5rem; border-radius: 50%; background-color: var(--primary-500); color: white; display: flex; align-items: center; justify-content: center; font-size: 0.75rem;">${unreadCount}</div>` : ''}
+                    </div>
+                `;
+                
+                userItem.addEventListener('click', function() {
+                    // Chat-Benutzer auswählen
+                    document.querySelectorAll('.chat-user-item').forEach(item => {
+                        item.style.backgroundColor = '';
+                    });
+                    this.style.backgroundColor = 'var(--primary-50)';
+                    
+                    // Ausgewählten Benutzer speichern
+                    currentChatUser = user;
+                    
+                    // Chat-Nachrichten laden
+                    loadChatMessages(user);
+                    
+                    // Chat-Eingabefeld anzeigen
+                    document.getElementById('chat-input-area').style.display = 'block';
+                });
+                
+                chatUsersList.appendChild(userItem);
+            });
+        }
+        
+        // Funktion zum Laden der Chat-Nachrichten
+        function loadChatMessages(chatUser) {
+            const chatMessages = document.getElementById('chat-messages');
+            if (!chatMessages) return;
+            
+            // Chat-Nachrichten leeren
+            chatMessages.innerHTML = '';
+            
+            // Aktuellen Benutzer laden
+            const currentUser = JSON.parse(localStorage.getItem('zyroUser') || '{}');
+            
+            // Chat-Header hinzufügen
+            const chatHeader = document.createElement('div');
+            chatHeader.style.textAlign = 'center';
+            chatHeader.style.padding = '0.5rem';
+            chatHeader.style.marginBottom = '1rem';
+            chatHeader.style.borderBottom = '1px solid var(--gray-200)';
+            chatHeader.innerHTML = `<h3>Chat mit ${chatUser.fullname || chatUser.username}</h3>`;
+            chatMessages.appendChild(chatHeader);
+            
+            // Chat-Nachrichten-Key generieren
+            const chatMessagesKey = getChatMessagesKey(currentUser.username, chatUser.username);
+            
+            // Chat-Nachrichten laden
+            let messages = JSON.parse(localStorage.getItem(chatMessagesKey) || '[]');
+            
+            if (messages.length === 0) {
+                const emptyChat = document.createElement('div');
+                emptyChat.style.textAlign = 'center';
+                emptyChat.style.padding = '2rem';
+                emptyChat.style.color = 'var(--gray-500)';
+                emptyChat.innerHTML = `
+                    <p>Noch keine Nachrichten. Schreibe etwas, um den Chat zu starten!</p>
+                `;
+                chatMessages.appendChild(emptyChat);
+                return;
+            }
+            
+            // Nachrichten als gelesen markieren
+            messages = messages.map(msg => {
+                if (msg.from === chatUser.username) {
+                    return { ...msg, read: true };
+                }
+                return msg;
+            });
+            
+            // Aktualisierte Nachrichten speichern
+            localStorage.setItem(chatMessagesKey, JSON.stringify(messages));
+            
+            // Badge-Anzeige aktualisieren
+            const userItem = document.querySelector(`.chat-user-item:nth-child(${Array.from(document.querySelectorAll('.chat-user-item')).findIndex(item => item.textContent.includes(chatUser.username)) + 1})`);
+            if (userItem) {
+                const badge = userItem.querySelector('div[style*="border-radius: 50%"]');
+                if (badge) {
+                    badge.remove();
+                }
+            }
+            
+            // Nachrichten anzeigen
+            let lastDate = null;
+            
+            messages.forEach(message => {
+                // Datum der Nachricht
+                const messageDate = new Date(message.timestamp);
+                const formattedDate = messageDate.toLocaleDateString('de-DE', { 
+                    weekday: 'long', 
+                    year: 'numeric', 
+                    month: 'long', 
+                    day: 'numeric' 
+                });
+                
+                // Datumstrenner anzeigen, wenn es ein neuer Tag ist
+                if (lastDate !== formattedDate) {
+                    const dateDivider = document.createElement('div');
+                    dateDivider.style.textAlign = 'center';
+                    dateDivider.style.margin = '1rem 0';
+                    dateDivider.style.position = 'relative';
+                    dateDivider.innerHTML = `
+                        <span style="background-color: var(--gray-50); padding: 0 0.5rem; position: relative; z-index: 1; color: var(--gray-500); font-size: 0.75rem;">
+                            ${formattedDate}
+                        </span>
+                        <div style="position: absolute; top: 50%; left: 0; right: 0; height: 1px; background-color: var(--gray-200); transform: translateY(-50%); z-index: 0;"></div>
+                    `;
+                    chatMessages.appendChild(dateDivider);
+                    lastDate = formattedDate;
+                }
+                
+                // Nachricht erstellen
+                const messageItem = document.createElement('div');
+                messageItem.className = `chat-message ${message.from === currentUser.username ? 'sent' : 'received'}`;
+                messageItem.style.maxWidth = '70%';
+                messageItem.style.margin = '0.5rem 0';
+                messageItem.style.padding = '0.75rem 1rem';
+                messageItem.style.borderRadius = '0.5rem';
+                messageItem.style.wordBreak = 'break-word';
+                
+                if (message.from === currentUser.username) {
+                    // Eigene Nachricht (rechts)
+                    messageItem.style.marginLeft = 'auto';
+                    messageItem.style.backgroundColor = 'var(--primary-500)';
+                    messageItem.style.color = 'white';
+                    messageItem.style.borderBottomRightRadius = '0';
+                } else {
+                    // Fremde Nachricht (links)
+                    messageItem.style.marginRight = 'auto';
+                    messageItem.style.backgroundColor = 'white';
+                    messageItem.style.border = '1px solid var(--gray-200)';
+                    messageItem.style.borderBottomLeftRadius = '0';
+                }
+                
+                // Uhrzeit formatieren
+                const formattedTime = messageDate.toLocaleTimeString('de-DE', { hour: '2-digit', minute: '2-digit' });
+                
+                messageItem.innerHTML = `
+                    <div>${message.text}</div>
+                    <div style="font-size: 0.7rem; text-align: right; margin-top: 0.25rem; opacity: 0.8;">${formattedTime}</div>
+                `;
+                
+                chatMessages.appendChild(messageItem);
+            });
+            
+            // Zum Ende des Chats scrollen
+            chatMessages.scrollTop = chatMessages.scrollHeight;
+        }
+        
+        // Funktion zum Senden einer Chat-Nachricht
+        function sendChatMessage() {
+            if (!currentChatUser) return;
+            
+            const messageInput = document.getElementById('chat-message-input');
+            const message = messageInput.value.trim();
+            
+            if (!message) return;
+            
+            // Aktuellen Benutzer laden
+            const currentUser = JSON.parse(localStorage.getItem('zyroUser') || '{}');
+            
+            // Chat-Nachrichten-Key generieren
+            const chatMessagesKey = getChatMessagesKey(currentUser.username, currentChatUser.username);
+            
+            // Bestehende Nachrichten laden
+            const chatMessages = JSON.parse(localStorage.getItem(chatMessagesKey) || '[]');
+            
+            // Neue Nachricht erstellen
+            const newMessage = {
+                from: currentUser.username,
+                to: currentChatUser.username,
+                text: message,
+                timestamp: new Date().toISOString(),
+                read: false
+            };
+            
+            // Nachricht zu bestehenden Nachrichten hinzufügen
+            chatMessages.push(newMessage);
+            
+            // Aktualisierte Nachrichten speichern
+            localStorage.setItem(chatMessagesKey, JSON.stringify(chatMessages));
+            
+            // Nachrichteneingabe leeren
+            messageInput.value = '';
+            
+            // Chat-Nachrichten neu laden
+            loadChatMessages(currentChatUser);
+            
+            // Fokus auf Eingabefeld setzen
+            messageInput.focus();
+        }
+        
+        // Hilfsfunktion zum Generieren eines eindeutigen Chat-Nachrichten-Keys
+        function getChatMessagesKey(user1, user2) {
+            // Benutzernamen alphabetisch sortieren, um sicherzustellen, dass der Key immer gleich ist
+            const sortedUsers = [user1, user2].sort();
+            return `chat_messages_${sortedUsers[0]}_${sortedUsers[1]}`;
+        }
+    </script>
+
+    <script>
+        // ... existing code ...
+// ... existing code ...
+</script>
 </body>
 </html> 
