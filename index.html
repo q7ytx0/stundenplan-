@@ -1418,6 +1418,56 @@
             font-size: 0.75rem;
             margin-top: 0.25rem;
         }
+
+        /* Stil für Social Media Karten */
+        .social-card {
+            transition: transform 0.2s, box-shadow 0.2s;
+            cursor: pointer;
+            background: white;
+            border-radius: 0.5rem;
+            overflow: hidden;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+        }
+
+        .social-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+
+        .social-card-content {
+            padding: 1.5rem;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            text-align: center;
+        }
+
+        .social-icon {
+            width: 48px;
+            height: 48px;
+            margin-bottom: 1rem;
+            color: var(--primary-600);
+        }
+
+        .social-title {
+            font-size: 1.5rem;
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+            color: var(--gray-900);
+        }
+
+        .social-description {
+            color: var(--gray-600);
+            margin-bottom: 1rem;
+        }
+
+        .social-username {
+            padding: 0.5rem 1rem;
+            background-color: var(--primary-50);
+            color: var(--primary-600);
+            border-radius: 9999px;
+            font-weight: 500;
+        }
     </style>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -1654,6 +1704,26 @@
                         </svg>
                     </span>
                     Nachrichten
+                </button>
+                <button type="button" class="nav-link" onclick="showMensaPage()" style="display: flex; align-items: center; width: 100%; text-align: left; background: none; border: none; padding: 0.75rem 1.5rem; color: var(--gray-600); text-decoration: none; transition: background-color 0.2s;">
+                    <span class="nav-link-icon">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M18 8h1a4 4 0 0 1 0 8h-1"></path>
+                            <path d="M2 8h16v9a4 4 0 0 1-4 4H6a4 4 0 0 1-4-4V8z"></path>
+                            <line x1="6" y1="1" x2="6" y2="4"></line>
+                            <line x1="10" y1="1" x2="10" y2="4"></line>
+                            <line x1="14" y1="1" x2="14" y2="4"></line>
+                        </svg>
+                    </span>
+                    Mensa
+                </button>
+                <button type="button" class="nav-link" onclick="showSocialMediaPage()" style="display: flex; align-items: center; width: 100%; text-align: left; background: none; border: none; padding: 0.75rem 1.5rem; color: var(--gray-600); text-decoration: none; transition: background-color 0.2s;">
+                    <span class="nav-link-icon">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M23 3a10.9 10.9 0 0 1-3.14 1.53 4.48 4.48 0 0 0-7.86 3v1A10.66 10.66 0 0 1 3 4s-4 9 5 13a11.64 11.64 0 0 1-7 2c9 5 20 0 20-11.5a4.5 4.5 0 0 0-.08-.83A7.72 7.72 0 0 0 23 3z"></path>
+                        </svg>
+                    </span>
+                    Social Media
                 </button>
             </div>
         </nav>
@@ -5060,6 +5130,244 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     }
 });
+// ... bestehender Code ...
+</script>
+// ... bestehender Code ...
+
+<!-- Vertretungs-Modal -->
+<div class="modal" id="vertretung-modal">
+    <div class="modal-content" style="max-width: 400px;">
+        <div class="modal-header">
+            <h2 class="modal-title">Vertretung eintragen</h2>
+            <button class="modal-close" onclick="document.getElementById('vertretung-modal').classList.remove('open');">
+                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <line x1="18" y1="6" x2="6" y2="18"></line>
+                    <line x1="6" y1="6" x2="18" y2="18"></line>
+                </svg>
+            </button>
+        </div>
+        <div class="modal-body">
+            <div id="vertretung-info"></div>
+            <div class="form-group" style="margin-top: 1rem;">
+                <label for="vertretungslehrer">Vertretungslehrer auswählen:</label>
+                <select id="vertretungslehrer" style="width: 100%; margin-top: 0.5rem; padding: 0.5rem; border: 1px solid var(--gray-300); border-radius: 0.5rem;">
+                    <!-- Lehrer werden per JavaScript eingefügt -->
+                </select>
+            </div>
+        </div>
+        <div class="modal-footer">
+            <button class="btn btn-secondary" onclick="document.getElementById('vertretung-modal').classList.remove('open');">Abbrechen</button>
+            <button class="btn btn-primary" onclick="vertretungSpeichern()">Speichern</button>
+        </div>
+    </div>
+</div>
+
+<script>
+// Hilfsfunktion: Prüfe, ob aktueller User Lehrer ist
+function isCurrentUserTeacher() {
+    const user = JSON.parse(localStorage.getItem('zyroUser') || '{}');
+    return user.isTeacher === true;
+}
+
+// Vertretungsdaten im localStorage verwalten
+function getVertretungen() {
+    return JSON.parse(localStorage.getItem('vertretungen') || '{}');
+}
+
+function setVertretungen(vertretungen) {
+    localStorage.setItem('vertretungen', JSON.stringify(vertretungen));
+}
+
+// Aktuelle Vertretungsinformationen
+let aktuelleVertretung = {
+    tag: '',
+    zeit: '',
+    fach: '',
+    lehrer: ''
+};
+
+// Event-Listener für Stundenplan-Slots
+document.addEventListener('DOMContentLoaded', function() {
+    if (isCurrentUserTeacher()) {
+        // Für Lehrer: Klickbare Slots
+        document.querySelectorAll('.time-slot').forEach(slot => {
+            slot.style.cursor = 'pointer';
+            slot.onclick = function() {
+                const tag = slot.closest('.time-column').querySelector('.time-header').textContent;
+                const zeit = slot.querySelector('.time-slot-time').textContent;
+                const fach = slot.querySelector('.time-slot-subject').textContent;
+                vertretungModal(tag, zeit, fach);
+            };
+        });
+    }
+    
+    // Vertretungen anzeigen
+    zeigeVertretungen();
+});
+
+// Modal für Vertretungsauswahl öffnen
+function vertretungModal(tag, zeit, fach) {
+    // Aktuelle Vertretung speichern
+    aktuelleVertretung = { tag, zeit, fach };
+    
+    // Modal-Info setzen
+    document.getElementById('vertretung-info').innerHTML = `
+        <p><strong>${tag}, ${zeit}</strong></p>
+        <p>Fach: ${fach}</p>
+    `;
+    
+    // Lehrer-Liste laden
+    const select = document.getElementById('vertretungslehrer');
+    select.innerHTML = '<option value="">Bitte wählen...</option>';
+    
+    // Registrierte Lehrer laden
+    const users = JSON.parse(localStorage.getItem('registeredUsers') || '[]');
+    users.filter(user => user.isTeacher).forEach(lehrer => {
+        const option = document.createElement('option');
+        option.value = lehrer.fullname || lehrer.username;
+        option.textContent = lehrer.fullname || lehrer.username;
+        select.appendChild(option);
+    });
+    
+    // Aktuelle Vertretung vorauswählen, falls vorhanden
+    const vertretungen = getVertretungen();
+    if (vertretungen[tag] && vertretungen[tag][zeit]) {
+        select.value = vertretungen[tag][zeit];
+    }
+    
+    // Modal öffnen
+    document.getElementById('vertretung-modal').classList.add('open');
+}
+
+// Vertretung speichern
+function vertretungSpeichern() {
+    const lehrerSelect = document.getElementById('vertretungslehrer');
+    const vertretungslehrer = lehrerSelect.value;
+    
+    if (!vertretungslehrer) {
+        alert('Bitte wähle einen Vertretungslehrer aus!');
+        return;
+    }
+    
+    // Vertretung speichern
+    const vertretungen = getVertretungen();
+    if (!vertretungen[aktuelleVertretung.tag]) {
+        vertretungen[aktuelleVertretung.tag] = {};
+    }
+    vertretungen[aktuelleVertretung.tag][aktuelleVertretung.zeit] = vertretungslehrer;
+    setVertretungen(vertretungen);
+    
+    // Modal schließen
+    document.getElementById('vertretung-modal').classList.remove('open');
+    
+    // Vertretungen neu anzeigen
+    zeigeVertretungen();
+}
+
+// Vertretungen im Stundenplan anzeigen
+function zeigeVertretungen() {
+    const vertretungen = getVertretungen();
+    
+    document.querySelectorAll('.time-slot').forEach(slot => {
+        const tag = slot.closest('.time-column').querySelector('.time-header').textContent;
+        const zeit = slot.querySelector('.time-slot-time').textContent;
+        
+        // Alte Vertretungsinfo entfernen
+        const oldInfo = slot.querySelector('.vertretung-info');
+        if (oldInfo) oldInfo.remove();
+        
+        // Neue Vertretungsinfo anzeigen, falls vorhanden
+        if (vertretungen[tag] && vertretungen[tag][zeit]) {
+            const vertretungsInfo = document.createElement('div');
+            vertretungsInfo.className = 'vertretung-info';
+            vertretungsInfo.style.color = '#ef4444';
+            vertretungsInfo.style.fontWeight = 'bold';
+            vertretungsInfo.style.marginTop = '0.5rem';
+            vertretungsInfo.textContent = 'Vertretung: ' + vertretungen[tag][zeit];
+            slot.appendChild(vertretungsInfo);
+        }
+    });
+}
+</script>
+// ... bestehender Code ...
+
+<!-- Social Media Seite -->
+<div class="page-container" id="social-media-page">
+    <div class="grid" style="grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 1.5rem; padding: 1.5rem;">
+        <!-- TikTok Card -->
+        <div class="social-card" onclick="window.open('https://www.tiktok.com/@mathildeanneke', '_blank')">
+            <div class="social-card-content">
+                <svg class="social-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512">
+                    <path fill="currentColor" d="M448,209.91a210.06,210.06,0,0,1-122.77-39.25V349.38A162.55,162.55,0,1,1,185,188.31V278.2a74.62,74.62,0,1,0,52.23,71.18V0l88,0a121.18,121.18,0,0,0,1.86,22.17h0A122.18,122.18,0,0,0,381,102.39a121.43,121.43,0,0,0,67,20.14Z"/>
+                </svg>
+                <h2 class="social-title">TikTok</h2>
+                <p class="social-description">Folge uns auf TikTok</p>
+                <div class="social-username">@mathildeanneke</div>
+            </div>
+        </div>
+
+        <!-- Instagram Card -->
+        <div class="social-card" onclick="window.open('https://www.instagram.com/mathildeanneke/', '_blank')">
+            <div class="social-card-content">
+                <svg class="social-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+                    <path fill="currentColor" d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zm0-2.163c-3.259 0-3.667.014-4.947.072-4.358.2-6.78 2.618-6.98 6.98-.059 1.281-.073 1.689-.073 4.948 0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072 3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98-1.281-.059-1.69-.073-4.949-.073zm0 5.838c-3.403 0-6.162 2.759-6.162 6.162s2.759 6.163 6.162 6.163 6.162-2.759 6.162-6.163c0-3.403-2.759-6.162-6.162-6.162zm0 10.162c-2.209 0-4-1.79-4-4 0-2.209 1.791-4 4-4s4 1.791 4 4c0 2.21-1.791 4-4 4zm6.406-11.845c-.796 0-1.441.645-1.441 1.44s.645 1.44 1.441 1.44c.795 0 1.439-.645 1.439-1.44s-.644-1.44-1.439-1.44z"/>
+                </svg>
+                <h2 class="social-title">Instagram</h2>
+                <p class="social-description">Folge uns auf Instagram</p>
+                <div class="social-username">@mathildeanneke</div>
+            </div>
+        </div>
+
+        <!-- Schulwebsite Card -->
+        <div class="social-card" onclick="window.open('https://www.mathilde-anneke-schule.de/', '_blank')">
+            <div class="social-card-content">
+                <svg class="social-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+                    <path fill="currentColor" d="M12 3L1 9l4 2.18v6L12 21l7-3.82v-6l2-1.09V17h2V9L12 3zm6.82 6L12 12.72 5.18 9 12 5.28 18.82 9zM17 15.99l-5 2.73-5-2.73v-3.72L12 15l5-2.73v3.72z"/>
+                </svg>
+                <h2 class="social-title">Schulwebsite</h2>
+                <p class="social-description">Besuche unsere Website</p>
+                <div class="social-username">mathilde-anneke-schule.de</div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+// ... bestehender Code ...
+function showSocialMediaPage() {
+    // Alle Seiten ausblenden
+    const pages = ['dashboard-content', 'stundenplan-page', 'noten-page', 'nachrichten-page', 'social-media-page'];
+    pages.forEach(pageId => {
+        const page = document.getElementById(pageId);
+        if (page) {
+            page.classList.remove('active');
+        }
+    });
+    
+    // Social Media Seite anzeigen
+    const socialMediaPage = document.getElementById('social-media-page');
+    if (socialMediaPage) {
+        socialMediaPage.classList.add('active');
+    }
+    
+    // Aktiven Link setzen
+    document.querySelectorAll('.nav-link').forEach(link => link.classList.remove('active'));
+    event.currentTarget.classList.add('active');
+    
+    // Seitentitel aktualisieren
+    const pageTitle = document.getElementById('current-page-title');
+    if (pageTitle) {
+        pageTitle.textContent = 'Social Media';
+    }
+    
+    // Auf mobilen Geräten das Menü schließen
+    if (window.innerWidth < 768) {
+        const navigation = document.getElementById('navigation');
+        if (navigation) {
+            navigation.classList.remove('open');
+        }
+    }
+}
 // ... bestehender Code ...
 </script>
 // ... bestehender Code ...
