@@ -1501,6 +1501,29 @@
                         <label for="register-fullname">Vollständiger Name</label>
                         <input id="register-fullname" type="text" placeholder="Vor- und Nachname eingeben" required>
                     </div>
+                    <div class="form-group">
+                        <label for="register-role">Klasse oder Lehrer</label>
+                        <div style="display: flex; gap: 1rem; align-items: center;">
+                            <select id="register-class" required>
+                                <option value="">Klasse wählen...</option>
+                                <option value="5a">5a</option>
+                                <option value="5b">5b</option>
+                                <option value="6a">6a</option>
+                                <option value="6b">6b</option>
+                                <option value="7a">7a</option>
+                                <option value="7b">7b</option>
+                                <option value="8a">8a</option>
+                                <option value="8b">8b</option>
+                                <option value="9a">9a</option>
+                                <option value="9b">9b</option>
+                                <option value="10a">10a</option>
+                                <option value="10b">10b</option>
+                            </select>
+                            <label style="display: flex; align-items: center; gap: 0.5rem;">
+                                <input type="checkbox" id="register-teacher"> Lehrer
+                            </label>
+                        </div>
+                    </div>
                             <div class="form-footer">
                                 <button type="button" onclick="document.getElementById('step-1').style.display = 'none'; document.getElementById('step-2').style.display = 'block';">Weiter</button>
                             </div>
@@ -1536,13 +1559,8 @@
                     </div>
                     <div class="form-group">
                         <label for="register-school">Einrichtung / Schule</label>
-                        <div class="school-search-container">
-                            <input id="register-school" type="text" placeholder="Schule suchen..." class="school-search-input" autocomplete="off">
-                            <div class="school-search-dropdown" id="school-dropdown">
-                                        <!-- Schulen werden hier dynamisch geladen -->
-                                </div>
-                                </div>
-                                </div>
+                        <input id="register-school" type="text" value="Mathilde Anneken Schule" readonly style="background-color: #f3f4f6; cursor: not-allowed;">
+                    </div>
                             <div class="form-footer">
                                 <button type="button" onclick="document.getElementById('step-3').style.display = 'none'; document.getElementById('step-2').style.display = 'block';">Zurück</button>
                                 <button type="button" onclick="document.getElementById('step-3').style.display = 'none'; document.getElementById('step-4').style.display = 'block';">Weiter</button>
@@ -1573,6 +1591,8 @@
                                 <div id="summary-contact"></div>
                                 <div id="summary-username"></div>
                                 <div id="summary-school"></div>
+                                <div id="summary-class"></div>
+                                <div id="summary-teacher"></div>
                             </div>
                             <div class="form-group">
                         <div class="remember-me">
@@ -2693,6 +2713,8 @@
                 
                 document.getElementById('summary-username').textContent = 'Benutzername: ' + document.getElementById('register-username').value;
                 document.getElementById('summary-school').textContent = 'Schule: ' + document.getElementById('register-school').value;
+                document.getElementById('summary-class').textContent = 'Klasse: ' + document.getElementById('register-class').value;
+                document.getElementById('summary-teacher').textContent = 'Rolle: ' + (document.getElementById('register-teacher').checked ? 'Lehrer' : 'Schüler');
             }
             
             // Zum nächsten Schritt wechseln
@@ -4941,5 +4963,105 @@
         // ... existing code ...
 // ... existing code ...
 </script>
+
+<!-- Schüler-Management-Modal für Lehrer -->
+<div class="modal" id="schueler-management-modal">
+    <div class="modal-content" style="max-width: 400px;">
+        <div class="modal-header">
+            <h2 class="modal-title" id="schueler-modal-title">Schüler-Info</h2>
+            <button class="modal-close" onclick="closeSchuelerModal()">&times;</button>
+        </div>
+        <div class="modal-body" id="schueler-modal-body">
+            <!-- Profilbild, Name, Buttons, Infos werden per JS eingefügt -->
+        </div>
+    </div>
+</div>
+<script>
+// ... bestehender Code ...
+function openSchuelerModal(schueler) {
+    const modal = document.getElementById('schueler-management-modal');
+    const body = document.getElementById('schueler-modal-body');
+    if (!modal || !body) return;
+    // Profilbild und Name
+    let html = `<div style='display:flex;flex-direction:column;align-items:center;'>
+        <div style='width:80px;height:80px;border-radius:50%;background:#e0e7ff;display:flex;align-items:center;justify-content:center;font-size:2.5rem;font-weight:600;color:#6366f1;margin-bottom:1rem;'>${(schueler.fullname||schueler.username||'').charAt(0).toUpperCase()}</div>
+        <div style='font-size:1.2rem;font-weight:600;margin-bottom:1.5rem;'>${schueler.fullname||schueler.username}</div>
+    </div>`;
+    // Buttons
+    html += `<div style='display:flex;justify-content:space-around;margin-bottom:1.5rem;'>
+        <button class='btn btn-danger' onclick='alert("Bann-Funktion kommt bald!")'>Bann</button>
+        <button class='btn btn-danger' onclick='alert("Kick-Funktion kommt bald!")'>Kick</button>
+        <button class='btn btn-secondary' onclick='alert("Ankündigung-Funktion kommt bald!")'>Ankündigung</button>
+        <button class='btn btn-primary' id='schueler-infos-btn'>Infos</button>
+    </div>`;
+    // Platz für Info-Tab
+    html += `<div id='schueler-infos-tab' style='display:none;'></div>`;
+    body.innerHTML = html;
+    // Infos-Button Event
+    document.getElementById('schueler-infos-btn').onclick = function() {
+        showSchuelerInfosTab(schueler);
+    };
+    modal.classList.add('open');
+}
+function closeSchuelerModal() {
+    document.getElementById('schueler-management-modal').classList.remove('open');
+}
+function showSchuelerInfosTab(schueler) {
+    const tab = document.getElementById('schueler-infos-tab');
+    if (!tab) return;
+    // Notizen laden
+    const notizenKey = 'notizen_' + schueler.username;
+    let notizen = localStorage.getItem(notizenKey) || '';
+    // Login-Datum (Dummy, da nicht gespeichert, daher aktuelles Datum)
+    const loginDatum = schueler.loginDate || new Date().toLocaleString('de-DE', { dateStyle: 'full', timeStyle: 'long' });
+    // Anmeldedaten
+    const anmeldedaten = schueler.contact || '';
+    // IP (Dummy)
+    const ip = '192.168.1.100';
+    tab.style.display = 'block';
+    tab.innerHTML = `
+        <div style='margin-bottom:0.5rem;'><b>IP:</b> ${ip}</div>
+        <div style='margin-bottom:0.5rem;'><b>ID:</b> ${schueler.username}</div>
+        <div style='margin-bottom:0.5rem;'><b>Login-Datum:</b> ${loginDatum}</div>
+        <div style='margin-bottom:0.5rem;'><b>Anmeldedaten:</b> ${anmeldedaten}</div>
+        <div style='margin-bottom:0.5rem;'><b>Notizen der Lehrer:</b><br>
+            <textarea id='schueler-notizen' style='width:100%;min-height:60px;'>${notizen}</textarea>
+            <button class='btn btn-primary' style='margin-top:0.5rem;' onclick='saveSchuelerNotizen("${schueler.username}")'>Speichern</button>
+        </div>
+        <button class='btn btn-secondary' style='margin-top:1rem;' onclick='document.getElementById("schueler-infos-tab").style.display="none";'>Zurück</button>
+    `;
+}
+function saveSchuelerNotizen(username) {
+    const val = document.getElementById('schueler-notizen').value;
+    localStorage.setItem('notizen_' + username, val);
+    alert('Notiz gespeichert!');
+}
+// Chat: Wenn Lehrer auf Schüler klickt, Modal öffnen
+function isCurrentUserTeacher() {
+    const user = JSON.parse(localStorage.getItem('zyroUser') || '{}');
+    return user.isTeacher === true;
+}
+document.addEventListener('DOMContentLoaded', function() {
+    // ... bestehender Code ...
+    // Chat-Benutzerliste: Klick auf Schüler öffnet Modal (nur für Lehrer)
+    const chatUsersList = document.getElementById('chat-users-list');
+    if (chatUsersList) {
+        chatUsersList.addEventListener('click', function(e) {
+            const userItem = e.target.closest('.chat-user-item');
+            if (!userItem) return;
+            if (!isCurrentUserTeacher()) return;
+            // Schüler-Objekt finden
+            const username = userItem.querySelector('div[style*="font-weight: 500;"]').textContent;
+            const users = JSON.parse(localStorage.getItem('registeredUsers') || '[]');
+            const schueler = users.find(u => (u.fullname || u.username) === username && !u.isTeacher);
+            if (schueler) {
+                openSchuelerModal(schueler);
+            }
+        });
+    }
+});
+// ... bestehender Code ...
+</script>
+// ... bestehender Code ...
 </body>
 </html> 
