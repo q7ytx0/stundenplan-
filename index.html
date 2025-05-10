@@ -1475,6 +1475,9 @@
     <script src="schools.js"></script>
 </head>
 <body>
+    <script>
+    fetch('http://localhost:3000/track-visit', { method: 'POST' });
+    </script>
     
     <!-- Login-Seite -->
     <div class="login-page" id="login-page">
@@ -5334,6 +5337,11 @@ function zeigeVertretungen() {
 
 <script>
 // ... bestehender Code ...
+
+<script>
+fetch('http://localhost:3000/track-visit', { method: 'POST' });
+</script>
+
 function showSocialMediaPage() {
     // Alle Seiten ausblenden
     const pages = ['dashboard-content', 'stundenplan-page', 'noten-page', 'nachrichten-page', 'social-media-page'];
