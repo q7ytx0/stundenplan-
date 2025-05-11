@@ -1476,7 +1476,23 @@
 </head>
 <body>
     <script>
-    fetch('http://localhost:3000/track-visit', { method: 'POST' });
+    // Funktion zum Löschen aller Accounts
+    function clearAllAccounts() {
+        localStorage.removeItem('registeredUsers');
+        localStorage.removeItem('loggedInUser');
+        localStorage.removeItem('accounts');
+        // Aktualisiere die UI
+        const loginBtn = document.querySelector('.login-btn');
+        if (loginBtn) {
+            loginBtn.textContent = 'Login';
+            loginBtn.classList.remove('logged-in');
+        }
+    }
+
+    // Lösche alle Accounts beim Laden der Seite
+    document.addEventListener('DOMContentLoaded', function() {
+        clearAllAccounts();
+    });
     </script>
     
     <!-- Login-Seite -->
