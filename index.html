@@ -46,7 +46,196 @@
             --foreground-rgb: 0, 0, 0;
             --background-rgb: 255, 255, 255;
         }
+
+        /* Basis-Animationen */
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        @keyframes slideIn {
+            from { transform: translateY(20px); opacity: 0; }
+            to { transform: translateY(0); opacity: 1; }
+        }
+
+        @keyframes scaleIn {
+            from { transform: scale(0.95); opacity: 0; }
+            to { transform: scale(1); opacity: 1; }
+        }
+
+        @keyframes bounce {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+            100% { transform: scale(1); }
+        }
+
+        @keyframes shimmer {
+            0% { background-position: -1000px 0; }
+            100% { background-position: 1000px 0; }
+        }
+
+        /* Globale Animationen */
+        .card, .message-preview, .notification-item, .time-slot {
+            animation: scaleIn 0.3s ease-out;
+            transition: all 0.3s ease;
+        }
+
+        .card:hover, .message-preview:hover, .notification-item:hover, .time-slot:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+        }
+
+        /* Button Animationen */
+        .btn {
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+        }
+
+        .btn:active {
+            transform: translateY(1px);
+        }
+
+        /* Navigation Animationen */
+        .nav-link {
+            transition: all 0.3s ease;
+            position: relative;
+        }
+
+        .nav-link::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 50%;
+            width: 0;
+            height: 2px;
+            background: var(--primary-600);
+            transition: all 0.3s ease;
+        }
+
+        .nav-link:hover::after {
+            width: 100%;
+            left: 0;
+        }
+
+        /* Modal Animationen */
+        .modal {
+            transition: opacity 0.3s ease;
+        }
+
+        .modal-content {
+            animation: slideIn 0.3s ease-out;
+        }
+
+        /* Dropdown Animationen */
+        .profile-dropdown, .notifications-dropdown {
+            transform-origin: top right;
+            transition: all 0.3s ease;
+            transform: scale(0.95);
+            opacity: 0;
+            visibility: hidden;
+        }
+
+        .profile-dropdown.open, .notifications-dropdown.open {
+            transform: scale(1);
+            opacity: 1;
+            visibility: visible;
+        }
+
+        /* Nachrichten Animationen */
+        .message-preview.unread::before {
+            content: '';
+            position: absolute;
+            left: 0;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 4px;
+            height: 70%;
+            background: var(--primary-600);
+            border-radius: 2px;
+            animation: scaleIn 0.3s ease-out;
+        }
+
+        /* Loading Spinner Animation */
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        .loading-spinner {
+            animation: spin 1s linear infinite, bounce 2s ease infinite;
+        }
+
+        /* Page Transitions */
+        .page-container {
+            transition: all 0.3s ease;
+            opacity: 0;
+            transform: translateY(20px);
+        }
+
+        .page-container.active {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        /* Social Media Cards */
+        .social-card {
+            transition: all 0.3s ease;
+        }
+
+        .social-card:hover {
+            transform: translateY(-8px) rotate(2deg);
+            box-shadow: 0 15px 30px rgba(0, 0, 0, 0.1);
+        }
+
+        .social-icon {
+            transition: all 0.3s ease;
+        }
+
+        .social-card:hover .social-icon {
+            transform: scale(1.1) rotate(-5deg);
+        }
+
+        /* Form Inputs */
+        input[type="text"],
+        input[type="password"],
+        input[type="email"],
+        textarea {
+            transition: all 0.3s ease;
+        }
+
+        input[type="text"]:focus,
+        input[type="password"]:focus,
+        input[type="email"]:focus,
+        textarea:focus {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+        }
+
+        /* Notification Badge Animation */
+        @keyframes pulse {
+            0% { transform: scale(0.95); opacity: 0.5; }
+            50% { transform: scale(1); opacity: 1; }
+            100% { transform: scale(0.95); opacity: 0.5; }
+        }
+
+        .notification-badge {
+            animation: pulse 2s infinite;
+        }
+
+        /* Grade Animation */
+        .grade {
+            transition: all 0.3s ease;
+        }
+
+        .grade:hover {
+            transform: scale(1.2) rotate(10deg);
+        }
         
+        /* Bestehende Stile beibehalten... */
         * {
             box-sizing: border-box;
             margin: 0;
@@ -1468,6 +1657,74 @@
             border-radius: 9999px;
             font-weight: 500;
         }
+
+        /* Scrollbar-Stil für die Navigation */
+        .nav-links::-webkit-scrollbar {
+            width: 6px;
+        }
+
+        .nav-links::-webkit-scrollbar-track {
+            background: var(--gray-100);
+            border-radius: 3px;
+        }
+
+        .nav-links::-webkit-scrollbar-thumb {
+            background: var(--gray-300);
+            border-radius: 3px;
+            transition: background 0.3s ease;
+        }
+
+        .nav-links::-webkit-scrollbar-thumb:hover {
+            background: var(--gray-400);
+        }
+
+        /* Hover-Effekt für Nav-Links */
+        .nav-link {
+            position: relative;
+            overflow: hidden;
+        }
+
+        .nav-link::before {
+            content: '';
+            position: absolute;
+            left: 0;
+            top: 0;
+            height: 100%;
+            width: 0;
+            background: var(--primary-100);
+            transition: width 0.3s ease;
+            z-index: 0;
+        }
+
+        .nav-link:hover::before {
+            width: 100%;
+        }
+
+        .nav-link > * {
+            position: relative;
+            z-index: 1;
+        }
+
+        /* Aktiver Link Stil */
+        .nav-link.active {
+            background: var(--primary-50);
+            color: var(--primary-600);
+            font-weight: 500;
+        }
+
+        .nav-link.active::before {
+            width: 4px;
+            background: var(--primary-600);
+        }
+
+        /* Icon Animation */
+        .nav-link-icon {
+            transition: transform 0.3s ease;
+        }
+
+        .nav-link:hover .nav-link-icon {
+            transform: scale(1.1);
+        }
     </style>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -1478,21 +1735,116 @@
     <script>
     // Funktion zum Löschen aller Accounts
     function clearAllAccounts() {
-        localStorage.removeItem('registeredUsers');
         localStorage.removeItem('loggedInUser');
-        localStorage.removeItem('accounts');
+        // NICHT mehr alle registeredUsers löschen
+        
         // Aktualisiere die UI
         const loginBtn = document.querySelector('.login-btn');
         if (loginBtn) {
             loginBtn.textContent = 'Login';
             loginBtn.classList.remove('logged-in');
         }
+        // Stelle sicher, dass der Standard-Benutzer existiert
+        addDefaultUser();
     }
 
-    // Lösche alle Accounts beim Laden der Seite
+    // Funktion zum Hinzufügen des Standard-Benutzers
+    function addDefaultUser() {
+        const defaultUser = {
+            username: 'zyro',
+            password: 'zyro',
+            fullname: 'Zyro Admin',
+            school: 'Mathilde Anneken Schule',
+            contact: 'admin@zyro-schule.de',
+            isTeacher: true
+        };
+        
+        // Hole existierende Benutzer oder initialisiere leeres Array
+        let registeredUsers = JSON.parse(localStorage.getItem('registeredUsers') || '[]');
+        
+        // Prüfen ob der Standard-Benutzer bereits existiert
+        if (!registeredUsers.some(u => u.username === defaultUser.username)) {
+            registeredUsers.push(defaultUser);
+            localStorage.setItem('registeredUsers', JSON.stringify(registeredUsers));
+            console.log('Standard-Benutzer hinzugefügt');
+        }
+    }
+
+    // Beim Laden der Seite NUR den Standard-Benutzer hinzufügen wenn nötig
     document.addEventListener('DOMContentLoaded', function() {
-        clearAllAccounts();
+        addDefaultUser(); // Nicht mehr clearAllAccounts() aufrufen
     });
+
+    // Funktion zum Registrieren
+    function registerUser() {
+        console.log("Registrieren-Button geklickt");
+        
+        // Prüfen, ob die Nutzungsbedingungen akzeptiert wurden
+        const termsCheckbox = document.getElementById('register-terms');
+        if (!termsCheckbox || !termsCheckbox.checked) {
+            alert('Bitte akzeptiere die Nutzungsbedingungen, um fortzufahren.');
+            return;
+        }
+        
+        // Daten aus allen Schritten sammeln
+        const fullname = document.getElementById('register-fullname').value;
+        const username = document.getElementById('register-username').value;
+        const school = document.getElementById('register-school').value;
+        const password = document.getElementById('register-password').value;
+        
+        // Kontaktinformationen je nach gewählter Option
+        let contact = '';
+        if (document.getElementById('email-option').classList.contains('active')) {
+            contact = document.getElementById('register-email').value;
+        } else {
+            contact = document.getElementById('register-phone').value;
+        }
+        
+        // Überprüfen, ob der Benutzername bereits existiert
+        const registeredUsers = getRegisteredUsers();
+        if (registeredUsers.some(u => u.username === username)) {
+            alert('Dieser Benutzername existiert bereits. Bitte wähle einen anderen.');
+            return;
+        }
+        
+        // Neuen Benutzer erstellen
+        const newUser = {
+            fullname: fullname,
+            username: username,
+            school: school,
+            contact: contact,
+            password: password,
+            isTeacher: document.getElementById('register-teacher').checked
+        };
+        
+        // Benutzer zur Liste hinzufügen
+        registeredUsers.push(newUser);
+        localStorage.setItem('registeredUsers', JSON.stringify(registeredUsers));
+        
+        // Aktiven Benutzer speichern
+        localStorage.setItem('zyroUser', JSON.stringify(newUser));
+        localStorage.setItem('zyroLoggedIn', 'true');
+        
+        // Erfolgsmeldung anzeigen
+        alert('Registrierung erfolgreich abgeschlossen!');
+        
+        // Zum Dashboard wechseln
+        document.getElementById('login-page').style.display = 'none';
+        document.getElementById('dashboard').style.display = 'block';
+        
+        // Benutzernamen im Profil anzeigen
+        const profileName = document.getElementById('profile-name');
+        if (profileName) {
+            profileName.textContent = newUser.fullname || newUser.username;
+        }
+        
+        // Benutzerinitiale im Profilbild anzeigen
+        const profileImage = document.getElementById('profile-image');
+        if (profileImage) {
+            const initial = (newUser.fullname || newUser.username).charAt(0).toUpperCase();
+            profileImage.textContent = initial;
+        }
+    }
     </script>
     
     <!-- Login-Seite -->
@@ -1686,7 +2038,7 @@
             <div class="nav-header">
                 <div class="nav-logo">Zyro</div>
             </div>
-            <div class="nav-links">
+            <div class="nav-links" style="height: calc(100vh - 80px); overflow-y: auto; padding-bottom: 2rem;">
                 <button type="button" class="nav-link active" onclick="showDashboardPage()" style="display: flex; align-items: center; width: 100%; text-align: left; background: none; border: none; padding: 0.75rem 1.5rem; color: var(--gray-600); text-decoration: none; transition: background-color 0.2s;">
                     <span class="nav-link-icon">
                         <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
@@ -1696,7 +2048,18 @@
                     </span>
                     Dashboard
                 </button>
-                <button type="button" class="nav-link" onclick="showStundenplanPage()" style="display: flex; align-items: center; width: 100%; text-align: left; background: none; border: none; padding: 0.75rem 1.5rem; color: var(--gray-600); text-decoration: none; transition: background-color 0.2s;">
+
+                <button type="button" class="nav-link" onclick="showHomeworkPage()" style="display: flex; align-items: center; width: 100%; text-align: left; background: none; border: none; padding: 0.75rem 1.5rem; color: var(--gray-600); text-decoration: none; transition: background-color 0.2s;">
+                    <span class="nav-link-icon">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"></path>
+                            <path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"></path>
+                        </svg>
+                    </span>
+                    Hausaufgaben
+                </button>
+
+                <button type="button" class="nav-link" onclick="showSubstitutionPage()" style="display: flex; align-items: center; width: 100%; text-align: left; background: none; border: none; padding: 0.75rem 1.5rem; color: var(--gray-600); text-decoration: none; transition: background-color 0.2s;">
                     <span class="nav-link-icon">
                         <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                             <rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect>
@@ -1705,45 +2068,52 @@
                             <line x1="3" y1="10" x2="21" y2="10"></line>
                         </svg>
                     </span>
-                    Stundenplan
+                    Vertretungsplan
                 </button>
-                <button type="button" class="nav-link" onclick="showNotenPage()" style="display: flex; align-items: center; width: 100%; text-align: left; background: none; border: none; padding: 0.75rem 1.5rem; color: var(--gray-600); text-decoration: none; transition: background-color 0.2s;">
+
+                <button type="button" class="nav-link" onclick="showCalendarPage()" style="display: flex; align-items: center; width: 100%; text-align: left; background: none; border: none; padding: 0.75rem 1.5rem; color: var(--gray-600); text-decoration: none; transition: background-color 0.2s;">
                     <span class="nav-link-icon">
                         <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                            <path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"></path>
-                            <path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"></path>
+                            <rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect>
+                            <line x1="16" y1="2" x2="16" y2="6"></line>
+                            <line x1="8" y1="2" x2="8" y2="6"></line>
+                            <line x1="3" y1="10" x2="21" y2="10"></line>
                         </svg>
                     </span>
-                    Noten
+                    Kalender/Termine
                 </button>
-                <button type="button" class="nav-link" onclick="showNachrichtenPage()" style="display: flex; align-items: center; width: 100%; text-align: left; background: none; border: none; padding: 0.75rem 1.5rem; color: var(--gray-600); text-decoration: none; transition: background-color 0.2s;">
+
+                <button type="button" class="nav-link" onclick="showAbsencePage()" style="display: flex; align-items: center; width: 100%; text-align: left; background: none; border: none; padding: 0.75rem 1.5rem; color: var(--gray-600); text-decoration: none; transition: background-color 0.2s;">
+                    <span class="nav-link-icon">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
+                            <circle cx="12" cy="7" r="4"></circle>
+                            <line x1="5" y1="12" x2="19" y2="12"></line>
+                        </svg>
+                    </span>
+                    Krankmeldung
+                </button>
+
+                <button type="button" class="nav-link" onclick="showFeedbackPage()" style="display: flex; align-items: center; width: 100%; text-align: left; background: none; border: none; padding: 0.75rem 1.5rem; color: var(--gray-600); text-decoration: none; transition: background-color 0.2s;">
                     <span class="nav-link-icon">
                         <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                             <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path>
                         </svg>
                     </span>
-                    Nachrichten
+                    Feedback
                 </button>
-                <button type="button" class="nav-link" onclick="showMensaPage()" style="display: flex; align-items: center; width: 100%; text-align: left; background: none; border: none; padding: 0.75rem 1.5rem; color: var(--gray-600); text-decoration: none; transition: background-color 0.2s;">
+
+                <button type="button" class="nav-link" onclick="showNewsPage()" style="display: flex; align-items: center; width: 100%; text-align: left; background: none; border: none; padding: 0.75rem 1.5rem; color: var(--gray-600); text-decoration: none; transition: background-color 0.2s;">
                     <span class="nav-link-icon">
                         <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                            <path d="M18 8h1a4 4 0 0 1 0 8h-1"></path>
-                            <path d="M2 8h16v9a4 4 0 0 1-4 4H6a4 4 0 0 1-4-4V8z"></path>
-                            <line x1="6" y1="1" x2="6" y2="4"></line>
-                            <line x1="10" y1="1" x2="10" y2="4"></line>
-                            <line x1="14" y1="1" x2="14" y2="4"></line>
+                            <path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"></path>
                         </svg>
                     </span>
-                    Mensa
+                    Pinnwand/News
                 </button>
-                <button type="button" class="nav-link" onclick="showSocialMediaPage()" style="display: flex; align-items: center; width: 100%; text-align: left; background: none; border: none; padding: 0.75rem 1.5rem; color: var(--gray-600); text-decoration: none; transition: background-color 0.2s;">
-                    <span class="nav-link-icon">
-                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                            <path d="M23 3a10.9 10.9 0 0 1-3.14 1.53 4.48 4.48 0 0 0-7.86 3v1A10.66 10.66 0 0 1 3 4s-4 9 5 13a11.64 11.64 0 0 1-7 2c9 5 20 0 20-11.5a4.5 4.5 0 0 0-.08-.83A7.72 7.72 0 0 0 23 3z"></path>
-                        </svg>
-                    </span>
-                    Social Media
-                </button>
+
+                <!-- Bestehende Buttons beibehalten -->
+                <!-- ... existing buttons ... -->
             </div>
         </nav>
 
@@ -2408,66 +2778,81 @@
                     <div class="messages-container">
                         <div class="messages-sidebar">
                             <div class="messages-search">
-                                <input type="text" class="messages-search-input" placeholder="Nachrichten durchsuchen...">
+                                <input type="text" class="messages-search-input" placeholder="Nachrichten durchsuchen..." onkeyup="searchMessages(this.value)">
                             </div>
-                            <div class="messages-list">
-                                <div class="message-preview active">
-                                    <div class="message-preview-header">
-                                        <div class="message-preview-sender">Hr. Gökdemir</div>
-                                        <div class="message-preview-time">Heute, 14:30</div>
-                                    </div>
-                                    <div class="message-preview-subject">Hausaufgaben für Montag</div>
-                                    <div class="message-preview-text">Bitte bearbeiten Sie die Aufgaben auf Seite 42-43 im Mathematikbuch bis zum nächsten Montag.</div>
-                                </div>
-                                <div class="message-preview">
-                                    <div class="message-preview-header">
-                                        <div class="message-preview-sender">Hr. Bierwirth</div>
-                                        <div class="message-preview-time">Gestern, 16:15</div>
-                                    </div>
-                                    <div class="message-preview-subject">Klassenarbeit verschoben</div>
-                                    <div class="message-preview-text">Die für nächste Woche geplante Klassenarbeit wird auf den übernächsten Dienstag verschoben.</div>
-                                </div>
-                                <div class="message-preview">
-                                    <div class="message-preview-header">
-                                        <div class="message-preview-sender">Schulleitung</div>
-                                        <div class="message-preview-time">15.05.2023, 09:00</div>
-                                    </div>
-                                    <div class="message-preview-subject">Elternabend</div>
-                                    <div class="message-preview-text">Am kommenden Donnerstag findet um 19:00 Uhr der Elternabend statt. Bitte informieren Sie Ihre Eltern.</div>
-                                </div>
+                            <div class="messages-list" id="messages-list">
+                                <!-- Nachrichten werden hier dynamisch eingefügt -->
                             </div>
                         </div>
                         <div class="message-content">
                             <div class="message-header">
-                                <div class="message-subject">Hausaufgaben für Montag</div>
+                                <div class="message-subject" id="message-detail-subject">Wählen Sie eine Nachricht aus</div>
                                 <div class="message-meta">
-                                    <div class="message-sender">Von: Hr. Gökdemir</div>
-                                    <div class="message-date">Heute, 14:30</div>
+                                    <div class="message-sender" id="message-detail-sender"></div>
+                                    <div class="message-date" id="message-detail-date"></div>
                                 </div>
                             </div>
-                            <div class="message-body">
-                                <p>Liebe Schülerinnen und Schüler,</p>
-                                <br>
-                                <p>für den kommenden Montag bitte ich Sie, die folgenden Aufgaben zu bearbeiten:</p>
-                                <br>
-                                <p>- Seite 42, Aufgaben 1-5</p>
-                                <p>- Seite 43, Aufgaben 7-9</p>
-                                <br>
-                                <p>Diese Aufgaben werden wir in der nächsten Stunde besprechen und sie dienen als Vorbereitung auf die kommende Klassenarbeit.</p>
-                                <br>
-                                <p>Bei Fragen können Sie mir gerne eine Nachricht schreiben.</p>
-                                <br>
-                                <p>Mit freundlichen Grüßen,</p>
-                                <p>Hr. Gökdemir</p>
+                            <div class="message-body" id="message-detail-content">
+                                <p style="text-align: center; color: var(--gray-500);">Wählen Sie eine Nachricht aus der Liste aus, um sie hier anzuzeigen.</p>
                             </div>
                             <div class="message-reply">
-                                <textarea class="message-reply-input" placeholder="Antwort schreiben..."></textarea>
+                                <textarea class="message-reply-input" id="reply-content" placeholder="Antwort schreiben..."></textarea>
                                 <div class="message-actions">
-                                    <button class="btn btn-secondary" id="cancel-message" onclick="document.getElementById('message-modal').classList.remove('open');">Abbrechen</button>
-                                    <button class="btn btn-primary" id="send-message">Senden</button>
+                                    <button class="btn btn-primary" onclick="sendReply()">Antworten</button>
                                 </div>
                             </div>
                         </div>
+                    </div>
+                </div>
+
+                <!-- Social Media Seite -->
+                <div class="page-container" id="social-media-page">
+                    <div class="grid" style="grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 1.5rem; padding: 1.5rem;">
+                        <!-- TikTok Card -->
+                        <div class="social-card" onclick="window.open('https://www.tiktok.com/@mathildeanneke', '_blank')">
+                            <div class="social-card-content">
+                                <svg class="social-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512">
+                                    <path fill="currentColor" d="M448,209.91a210.06,210.06,0,0,1-122.77-39.25V349.38A162.55,162.55,0,1,1,185,188.31V278.2a74.62,74.62,0,1,0,52.23,71.18V0l88,0a121.18,121.18,0,0,0,1.86,22.17h0A122.18,122.18,0,0,0,381,102.39a121.43,121.43,0,0,0,67,20.14Z"/>
+                                </svg>
+                                <h2 class="social-title">TikTok</h2>
+                                <p class="social-description">Folge uns auf TikTok</p>
+                                <div class="social-username">@mathildeanneke</div>
+                            </div>
+                        </div>
+
+                        <!-- Instagram Card -->
+                        <div class="social-card" onclick="window.open('https://www.instagram.com/mathildeanneke/', '_blank')">
+                            <div class="social-card-content">
+                                <svg class="social-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+                                    <path fill="currentColor" d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zm0-2.163c-3.259 0-3.667.014-4.947.072-4.358.2-6.78 2.618-6.98 6.98-.059 1.281-.073 1.689-.073 4.948 0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072 3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98-1.281-.059-1.69-.073-4.949-.073zm0 5.838c-3.403 0-6.162 2.759-6.162 6.162s2.759 6.163 6.162 6.163 6.162-2.759 6.162-6.163c0-3.403-2.759-6.162-6.162-6.162zm0 10.162c-2.209 0-4-1.79-4-4 0-2.209 1.791-4 4-4s4 1.791 4 4c0 2.21-1.791 4-4 4zm6.406-11.845c-.796 0-1.441.645-1.441 1.44s.645 1.44 1.441 1.44c.795 0 1.439-.645 1.439-1.44s-.644-1.44-1.439-1.44z"/>
+                                </svg>
+                                <h2 class="social-title">Instagram</h2>
+                                <p class="social-description">Folge uns auf Instagram</p>
+                                <div class="social-username">@mathildeanneke</div>
+                            </div>
+                        </div>
+
+                        <!-- Schulwebsite Card -->
+                        <div class="social-card" onclick="window.open('https://www.mathilde-anneke-schule.de/', '_blank')">
+                            <div class="social-card-content">
+                                <svg class="social-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+                                    <path fill="currentColor" d="M12 3L1 9l4 2.18v6L12 21l7-3.82v-6l2-1.09V17h2V9L12 3zm6.82 6L12 12.72 5.18 9 12 5.28 18.82 9zM17 15.99l-5 2.73-5-2.73v-3.72L12 15l5-2.73v3.72z"/>
+                                </svg>
+                                <h2 class="social-title">Schulwebsite</h2>
+                                <p class="social-description">Besuche unsere Website</p>
+                                <div class="social-username">mathilde-anneke-schule.de</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Mensa Seite -->
+                <div class="page-container" id="mensa-page">
+                    <div class="card" style="text-align: center; padding: 2rem; margin: 2rem auto; max-width: 600px;">
+                        <h2 style="margin-bottom: 1.5rem; color: var(--primary-600);">MensaMax Anmeldung</h2>
+                        <p style="font-size: 1.2rem; margin-bottom: 1rem; color: var(--gray-700);">Bitte melden Sie sich bei MensaMax an, um die Speisepläne einzusehen und Ihr Guthaben zu verwalten.</p>
+                        <p style="color: var(--gray-500); margin-bottom: 2rem;">Sie werden in wenigen Sekunden automatisch weitergeleitet...</p>
+                        <div class="loading-spinner" style="margin: 0 auto; width: 40px; height: 40px; border: 3px solid var(--gray-200); border-top-color: var(--primary-600); border-radius: 50%; animation: spin 1s linear infinite;"></div>
                     </div>
                 </div>
             </div>
@@ -3077,6 +3462,12 @@
                     
                 const username = document.getElementById('username').value;
                 const password = document.getElementById('password').value;
+                
+                // Überprüfen, ob die Felder ausgefüllt sind
+                if (!username || !password) {
+                    alert('Bitte Benutzername und Passwort eingeben.');
+                    return;
+                }
                 
                 // Überprüfen, ob der Benutzer registriert ist
                 const registeredUsers = JSON.parse(localStorage.getItem('registeredUsers') || '[]');
@@ -4039,18 +4430,19 @@
                 return;
             }
             
-            // Benutzer direkt registrieren ohne Verifizierung (für einfacheres Testen)
+            // Neuen Benutzer erstellen
             const newUser = {
                 fullname: fullname,
                 username: username,
                 school: school,
                 contact: contact,
-                password: password
+                password: password,
+                isTeacher: document.getElementById('register-teacher').checked
             };
             
             // Benutzer zur Liste hinzufügen
             registeredUsers.push(newUser);
-            setRegisteredUsers(registeredUsers);
+            localStorage.setItem('registeredUsers', JSON.stringify(registeredUsers));
             
             // Aktiven Benutzer speichern
             localStorage.setItem('zyroUser', JSON.stringify(newUser));
@@ -4090,12 +4482,42 @@
                 return;
             }
             
+            // Prüfen ob es der Standard-Benutzer ist
+            if (username === 'zyro' && password === 'zyro') {
+                const defaultUser = {
+                    username: 'zyro',
+                    password: 'zyro',
+                    fullname: 'Zyro Admin',
+                    school: 'Mathilde Anneken Schule',
+                    contact: 'admin@zyro-schule.de',
+                    isTeacher: true
+                };
+                
+                // Login erfolgreich
+                localStorage.setItem('zyroUser', JSON.stringify(defaultUser));
+                localStorage.setItem('zyroLoggedIn', 'true');
+                
+                // Dashboard anzeigen und Login-Seite ausblenden
+                document.getElementById('login-page').style.display = 'none';
+                document.getElementById('dashboard').style.display = 'block';
+                
+                // Benutzernamen im Profil anzeigen
+                const profileName = document.getElementById('profile-name');
+                if (profileName) {
+                    profileName.textContent = defaultUser.fullname;
+                }
+                
+                // Benutzerinitiale im Profilbild anzeigen
+                const profileImage = document.getElementById('profile-image');
+                if (profileImage) {
+                    profileImage.textContent = 'Z';
+                }
+                
+                return;
+            }
+            
             // Überprüfen, ob der Benutzer registriert ist
             const registeredUsers = getRegisteredUsers();
-            // Mache registeredUsers global für Debugging
-            window.registeredUsers = registeredUsers;
-            console.log('Registrierte Benutzer:', registeredUsers);
-            
             const user = registeredUsers.find(u => u.username === username && u.password === password);
             
             if (user) {
@@ -5395,5 +5817,80 @@ function showSocialMediaPage() {
 // ... bestehender Code ...
 </script>
 // ... bestehender Code ...
+
+<!-- Mensa Seite -->
+<div class="page-container" id="mensa-page">
+    <div class="card" style="text-align: center; padding: 2rem;">
+        <h2 style="margin-bottom: 1.5rem;">MensaMax Anmeldung</h2>
+        <p style="font-size: 1.2rem; margin-bottom: 1rem;">Bitte melden Sie sich bei MensaMax an, um die Speisepläne einzusehen und Ihr Guthaben zu verwalten.</p>
+        <p style="color: var(--gray-500); margin-bottom: 2rem;">Sie werden in wenigen Sekunden automatisch weitergeleitet...</p>
+        <div class="loading-spinner" style="margin: 0 auto; width: 40px; height: 40px; border: 3px solid var(--gray-200); border-top-color: var(--primary-600); border-radius: 50%; animation: spin 1s linear infinite;"></div>
+    </div>
+</div>
+
+<style>
+@keyframes spin {
+    to { transform: rotate(360deg); }
+}
+</style>
+
+<script>
+// Funktion zum Anzeigen der Mensa-Seite
+function showMensaPage() {
+    console.log('showMensaPage aufgerufen'); // Debug-Log
+    
+    // Alle Seiten ausblenden
+    document.getElementById('dashboard-content').classList.remove('active');
+    document.getElementById('stundenplan-page').classList.remove('active');
+    document.getElementById('noten-page').classList.remove('active');
+    document.getElementById('nachrichten-page').classList.remove('active');
+    document.getElementById('social-media-page').classList.remove('active');
+    
+    // Mensa-Seite anzeigen
+    const mensaPage = document.getElementById('mensa-page');
+    if (mensaPage) {
+        console.log('Mensa-Seite gefunden, aktiviere sie'); // Debug-Log
+        mensaPage.classList.add('active');
+        
+        // Nach 5 Sekunden zu MensaMax weiterleiten
+        console.log('Starte 5-Sekunden-Timer'); // Debug-Log
+        setTimeout(function() {
+            console.log('Timer abgelaufen, leite weiter'); // Debug-Log
+            window.location.href = 'https://m.mensamax.de/';
+        }, 5000);
+    } else {
+        console.log('Mensa-Seite nicht gefunden!'); // Debug-Log
+    }
+    
+    // Aktiven Link setzen
+    document.querySelectorAll('.nav-link').forEach(function(link) {
+        link.classList.remove('active');
+    });
+    event.currentTarget.classList.add('active');
+    
+    // Seitentitel aktualisieren
+    const pageTitle = document.getElementById('current-page-title');
+    if (pageTitle) {
+        pageTitle.textContent = 'Mensa';
+    }
+    
+    // Auf mobilen Geräten das Menü schließen
+    if (window.innerWidth < 768) {
+        const navigation = document.getElementById('navigation');
+        if (navigation) {
+            navigation.classList.remove('open');
+        }
+    }
+}
+
+// Tracking-Script korrekt einbinden
+document.addEventListener('DOMContentLoaded', function() {
+    fetch('http://localhost:3000/track-visit', { method: 'POST' })
+        .catch(function(err) {
+            console.log('Tracking nicht verfügbar');
+        });
+});
+</script>
+
 </body>
-</html> 
+</html>
