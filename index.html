@@ -2039,6 +2039,37 @@
                 <div class="nav-logo">Zyro</div>
             </div>
             <div class="nav-links" style="height: calc(100vh - 80px); overflow-y: auto; padding-bottom: 2rem;">
+                <button type="button" class="nav-link" onclick="showStundenplanPage()" style="display: flex; align-items: center; width: 100%; text-align: left; background: none; border: none; padding: 0.75rem 1.5rem; color: var(--gray-600); text-decoration: none; transition: background-color 0.2s;">
+                    <span class="nav-link-icon">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect>
+                            <line x1="16" y1="2" x2="16" y2="6"></line>
+                            <line x1="8" y1="2" x2="8" y2="6"></line>
+                            <line x1="3" y1="10" x2="21" y2="10"></line>
+                        </svg>
+                    </span>
+                    Stundenplan
+                </button>
+
+                <button type="button" class="nav-link" onclick="showNotenPage()" style="display: flex; align-items: center; width: 100%; text-align: left; background: none; border: none; padding: 0.75rem 1.5rem; color: var(--gray-600); text-decoration: none; transition: background-color 0.2s;">
+                    <span class="nav-link-icon">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"></path>
+                            <path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"></path>
+                        </svg>
+                    </span>
+                    Noten
+                </button>
+
+                <button type="button" class="nav-link" onclick="document.getElementById('chat-system-modal').classList.add('open')" style="display: flex; align-items: center; width: 100%; text-align: left; background: none; border: none; padding: 0.75rem 1.5rem; color: var(--gray-600); text-decoration: none; transition: background-color 0.2s;">
+                    <span class="nav-link-icon">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path>
+                        </svg>
+                    </span>
+                    Chat
+                </button>
+
                 <button type="button" class="nav-link active" onclick="showDashboardPage()" style="display: flex; align-items: center; width: 100%; text-align: left; background: none; border: none; padding: 0.75rem 1.5rem; color: var(--gray-600); text-decoration: none; transition: background-color 0.2s;">
                     <span class="nav-link-icon">
                         <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
@@ -2047,16 +2078,6 @@
                         </svg>
                     </span>
                     Dashboard
-                </button>
-
-                <button type="button" class="nav-link" onclick="showHomeworkPage()" style="display: flex; align-items: center; width: 100%; text-align: left; background: none; border: none; padding: 0.75rem 1.5rem; color: var(--gray-600); text-decoration: none; transition: background-color 0.2s;">
-                    <span class="nav-link-icon">
-                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                            <path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"></path>
-                            <path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"></path>
-                        </svg>
-                    </span>
-                    Hausaufgaben
                 </button>
 
                 <button type="button" class="nav-link" onclick="showSubstitutionPage()" style="display: flex; align-items: center; width: 100%; text-align: left; background: none; border: none; padding: 0.75rem 1.5rem; color: var(--gray-600); text-decoration: none; transition: background-color 0.2s;">
