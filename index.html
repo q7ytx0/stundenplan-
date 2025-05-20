@@ -6117,35 +6117,20 @@
             const registeredUsers = getRegisteredUsers();
             const currentUser = JSON.parse(localStorage.getItem('zyroUser') || '{}');
             
-            // Benutzer filtern basierend auf Rolle und Suchbegriff
+            // Alle Benutzer anzeigen, außer dem aktuellen Benutzer
             const filteredUsers = registeredUsers.filter(user => {
                 // Aktuellen Benutzer ausschließen
                 if (user.username === currentUser.username) return false;
                 
-                // Wenn der aktuelle Benutzer ein Lehrer ist, zeige alle Benutzer
-                if (currentUser.isTeacher || currentUser.role === 'admin') {
-                    if (searchTerm) {
-                        const searchTermLower = searchTerm.toLowerCase();
-                        return (user.fullname?.toLowerCase().includes(searchTermLower) || 
-                                user.username?.toLowerCase().includes(searchTermLower));
-                    }
-                    return true;
+                // Bei Suche nach Namen filtern
+                if (searchTerm) {
+                    const searchTermLower = searchTerm.toLowerCase();
+                    return (user.fullname?.toLowerCase().includes(searchTermLower) || 
+                            user.username?.toLowerCase().includes(searchTermLower));
                 }
                 
-                // Wenn der aktuelle Benutzer ein Schüler ist, zeige nur Lehrer
-                if (!currentUser.isTeacher && currentUser.role !== 'admin') {
-                    if (user.isTeacher || user.role === 'admin') {
-                        if (searchTerm) {
-                            const searchTermLower = searchTerm.toLowerCase();
-                            return (user.fullname?.toLowerCase().includes(searchTermLower) || 
-                                    user.username?.toLowerCase().includes(searchTermLower));
-                        }
-                        return true;
-                    }
-                    return false;
-                }
-                
-                return false;
+                // Alle anderen Benutzer anzeigen
+                return true;
             });
             
             console.log('Gefilterte Chat-Benutzer:', filteredUsers);
