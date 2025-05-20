@@ -34,42 +34,44 @@
             return newUser;
         }
 
-        async function getRegisteredUsers() {
-    try {
-        // Verbindung zur Datenbank herstellen
-        const response = await fetch('http://localhost/zyro/get_users.php');
-        if (!response.ok) {
-            throw new Error('Netzwerkfehler beim Laden der Benutzer');
-        }
-        
-        const users = await response.json();
-        
-        // Benutzer mit zusätzlichen Eigenschaften versehen
-        const enhancedUsers = users.map(user => ({
-            ...user,
-            status: user.status || 'offline',
-            lastActive: user.lastActive || new Date().toISOString(),
-            isTeacher: user.role === 'teacher',
-            school: user.school || 'Gymnasium'
-        }));
-        
-        // Benutzer im localStorage zwischenspeichern
-        localStorage.setItem('registeredUsers', JSON.stringify(enhancedUsers));
-        
-        return enhancedUsers;
-    } catch (error) {
-        console.error('Fehler beim Laden der Benutzer:', error);
-        
-        // Im Fehlerfall: Versuche Benutzer aus dem localStorage zu laden
-        const cachedUsers = JSON.parse(localStorage.getItem('registeredUsers') || '[]');
-        if (cachedUsers.length > 0) {
-            return cachedUsers;
-        }
-        
-        // Wenn keine gecachten Benutzer verfügbar sind, gib leere Liste zurück
-        return [];
-    }
-}
+        function getRegisteredUsers() {
+            // Vorhandene registrierte Benutzer laden
+            const registeredUsers = JSON.parse(localStorage.getItem('registeredUsers') || '[]');
+            
+            // Wenn keine Benutzer vorhanden sind, Standardbenutzer erstellen
+            if (registeredUsers.length === 0) {
+                const defaultUsers = [
+                    {
+                        username: 'zyro',
+                        password: 'zyro',
+                        fullname: 'Admin User',
+                        role: 'admin',
+                        isTeacher: false,
+                        status: 'offline',
+                        lastActive: new Date().toISOString(),
+                        school: 'System'
+                    },
+                    {
+                        username: 'lehrer1',
+                        password: 'lehrer1',
+                        fullname: 'Max Mustermann',
+                        role: 'teacher',
+                        isTeacher: true,
+                        status: 'offline',
+                        lastActive: new Date().toISOString(),
+                        school: 'Gymnasium'
+                    },
+                    {
+                        username: 'schueler1',
+                        password: 'schueler1',
+                        fullname: 'Lisa Müller',
+                        role: 'student',
+                        isTeacher: false,
+                        status: 'offline',
+                        lastActive: new Date().toISOString(),
+                        school: 'Gymnasium'
+                    }
+                ];
                 
                 localStorage.setItem('registeredUsers', JSON.stringify(defaultUsers));
                 return defaultUsers;
@@ -92,14 +94,6 @@
     }
 
     function createChatUI() {
-        console.log('Creating chat UI...');
-        
-        // Existierenden Chat-Container entfernen falls vorhanden
-        const existingContainer = document.getElementById('chat-container');
-        if (existingContainer) {
-            existingContainer.remove();
-        }
-        
         // Chat-Container erstellen
         const chatContainer = document.createElement('div');
         chatContainer.id = 'chat-container';
@@ -6112,52 +6106,47 @@
         let currentChatUser = null;
         
         // Funktion zum Laden der Chat-Benutzer
-        async function loadChatUsers(searchTerm = '') {
-            console.log('Loading chat users...');
+        function loadChatUsers(searchTerm = '') {
             const chatUsersList = document.getElementById('chat-users-list');
-            if (!chatUsersList) {
-                console.error('Chat users list element not found');
-                return;
-            }
+            if (!chatUsersList) return;
             
             // Chat-Benutzerliste leeren
             chatUsersList.innerHTML = '';
             
-            // Lade-Animation anzeigen
-            chatUsersList.innerHTML = '<div style="text-align: center; padding: 20px;">Lade Benutzer...</div>';
+            // Alle registrierten Benutzer laden
+            const registeredUsers = getRegisteredUsers();
+            const currentUser = JSON.parse(localStorage.getItem('zyroUser') || '{}');
             
-            try {
-                // Alle registrierten Benutzer laden
-                const registeredUsers = await getRegisteredUsers();
-                console.log('Registered users:', registeredUsers);
-                
-                const currentUser = JSON.parse(localStorage.getItem('zyroUser') || '{}');
-                console.log('Current user:', currentUser);
-            
-            // Alle Benutzer anzeigen, außer dem aktuellen Benutzer
+            // Benutzer filtern basierend auf Rolle und Suchbegriff
             const filteredUsers = registeredUsers.filter(user => {
                 // Aktuellen Benutzer ausschließen
-                if (user.username === currentUser.username) {
-                    console.log('Excluding current user:', user.username);
+                if (user.username === currentUser.username) return false;
+                
+                // Wenn der aktuelle Benutzer ein Lehrer ist, zeige alle Benutzer
+                if (currentUser.isTeacher || currentUser.role === 'admin') {
+                    if (searchTerm) {
+                        const searchTermLower = searchTerm.toLowerCase();
+                        return (user.fullname?.toLowerCase().includes(searchTermLower) || 
+                                user.username?.toLowerCase().includes(searchTermLower));
+                    }
+                    return true;
+                }
+                
+                // Wenn der aktuelle Benutzer ein Schüler ist, zeige nur Lehrer
+                if (!currentUser.isTeacher && currentUser.role !== 'admin') {
+                    if (user.isTeacher || user.role === 'admin') {
+                        if (searchTerm) {
+                            const searchTermLower = searchTerm.toLowerCase();
+                            return (user.fullname?.toLowerCase().includes(searchTermLower) || 
+                                    user.username?.toLowerCase().includes(searchTermLower));
+                        }
+                        return true;
+                    }
                     return false;
                 }
                 
-                // Bei Suche nach Namen filtern
-                if (searchTerm) {
-                    const searchTermLower = searchTerm.toLowerCase();
-                    const matches = (user.fullname?.toLowerCase().includes(searchTermLower) || 
-                                  user.username?.toLowerCase().includes(searchTermLower));
-                    if (!matches) {
-                        console.log('User does not match search term:', user.username);
-                    }
-                    return matches;
-                }
-                
-                // Alle anderen Benutzer anzeigen
-                return true;
+                return false;
             });
-            
-            console.log('Filtered users:', filteredUsers);
             
             console.log('Gefilterte Chat-Benutzer:', filteredUsers);
             
