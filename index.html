@@ -7,22 +7,80 @@
     
     <script>
         // Vordefinierte Benutzer für Login
-        const users = [
-        {
-            username: 'zyro',
-            password: 'zyro',
-            role: 'admin',
-            status: 'offline',
-            lastActive: new Date().toISOString()
-        },
-        {
-            username: 'zyr0',
-            password: 'zyr0',
-            role: 'user',
-            status: 'offline',
-            lastActive: new Date().toISOString()
+        function registerUser(userData) {
+            // Bestehende Benutzer laden
+            const registeredUsers = JSON.parse(localStorage.getItem('registeredUsers') || '[]');
+            
+            // Prüfen, ob Benutzername bereits existiert
+            if (registeredUsers.some(user => user.username === userData.username)) {
+                throw new Error('Benutzername bereits vergeben');
+            }
+            
+            // Neuen Benutzer mit Standardwerten erstellen
+            const newUser = {
+                ...userData,
+                status: 'offline',
+                lastActive: new Date().toISOString(),
+                school: userData.school || 'Nicht angegeben',
+                role: userData.isTeacher ? 'teacher' : 'student'
+            };
+            
+            // Benutzer zur Liste hinzufügen
+            registeredUsers.push(newUser);
+            
+            // Liste aktualisieren
+            localStorage.setItem('registeredUsers', JSON.stringify(registeredUsers));
+            
+            return newUser;
         }
-    ];
+
+        function getRegisteredUsers() {
+            // Vorhandene registrierte Benutzer laden
+            const registeredUsers = JSON.parse(localStorage.getItem('registeredUsers') || '[]');
+            
+            // Wenn keine Benutzer vorhanden sind, Standardbenutzer erstellen
+            if (registeredUsers.length === 0) {
+                const defaultUsers = [
+                    {
+                        username: 'zyro',
+                        password: 'zyro',
+                        fullname: 'Admin User',
+                        role: 'admin',
+                        isTeacher: false,
+                        status: 'offline',
+                        lastActive: new Date().toISOString(),
+                        school: 'System'
+                    },
+                    {
+                        username: 'lehrer1',
+                        password: 'lehrer1',
+                        fullname: 'Max Mustermann',
+                        role: 'teacher',
+                        isTeacher: true,
+                        status: 'offline',
+                        lastActive: new Date().toISOString(),
+                        school: 'Gymnasium'
+                    },
+                    {
+                        username: 'schueler1',
+                        password: 'schueler1',
+                        fullname: 'Lisa Müller',
+                        role: 'student',
+                        isTeacher: false,
+                        status: 'offline',
+                        lastActive: new Date().toISOString(),
+                        school: 'Gymnasium'
+                    }
+                ];
+                
+                localStorage.setItem('registeredUsers', JSON.stringify(defaultUsers));
+                return defaultUsers;
+            }
+            
+            return registeredUsers;
+        }
+
+        const users = getRegisteredUsers();
 
     // Chat-System initialisieren
     const chatMessages = JSON.parse(localStorage.getItem('chatMessages') || '[]');
@@ -479,11 +537,32 @@
         const user = checkLogin(username, password);
 
         if (user) {
+            // Benutzer als online markieren
+            user.status = 'online';
+            user.lastActive = new Date().toISOString();
+            
+            // Benutzer in der registrierten Liste aktualisieren
+            const registeredUsers = getRegisteredUsers();
+            const updatedUsers = registeredUsers.map(u => 
+                u.username === user.username ? user : u
+            );
+            localStorage.setItem('registeredUsers', JSON.stringify(updatedUsers));
+            
+            // Aktuellen Benutzer speichern
             localStorage.setItem('zyroUser', JSON.stringify(user));
-            updateUserStatus(username, 'online');
+            
+            // UI aktualisieren
             updateUserInterface(user);
             createChatUI();
-            window.location.href = user.role === 'admin' ? 'admin.html' : 'user.html';
+            
+            // Zur entsprechenden Seite weiterleiten
+            if (user.role === 'admin') {
+                window.location.href = 'admin.html';
+            } else if (user.role === 'teacher') {
+                window.location.href = 'teacher.html';
+            } else {
+                window.location.href = 'user.html';
+            }
         } else {
             document.getElementById('error').textContent = 'Ungültige Anmeldedaten';
         }
@@ -3092,7 +3171,7 @@
                                     <div class="profile-menu-icon">
                                         <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                                             <circle cx="12" cy="12" r="3"></circle>
-                                            <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path>
+                                            <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1 2 2h.09a1.65 1.65 0 0 0 1.51 1z"></path>
                                         </svg>
                                     </div>
                                     <div class="profile-menu-text">Einstellungen</div>
@@ -6036,33 +6115,44 @@
             
             // Alle registrierten Benutzer laden
             const registeredUsers = getRegisteredUsers();
-            // Mache registeredUsers global verfügbar für Debugging
-            window.registeredUsers = registeredUsers;
-            console.log('Chat-Benutzer laden:', registeredUsers);
-            
             const currentUser = JSON.parse(localStorage.getItem('zyroUser') || '{}');
             
-            // Benutzer filtern (ohne den aktuellen Benutzer)
+            // Benutzer filtern basierend auf Rolle und Suchbegriff
             const filteredUsers = registeredUsers.filter(user => {
                 // Aktuellen Benutzer ausschließen
                 if (user.username === currentUser.username) return false;
                 
-                // Nach Suchbegriff filtern, falls vorhanden
-                if (searchTerm) {
-                    const searchTermLower = searchTerm.toLowerCase();
-                    return user.fullname?.toLowerCase().includes(searchTermLower) || 
-                           user.username?.toLowerCase().includes(searchTermLower);
+                // Wenn der aktuelle Benutzer ein Lehrer ist, zeige alle Benutzer
+                if (currentUser.isTeacher || currentUser.role === 'admin') {
+                    if (searchTerm) {
+                        const searchTermLower = searchTerm.toLowerCase();
+                        return (user.fullname?.toLowerCase().includes(searchTermLower) || 
+                                user.username?.toLowerCase().includes(searchTermLower));
+                    }
+                    return true;
                 }
                 
-                return true;
+                // Wenn der aktuelle Benutzer ein Schüler ist, zeige nur Lehrer
+                if (!currentUser.isTeacher && currentUser.role !== 'admin') {
+                    if (user.isTeacher || user.role === 'admin') {
+                        if (searchTerm) {
+                            const searchTermLower = searchTerm.toLowerCase();
+                            return (user.fullname?.toLowerCase().includes(searchTermLower) || 
+                                    user.username?.toLowerCase().includes(searchTermLower));
+                        }
+                        return true;
+                    }
+                    return false;
+                }
+                
+                return false;
             });
             
             console.log('Gefilterte Chat-Benutzer:', filteredUsers);
             
-            // Wenn keine Benutzer gefunden wurden, erstelle einen Testbenutzer
+            // Wenn keine Benutzer gefunden wurden
             if (filteredUsers.length === 0) {
                 chatUsersList.innerHTML = '<div style="padding: 1rem; text-align: center; color: var(--gray-500);">Keine Benutzer gefunden</div>';
-                chatUsersList.innerHTML += '<div style="padding: 1rem; text-align: center;"><button class="btn btn-secondary" onclick="importExampleUsers(); setTimeout(() => loadChatUsers(), 500);">Beispielbenutzer importieren</button></div>';
                 return;
             }
             
@@ -6081,13 +6171,23 @@
                     msg.from === user.username && msg.read === false
                 ).length;
                 
+                // Benutzertyp-Badge hinzufügen
+                const userTypeBadge = user.isTeacher ? 
+                    '<span style="background: var(--primary-100); color: var(--primary-600); padding: 2px 6px; border-radius: 4px; font-size: 0.7rem; margin-left: 8px;">Lehrer</span>' : 
+                    (user.role === 'admin' ? 
+                        '<span style="background: var(--warning-100); color: var(--warning-600); padding: 2px 6px; border-radius: 4px; font-size: 0.7rem; margin-left: 8px;">Admin</span>' : 
+                        '<span style="background: var(--gray-100); color: var(--gray-600); padding: 2px 6px; border-radius: 4px; font-size: 0.7rem; margin-left: 8px;">Schüler</span>');
+                
                 userItem.innerHTML = `
                     <div style="display: flex; align-items: center;">
                         <div style="width: 2.5rem; height: 2.5rem; border-radius: 50%; background-color: var(--primary-100); color: var(--primary-600); display: flex; align-items: center; justify-content: center; font-weight: 600; margin-right: 0.75rem;">
                             ${(user.fullname || user.username).charAt(0).toUpperCase()}
                         </div>
                         <div style="flex: 1;">
-                            <div style="font-weight: 500;">${user.fullname || user.username}</div>
+                            <div style="font-weight: 500; display: flex; align-items: center;">
+                                ${user.fullname || user.username}
+                                ${userTypeBadge}
+                            </div>
                             <div style="font-size: 0.75rem; color: var(--gray-500);">${user.school || ''}</div>
                         </div>
                         ${unreadCount > 0 ? `<div style="width: 1.5rem; height: 1.5rem; border-radius: 50%; background-color: var(--primary-500); color: white; display: flex; align-items: center; justify-content: center; font-size: 0.75rem;">${unreadCount}</div>` : ''}
@@ -6623,7 +6723,7 @@ function zeigeVertretungen() {
         <div class="social-card" onclick="window.open('https://www.instagram.com/mathildeanneke/', '_blank')">
             <div class="social-card-content">
                 <svg class="social-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
-                    <path fill="currentColor" d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zm0-2.163c-3.259 0-3.667.014-4.947.072-4.358.2-6.78 2.618-6.98 6.98-.059 1.281-.073 1.689-.073 4.948 0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072 3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98-1.281-.059-1.69-.073-4.949-.073zm0 5.838c-3.403 0-6.162 2.759-6.162 6.162s2.759 6.163 6.162 6.163 6.162-2.759 6.162-6.163c0-3.403-2.759-6.162-6.162-6.162zm0 10.162c-2.209 0-4-1.79-4-4 0-2.209 1.791-4 4-4s4 1.791 4 4c0 2.21-1.791 4-4 4zm6.406-11.845c-.796 0-1.441.645-1.441 1.44s.645 1.44 1.441 1.44c.795 0 1.439-.645 1.439-1.44s-.644-1.44-1.439-1.44z"/>
+                    <path fill="currentColor" d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zm0-2.163c-3.259 0-3.667.014-4.947.072-4.358.2-6.78 2.618-6.98 6.98-.059 1.281-.073 1.689-.073 4.948 0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072 3.259 0 3.668-.014 4.947-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98-1.281-.059-1.69-.073-4.949-.073zm0 5.838c-3.403 0-6.162 2.759-6.162 6.162s2.759 6.163 6.162 6.163 6.162-2.759 6.162-6.163c0-3.403-2.759-6.162-6.162-6.162zm0 10.162c-2.209 0-4-1.79-4-4 0-2.209 1.791-4 4-4s4 1.791 4 4c0 2.21-1.791 4-4 4zm6.406-11.845c-.796 0-1.441.645-1.441 1.44s.645 1.44 1.441 1.44c.795 0 1.439-.645 1.439-1.44s-.644-1.44-1.439-1.44z"/>
                 </svg>
                 <h2 class="social-title">Instagram</h2>
                 <p class="social-description">Folge uns auf Instagram</p>
